@@ -1,32 +1,54 @@
 {
-    "name" : "Jupyter::Kernel",
-    "source-url" : "git://github.com/bduggan/raku-jupyter-kernel.git",
-    "raku" : "6.*",
-    "build-depends" : [ ],
-    "provides" : {
-        "Jupyter::Kernel" : "lib/Jupyter/Kernel.rakumod",
-        "Jupyter::Kernel::Comm" : "lib/Jupyter/Kernel/Comm.rakumod",
-        "Jupyter::Kernel::Comms" : "lib/Jupyter/Kernel/Comms.rakumod",
-        "Jupyter::Kernel::Handler" : "lib/Jupyter/Kernel/Handler.rakumod",
-        "Jupyter::Kernel::History" : "lib/Jupyter/Kernel/History.rakumod",
-        "Jupyter::Kernel::Magics" :  "lib/Jupyter/Kernel/Magics.rakumod",
-        "Jupyter::Kernel::Paths" : "lib/Jupyter/Kernel/Paths.rakumod",
-        "Jupyter::Kernel::Response" : "lib/Jupyter/Kernel/Response.rakumod",
-        "Jupyter::Kernel::Sandbox" : "lib/Jupyter/Kernel/Sandbox.rakumod",
-        "Jupyter::Kernel::Sandbox::Autocomplete" : "lib/Jupyter/Kernel/Sandbox/Autocomplete.rakumod",
-        "Jupyter::Kernel::Service" : "lib/Jupyter/Kernel/Service.rakumod"
-    },
-    "resources" : [ "logo-32x32.png", "logo-64x64.png" ],
-    "tags" : [ ],
-    "depends" : [
-        "UUID", "Log::Async", "Net::ZMQ:ver<0.8>", "JSON::Tiny",
-        "Digest::HMAC", "Digest::SHA256::Native"
-    ],
-    "description" : "Raku Kernel for Jupyter Notebooks",
-    "test-depends" : [ ],
-    "version" : "0.0.21",
-    "license" : "Artistic-2.0",
-    "authors" : [
-        "Brian Duggan"
-    ]
+  "name": "Jupyter::Chatbook",
+  "description": "Jupyter Raku Kernel that produces LLM-aware notebooks (or chatbooks.)",
+  "version": "0.0.22",
+  "authors": [
+    "Brian Duggan",
+    "Anton Antonov"
+  ],
+  "auth": "zef:antononcube",
+  "depends": [
+    "Clipboard:ver<0.1.1>",
+    "Digest::HMAC",
+    "Digest::SHA256::Native",
+    "JSON::Tiny",
+    "Log::Async",
+    "Net::ZMQ:ver<0.8>",
+    "Text::Plot:ver<0.1.0>",
+    "UUID",
+    "WWW:OpenAI:ver<0.2.8>",
+    "WWW:PaLM:ver<0.1.8>"
+  ],
+  "build-depends": [],
+  "test-depends": [],
+  "provides": {
+    "Jupyter::Kernel": "lib/Jupyter/Kernel.rakumod",
+    "Jupyter::Kernel::Comm": "lib/Jupyter/Kernel/Comm.rakumod",
+    "Jupyter::Kernel::Comms": "lib/Jupyter/Kernel/Comms.rakumod",
+    "Jupyter::Kernel::Handler": "lib/Jupyter/Kernel/Handler.rakumod",
+    "Jupyter::Kernel::History": "lib/Jupyter/Kernel/History.rakumod",
+    "Jupyter::Kernel::Magics": "lib/Jupyter/Kernel/Magics.rakumod",
+    "Jupyter::Kernel::Paths": "lib/Jupyter/Kernel/Paths.rakumod",
+    "Jupyter::Kernel::Response": "lib/Jupyter/Kernel/Response.rakumod",
+    "Jupyter::Kernel::Sandbox": "lib/Jupyter/Kernel/Sandbox.rakumod",
+    "Jupyter::Kernel::Sandbox::Autocomplete": "lib/Jupyter/Kernel/Sandbox/Autocomplete.rakumod",
+    "Jupyter::Kernel::Service": "lib/Jupyter/Kernel/Service.rakumod"
+  },
+  "resources": [
+    "logo-32x32.png",
+    "logo-64x64.png"
+  ],
+  "license": "Artistic-2.0",
+  "tags": [
+    "bard",
+    "chatgpt",
+    "dall-e",
+    "jupyter",
+    "kernel",
+    "llm",
+    "openai",
+    "palm"
+  ],
+  "source-url": "https://github.com/antononcube/Raku-Jupyter-Chatbook",
+  "raku": "6.*"
 }
