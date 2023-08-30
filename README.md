@@ -5,7 +5,7 @@
 This Raku package is fork of Brian Duggan's 
 ["Jupyter::Kernel"](https://github.com/bduggan/raku-jupyter-kernel).
 
-("Jupyter::Kernel" is a pure Raku implementation of a Raku kernel for Jupyter clients¹.
+"Jupyter::Kernel" is a pure Raku implementation of a Raku kernel for Jupyter clients¹.
 
 Jupyter notebooks provide a web-based (or console-based)
 Read Eval Print Loop (REPL) for running code and serializing input and output.
@@ -27,7 +27,7 @@ is because:
 - I plan to introduce 4-6 new package dependencies
 - I expect to do a fair amount of UX experimental implementations and refactoring
 
-**Remark:** I am convinced that using "Jupyter::Kernel" as a base, some fairly sophisticated, 
+**Remark:** I am convinced that using "Jupyter::Kernel" as a base some fairly sophisticated, 
 yet natural programming workflows can be produced.
 
 
@@ -37,6 +37,21 @@ yet natural programming workflows can be produced.
 
 Follow the instructions of
 ["Jupyter::Kernel"](https://github.com/bduggan/raku-jupyter-kernel).
+
+-------
+
+## Using LLMs in chatbooks
+
+There four ways to use LLMs in a chatbook:
+
+1. LLM functions, [AA3, AAp4]
+2. Chat objects, [AAp4]
+3. OpenAI, [AAp2], or PaLM, [AAp3] code cells with magics
+4. Sequential composition of chat cells
+
+Let us briefly describe each way in turn.
+
+*TBF...*
 
 -------
 
@@ -105,7 +120,9 @@ See the demo recordings:
 
 -------
 
-## Motivation (... or just a rant)
+## Motivation extended 
+
+*(... or just a rant...)*
 
 One of my "missions" with Raku is to have a reasonable set of Machine Learning (ML) algorithms implemented (only) with Raku.
 Another "mission" is to endow Raku with a Large Language Models (LLMs) system that integrates very well with Raku and Raku's ecosystem.
@@ -135,7 +152,6 @@ The last point strongly depends upon having a robust interactive notebook soluti
 ------
 
 ## References
-
 
 ### Articles
 
