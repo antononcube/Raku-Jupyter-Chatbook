@@ -93,13 +93,14 @@ See the demo recording
 ["Raku Literate Programming via command line pipelines"](https://www.youtube.com/watch?v=2UjAdQaKof8), [AAv1], (4.5 min.)
 
 **LLM usage:** Markdown cells with messages to be send to OpenAI or PaLM can be specified.
-See [AA2, AA3].
+See [AA2, AA3]. Additionally, Raku has dedicated packages for accessing OpenAI and PaLM,
+and the creation of LLM functions and LLM chat objects.
 
 ### Mathematica notebooks
 
 The creation of Jupyter notebooks was inspired from
 [Mathematica's](https://www.wolfram.com/mathematica/?source=nav)
-notebooks. (Jupyter, instead of S-expressions uses JSON format.)
+notebooks. Jupyter, instead of hierarchical S-expressions uses the hierarchical JSON format.
 
 So, instead of using Jupyter's framework for having a *Raku notebook solution*, 
 the much more mature framework of Mathematica can be used. See: 
@@ -111,6 +112,17 @@ See the demo recordings:
 - ["Racoons playing with pearls and onions"](https://www.youtube.com/watch?v=zlkoNZK8MpU), [AAv2]
 - ["Streamlining ChatGPT code generation and narration workflows (Raku)"](https://www.youtube.com/watch?v=mI-oWLz5dYY), [AAv2]
 
+**LLM usage (WL):** Fully integrated LLM utilization of all four points in the previous section. See [SW1].
+
+**LLM usage (Raku):** The paclet ["RakuMode"](https://resources.wolframcloud.com/PacletRepository/resources/AntonAntonov/RakuMode/) 
+is based the "Chatbook style". 
+I.e. Raku can be used in WL chatbooks. Additionally, Raku has dedicated packages for accessing OpenAI and PaLM,
+and the creation of LLM functions and LLM chat objects.
+
+
+**Remark:** The sequential execution of chat cells mentioned in the previous section is heavily
+influenced by the chatbooks in Mathematica 13.3. 
+Earlier versions of Mathematica WL paclet ["Chatbook"](https://resources.wolframcloud.com/PacletRepository/resources/Wolfram/Chatbook/).
 
 ------
 
@@ -175,6 +187,10 @@ The last point strongly depends upon having a robust interactive notebook soluti
 (2023),
 [RakuForPrediction at WordPress](https://rakuforprediction.wordpress.com).
 
+[SW1] Stephen Wolfram,
+["Introducing Chat Notebooks: Integrating LLMs into the Notebook Paradigm"](https://writings.stephenwolfram.com/2023/06/introducing-chat-notebooks-integrating-llms-into-the-notebook-paradigm/),
+(2023),
+[writings.stephenwolfram.com](https://writings.stephenwolfram.com).
 
 ### Packages
 
