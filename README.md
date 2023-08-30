@@ -2,7 +2,7 @@
 
 ## In brief
 
-This Raku package is fork of Brian Duggan's 
+This Raku package is a fork of Brian Duggan's 
 ["Jupyter::Kernel"](https://github.com/bduggan/raku-jupyter-kernel).
 
 "Jupyter::Kernel" is a pure Raku implementation of a Raku kernel for Jupyter clients¹.
@@ -10,16 +10,16 @@ This Raku package is fork of Brian Duggan's
 Jupyter notebooks provide a web-based (or console-based)
 Read Eval Print Loop (REPL) for running code and serializing input and output.
 
-It is desirable to include the interaction Large Language Models (LLMs) to the "usual" REPL.
+It is desirable to include the interaction with Large Language Models (LLMs) to the "usual" REPL.
 
-Having LLM-aware and LLM-chat-endowed notebooks can really speed up the:
+Having LLM-aware and LLM-chat-endowed notebooks (i.e. *chatbooks*) can really speed up the:
 - Utilization of Raku 
   - Derivation of useful (actionable) code
 - Adoption of Raku by newcomers
 - Writing and preparation of documents on variety of subjects
 
 This repository is mostly for experimental work, but it aims to be *always* very
-useful for interacting with Large Language Models (LLMs) via Raku.
+useful for interacting with LLMs via Raku.
 
 **Remark:** The reason to have a separate package -- a fork of
 ["Jupyter::Kernel"](https://github.com/bduggan/raku-jupyter-kernel) --
@@ -27,7 +27,7 @@ is because:
 - I plan to introduce 4-6 new package dependencies
 - I expect to do a fair amount of UX experimental implementations and refactoring
 
-**Remark:** I am convinced that using "Jupyter::Kernel" as a base some fairly sophisticated, 
+**Remark:** I am convinced that by using "Jupyter::Kernel" as a base some fairly sophisticated, 
 yet natural programming workflows can be produced.
 
 
@@ -42,7 +42,7 @@ Follow the instructions of
 
 ## Using LLMs in chatbooks
 
-There four ways to use LLMs in a chatbook:
+There are four ways to use LLMs in a chatbook:
 
 1. LLM functions, [AA3, AAp4]
 2. Chat objects, [AAp4]
@@ -80,24 +80,24 @@ to write a "work" Markdown document.
 2. That Markdown file can be "executed" using "Text::CodeProcessing". 
 
 3. The obtained, "woven" Markdown file has the results of 
-the Raku (and Shell, and OpenAI, and PaLM) code cells in the original document.
+the Raku, Shell, OpenAI, and PaLM code cells in the original document.
 
 4. The content of the "work" document can be refined based in the results displayed in
 the "woven" document.
 
-5. If "more intensive interaction" is needed one can convert one of the Markdown files into a notebook. 
+5. If a "more intensive interaction" is needed one of the Markdown files can be converted into a notebook:
    - ["Markdown::Grammar"](https://raku.land/zef:antononcube/Markdown::Grammar), [AAp3], can convert to Mathematica notebooks.
    - ["jupytext"](https://jupytext.readthedocs.io/) can convert to Jupyter notebooks.
 
 See the demo recording
 ["Raku Literate Programming via command line pipelines"](https://www.youtube.com/watch?v=2UjAdQaKof8), [AAv1], (4.5 min.)
 
-**LLM usage:** Markdown cells with message to be send to OpenAI or PaLM can be specified.
+**LLM usage:** Markdown cells with messages to be send to OpenAI or PaLM can be specified.
 See [AA2, AA3].
 
 ### Mathematica notebooks
 
-The creation of Jupyter notebooks were inspired from
+The creation of Jupyter notebooks was inspired from
 [Mathematica's](https://www.wolfram.com/mathematica/?source=nav)
 notebooks. (Jupyter, instead of S-expressions uses JSON format.)
 
@@ -235,6 +235,6 @@ The last point strongly depends upon having a robust interactive notebook soluti
 
 ## *Footnotes*
 
-¹ Jupyter clients are user interfaces to interact with an interpreter kernel like `Jupyter::Kernel`.
+¹ Jupyter clients are user interfaces to interact with an interpreter kernel like "Jupyter::Kernel".
 Jupyter [Lab | Notebook | Console | QtConsole ] are the jupyter maintained clients.
 More info in the [jupyter documentations site](https://jupyter.org/documentation).
