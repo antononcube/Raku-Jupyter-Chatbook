@@ -95,7 +95,9 @@ my class Magic::OpenAI is Magic {
                 max-tokens => 120,
                 format => 'values');
 
-        copy-to-clipboard($res);
+        if $*DISTRO eq 'macos' {
+            copy-to-clipboard($res);
+        }
 
         return Result.new:
                 output => $res,
@@ -134,7 +136,9 @@ my class Magic::PaLM is Magic {
                 max-tokens => 300,
                 format => 'values');
 
-        copy-to-clipboard($res);
+        if $*DISTRO eq 'macos' {
+            copy-to-clipboard($res);
+        }
 
         return Result.new:
                 output => $res,
