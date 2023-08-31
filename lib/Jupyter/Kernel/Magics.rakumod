@@ -150,6 +150,21 @@ my class Magic::PaLM is Magic {
     }
 }
 
+my class Magic::MermaidInk is Magic {
+    method preprocess($code) {
+        my $imgResB64 = mermaid-ink($code, format => 'md-image');
+
+        my $res = from-base64($imgResB64);
+
+        return Result.new:
+                output => $res,
+                output-mime-type => 'text/html',
+                stdout => $res,
+                stdout-mime-type => 'text/html',
+                ;
+    }
+}
+
 my class Magic::Run is Magic {
     has Str:D $.file is required;
     method preprocess($code is rw) {
@@ -241,7 +256,7 @@ grammar Magic::Grammar {
         [ <simple> || <args> || <filter> || <always> ]
     }
     token simple {
-        $<key>=[ 'javascript' | 'bash' | 'openai' | 'dalle' | 'palm' ]
+        $<key>=[ 'javascript' | 'bash' | 'openai' | 'dalle' | 'palm' | <mermaid> ]
     }
     token args {
         $<key>='run' $<rest>=.*
@@ -263,6 +278,7 @@ grammar Magic::Grammar {
         | <openai>
         | <dalle>
         | <palm>
+        | <mermaid>
     }
     token html {
         'html'
@@ -284,6 +300,9 @@ grammar Magic::Grammar {
     }
     token palm {
         'palm'
+    }
+    token mermaid {
+        'mermaid' || 'mmd'
     }
 }
 
@@ -308,6 +327,9 @@ class Magic::Actions {
             }
             when 'palm' {
                 $/.make: Magic::PaLM.new;
+            }
+            when $_ ∈ <mermaid mmd> {
+                $/.make: Magic::MermaidInk.new;
             }
         }
     }
