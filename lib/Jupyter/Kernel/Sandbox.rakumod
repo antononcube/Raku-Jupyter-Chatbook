@@ -76,6 +76,8 @@ class Jupyter::Kernel::Sandbox is export {
         $!repl = REPL.new($!compiler, {});
         $!completer = Jupyter::Kernel::Sandbox::Autocomplete.new(:$.handler);
         self.eval(q:to/INIT/);
+            my $In = [];
+            sub In { $In };
             my $Out = [];
             sub Out { $Out };
             my \_ = do {
@@ -103,6 +105,9 @@ class Jupyter::Kernel::Sandbox is export {
                 );
                 \$*JUPYTER.set-lang( \$?LANG );
                 \$*JUPYTER.add-lexicals( MY::.keys );
+                \$In[$store] := q:to/END99erx3ds00e0xxdreREIFer929eecw143/;
+                $code
+                END99erx3ds00e0xxdreREIFer929eecw143
                 \$Out[$store] := _$store;
                 _ = _$store;
                 DONE
