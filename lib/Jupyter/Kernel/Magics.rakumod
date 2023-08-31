@@ -2,6 +2,7 @@ unit class Jupyter::Kernel::Magics;
 use Jupyter::Kernel::Response;
 use WWW::OpenAI;
 use WWW::PaLM;
+use WWW::MermaidInk;
 use Clipboard;  # copy-to-clipboard
 use Text::Plot; # from-base64
 
@@ -62,12 +63,12 @@ class Magic::Filter::Latex is Magic::Filter {
 }
 
 class Magic {
-    method preprocess($code! is rw) { Nil }
+    method preprocess($code is rw) { Nil }
     method postprocess(:$result! ) { $result }
 }
 
 my class Magic::JS is Magic {
-    method preprocess($code!) {
+    method preprocess($code) {
         return Result.new:
                 output => $code,
                 output-mime-type => 'application/javascript';
@@ -75,7 +76,7 @@ my class Magic::JS is Magic {
 }
 
 my class Magic::Bash is Magic {
-    method preprocess($code!) {
+    method preprocess($code) {
         my $cmd = (shell $code, :out, :err);
 
         return Result.new:
@@ -88,7 +89,7 @@ my class Magic::Bash is Magic {
 }
 
 my class Magic::OpenAI is Magic {
-    method preprocess($code!) {
+    method preprocess($code) {
         my $res = openai-completion(
                 $code,
                 type => 'text',
@@ -109,7 +110,7 @@ my class Magic::OpenAI is Magic {
 }
 
 my class Magic::OpenAIDallE is Magic {
-    method preprocess($code!) {
+    method preprocess($code) {
         my @imgResB64 = |openai-create-image(
                 $code,
                 response-format => 'b64_json',
@@ -130,7 +131,7 @@ my class Magic::OpenAIDallE is Magic {
 }
 
 my class Magic::PaLM is Magic {
-    method preprocess($code!) {
+    method preprocess($code) {
         my $res = palm-generate-text(
                 $code,
                 max-tokens => 300,
@@ -151,7 +152,7 @@ my class Magic::PaLM is Magic {
 
 my class Magic::Run is Magic {
     has Str:D $.file is required;
-    method preprocess($code! is rw) {
+    method preprocess($code is rw) {
         $.file or return Result.new:
                 stdout => "Missing filename to run.",
                 stdout-mime-type => 'text/plain';
@@ -187,7 +188,7 @@ class Magic::Always is Magic {
     has Str:D $.subcommand = '';
     has Str:D $.rest = '';
 
-    method preprocess($code! is rw) {
+    method preprocess($code is rw) {
         my $output = '';
         given $.subcommand {
             when 'prepend' { $always.prepend.push($.rest.trim); }
@@ -210,13 +211,13 @@ class Magic::Always is Magic {
 
 class Magic::AlwaysWorker is Magic {
     #= Applyer for always magics on each line
-    method unmagicify($code! is rw) {
+    method unmagicify($code is rw) {
         my $magic-action = Jupyter::Kernel::Magics.new.parse-magic($code);
         return $magic-action.preprocess($code) if $magic-action;
         return Nil;
     }
 
-    method preprocess($code! is rw) {
+    method preprocess($code is rw) {
         my $pre = ''; my $post = '';
         for $always.prepend -> $magic-code {
             my $container = $magic-code;
