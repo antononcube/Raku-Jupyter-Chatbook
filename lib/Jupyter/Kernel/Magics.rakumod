@@ -102,18 +102,35 @@ my class Magic::Bash is Magic {
     }
 }
 
-my class Magic::OpenAI is Magic {
-    method preprocess($code) {
-        my $res = openai-completion(
-                $code,
-                type => 'text',
-                max-tokens => 120,
-                format => 'values');
+my class Magic::LLM is Magic {
+    has %.args;
+    method pre-process-args() {
+        my $ep = exact-parser([{.Numeric}, {.Str}]);
 
+        %!args = %!args.map({ $_.key => to-unquoted($_.value) }).Hash;
+
+        %!args = $ep.process(%!args);
+
+        return %!args;
+    }
+}
+
+my class Magic::OpenAI is Magic::LLM {
+    method preprocess($code) {
+        # Process arguments
+        self.pre-process-args;
+
+        self.args = %(max-tokens => 300, format => 'values') , self.args;
+
+        # Call LLM's interface function
+        my $res = openai-completion($code, type => 'text', |self.args);
+
+        # Copy to clipboard
         if $*DISTRO eq 'macos' {
             copy-to-clipboard($res);
         }
 
+        # Result
         return Result.new:
                 output => $res,
                 output-mime-type => 'text/plain',
@@ -123,18 +140,26 @@ my class Magic::OpenAI is Magic {
     }
 }
 
-my class Magic::OpenAIDallE is Magic {
+my class Magic::OpenAIDallE is Magic::LLM {
     method preprocess($code) {
-        my @imgResB64 = |openai-create-image(
-                $code,
-                response-format => 'b64_json',
-                n => 1,
-                size => 'small',
-                format => 'values',
-                method => 'tiny');
 
-        my $res = from-base64(@imgResB64[0]);
+        # Process arguments
+        self.pre-process-args;
 
+        self.args =
+                %(response-format => 'b64_json',
+                  n => 1,
+                  size => 'small',
+                  format => 'values',
+                  method => 'tiny') , self.args;
+
+        # Call LLM's interface function
+        my @imgResB64 = |openai-create-image($code, |self.args);
+
+        # Transform base64 images into HTML images
+        my $res = @imgResB64.map({ from-base64($_) }).join("\n\n");
+
+        # Result
         return Result.new:
                 output => $res,
                 output-mime-type => 'text/html',
@@ -144,24 +169,23 @@ my class Magic::OpenAIDallE is Magic {
     }
 }
 
-my class Magic::PaLM is Magic {
-    has %.args;
+my class Magic::PaLM is Magic::LLM {
     method preprocess($code) {
 
-        my $ep = exact-parser([{.Numeric}, {.Str}]);
-
-        self.args = self.args.map({ $_.key => to-unquoted($_.value) }).Hash;
-
-        self.args = $ep.process(self.args);
+        # Process arguments
+        self.pre-process-args;
 
         self.args = %(max-tokens => 300, format => 'values') , self.args;
 
+        # Call LLM's interface function
         my $res = palm-generate-text( $code, |self.args);
 
+        # Copy to clipboard
         if $*DISTRO eq 'macos' {
             copy-to-clipboard($res);
         }
 
+        # Result
         return Result.new:
                 output => $res,
                 output-mime-type => 'text/plain',
@@ -277,10 +301,10 @@ grammar Magic::Grammar {
         [ <args> || <simple> || <filter> || <always> ]
     }
     token simple {
-        $<key>=[ 'javascript' | 'bash' | 'openai' | 'dalle' | <mermaid> ]
+        $<key>=[ 'javascript' | 'bash' | <mermaid> ]
     }
     token args {
-        || $<key>='palm' [\h* ',' \h* <magic-list-of-params> \h*]?
+        || $<key>=[ 'openai' | 'dalle' | 'palm' ] [\h* ',' \h* <magic-list-of-params> \h*]?
         || $<key>='run' $<rest>=.*
     }
     rule filter {
@@ -347,12 +371,6 @@ class Magic::Actions {
             when 'bash' {
                 $/.make: Magic::Bash.new;
             }
-            when 'openai' {
-                $/.make: Magic::OpenAI.new;
-            }
-            when 'dalle' {
-                $/.make: Magic::OpenAIDallE.new;
-            }
             when $_ ∈ <mermaid mmd> {
                 $/.make: Magic::MermaidInk.new;
             }
@@ -363,9 +381,16 @@ class Magic::Actions {
             when 'run' {
                 $/.make: Magic::Run.new(file => trim ~$<rest>);
             }
+            when 'openai' {
+                my %args = $<magic-list-of-params>.made // %();
+                $/.make: Magic::OpenAI.new(:%args);
+            }
+            when 'dalle' {
+                my %args = $<magic-list-of-params>.made // %();
+                $/.make: Magic::OpenAIDallE.new(:%args);
+            }
             when 'palm' {
                 my %args = $<magic-list-of-params>.made // %();
-                note %args.raku;
                 $/.make: Magic::PaLM.new(:%args);
             }
         }
