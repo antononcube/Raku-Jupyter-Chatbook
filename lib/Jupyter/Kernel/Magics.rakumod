@@ -5,6 +5,7 @@ use WWW::PaLM;
 use WWW::MermaidInk;
 use Clipboard;  # copy-to-clipboard
 use Text::Plot; # from-base64
+use Text::SubParsers;
 
 my class Result does Jupyter::Kernel::Response {
     has $.output is default(Nil);
@@ -29,6 +30,19 @@ my class Always {
 #| Globals
 my $always = Always.new;
 
+#===========================================================
+
+our sub to-single-quoted(Str $s) {
+    '\'' ~ $s ~ '\''
+}
+
+our sub to-unquoted(Str $ss is copy) {
+    if $ss ~~ / ^ '\'' (.*) '\'' $ / { return ~$0; }
+    if $ss ~~ / ^ '"' (.*) '"' $ / { return ~$0; }
+    return $ss;
+}
+
+#===========================================================
 class Magic::Filter {
     method transform($str) {
         # no transformation by default
@@ -131,11 +145,18 @@ my class Magic::OpenAIDallE is Magic {
 }
 
 my class Magic::PaLM is Magic {
+    has %.args;
     method preprocess($code) {
-        my $res = palm-generate-text(
-                $code,
-                max-tokens => 300,
-                format => 'values');
+
+        my $ep = exact-parser([{.Numeric}, {.Str}]);
+
+        self.args = self.args.map({ $_.key => to-unquoted($_.value) }).Hash;
+
+        self.args = $ep.process(self.args);
+
+        self.args = %(max-tokens => 300, format => 'values') , self.args;
+
+        my $res = palm-generate-text( $code, |self.args);
 
         if $*DISTRO eq 'macos' {
             copy-to-clipboard($res);
@@ -253,13 +274,14 @@ grammar Magic::Grammar {
     rule TOP { <magic> }
     rule magic {
         [ '%%' | '#%' ]
-        [ <simple> || <args> || <filter> || <always> ]
+        [ <args> || <simple> || <filter> || <always> ]
     }
     token simple {
-        $<key>=[ 'javascript' | 'bash' | 'openai' | 'dalle' | 'palm' | <mermaid> ]
+        $<key>=[ 'javascript' | 'bash' | 'openai' | 'dalle' | <mermaid> ]
     }
     token args {
-        $<key>='run' $<rest>=.*
+        || $<key>='palm' [\h* ',' \h* <magic-list-of-params> \h*]?
+        || $<key>='run' $<rest>=.*
     }
     rule filter {
         [
@@ -304,6 +326,12 @@ grammar Magic::Grammar {
     token mermaid {
         'mermaid' || 'mmd'
     }
+
+    # Magic list of assignments
+    regex magic-list-of-params { <magic-assign-pair>+ % [ \h* ',' \h* ] }
+
+    # Magic pair assignment
+    regex magic-assign-pair { $<param>=([<.alpha> | '.' | '_' | '-']+) \h* '=' \h* $<value>=(<-[{},\s]>* | '{' ~ '}' <-[{}]>* ) }
 }
 
 class Magic::Actions {
@@ -325,9 +353,6 @@ class Magic::Actions {
             when 'dalle' {
                 $/.make: Magic::OpenAIDallE.new;
             }
-            when 'palm' {
-                $/.make: Magic::PaLM.new;
-            }
             when $_ ∈ <mermaid mmd> {
                 $/.make: Magic::MermaidInk.new;
             }
@@ -337,6 +362,11 @@ class Magic::Actions {
         given ("$<key>") {
             when 'run' {
                 $/.make: Magic::Run.new(file => trim ~$<rest>);
+            }
+            when 'palm' {
+                my %args = $<magic-list-of-params>.made // %();
+                note %args.raku;
+                $/.make: Magic::PaLM.new(:%args);
             }
         }
     }
@@ -369,6 +399,15 @@ class Magic::Actions {
         my %args = :enclosure('');
         %args<enclosure> = ~$_ with $<enclosure>;
         $/.make: Magic::Filter::Latex.new(|%args);
+    }
+
+    method magic-list-of-params($/) {
+        my %args = |$<magic-assign-pair>>>.made;
+        make %args;
+    }
+
+    method magic-assign-pair($/) {
+        make $<param>.Str => $<value>.Str;
     }
 }
 
