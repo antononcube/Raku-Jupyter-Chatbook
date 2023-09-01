@@ -1,7 +1,7 @@
 {
   "name": "Jupyter::Chatbook",
   "description": "Jupyter Raku Kernel that produces LLM-aware notebooks (or chatbooks.)",
-  "version": "0.0.22",
+  "version": "0.1.0",
   "authors": [
     "Brian Duggan",
     "Anton Antonov"
@@ -43,14 +43,20 @@
   "license": "Artistic-2.0",
   "tags": [
     "bard",
+    "chat",
+    "chatbook",
     "chatgpt",
     "dall-e",
     "jupyter",
     "kernel",
     "llm",
+    "mermaid",
+    "mermaid-js",
+    "notebook",
     "openai",
     "palm"
   ],
+  "api": "1",
   "source-url": "https://github.com/antononcube/Raku-Jupyter-Chatbook",
   "raku": "6.*"
 }
