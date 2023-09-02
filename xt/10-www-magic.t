@@ -85,3 +85,5 @@ class MockResult {
 
     is $r.output-mime-type, 'text/html', 'mermaid magic set the mime type';
 }
+
+done-testing;
