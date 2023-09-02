@@ -128,7 +128,7 @@ my class Magic::OpenAI is Magic::LLM {
         self.args = %(max-tokens => 300, format => 'values') , self.args;
 
         # Call LLM's interface function
-        my $res = openai-completion($code, type => 'text', |self.args);
+        my $res = openai-completion($code, |self.args);
 
         # Copy to clipboard
         if $*DISTRO eq 'macos' {
