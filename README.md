@@ -5,18 +5,20 @@
 This Raku package is a fork of Brian Duggan's 
 ["Jupyter::Kernel"](https://github.com/bduggan/raku-jupyter-kernel).
 
-"Jupyter::Kernel" is a pure Raku implementation of a Raku kernel for Jupyter clients¹.
+Here are the top opening statements of the README of "Jupyter::Kernel":
 
-Jupyter notebooks provide a web-based (or console-based)
+> "Jupyter::Kernel" is a pure Raku implementation of a Raku kernel for Jupyter clients¹.
+
+> Jupyter notebooks provide a web-based (or console-based)
 Read Eval Print Loop (REPL) for running code and serializing input and output.
 
-It is desirable to include the interaction with Large Language Models (LLMs) to the "usual" REPL.
+It is desirable to include the interaction with Large Language Models (LLMs) to the "typical" 
+REPL systems or workflows.
 
-Having LLM-aware and LLM-chat-endowed notebooks (i.e. *chatbooks*) can really speed up the:
-- Utilization of Raku 
-  - Derivation of useful (actionable) code
-- Adoption of Raku by newcomers
+Having LLM-aware and LLM-chat-endowed notebooks -- **chatbooks** -- can really speed up the:
 - Writing and preparation of documents on variety of subjects
+- Derivation of useful Raku (actionable) code
+- Adoption of Raku by newcomers
 
 This repository is mostly for experimental work, but it aims to be *always* very
 useful for interacting with LLMs via Raku.
@@ -27,15 +29,24 @@ is because:
 - I plan to introduce 4-6 new package dependencies
 - I expect to do a fair amount of UX experimental implementations and refactoring
 
-**Remark:** I am convinced that by using "Jupyter::Kernel" as a base some fairly sophisticated, 
-yet natural programming workflows can be produced.
-
-
 -------
 
 ## Installation and setup
 
-Follow the instructions of
+From ["Zef ecosystem"](https://raku.land):
+
+```
+zef install Jupyter::Chatbook
+```
+
+From GitHub:
+
+```
+zef install https://github.com/antononcube/Raku-Jupyter-Chatbook.git
+```
+
+
+After installing the package "Jupyter::Chatbook" follow the setup instructions of
 ["Jupyter::Kernel"](https://github.com/bduggan/raku-jupyter-kernel).
 
 -------
@@ -52,11 +63,11 @@ There are four ways to use LLMs in a chatbook:
 The sub-sections below briefly describe each of these ways and have links to notebooks with
 more detailed examples.
 
-### LLM functions 
+### LLM functions and chat objects
 
 LLM functions as described in [AA3] are best utilized via a certain REPL tool or environment.
 Notebooks are the perfect media for LLM functions workflows. 
-Here is an example of a code cell that defines an LLM functions:
+Here is an example of a code cell that defines an LLM function:
 
 ```perl6
 use LLM::Functions;
@@ -64,16 +75,20 @@ use LLM::Functions;
 my &fcp = llm-function({"What is the population of the country $_ ?"});
 ```
 ```
-# -> **@args, *%args { #`(Block|5708007162384) ... }
+# -> **@args, *%args { #`(Block|5977720762960) ... }
 ```
 
-Here is another cell that might evaluated multiple times using different country names:
+Here is another cell that can be evaluated multiple times using different country names:
 
 ```perl6
-&fcp('Botswana')
+<Niger Gabon>.map({ &fcp($_) })
 ```
 ```
-# The population of Botswana was 2,323,706 as of July 2020.
+# (
+# 
+# As of July 2020, the population of Niger is estimated at 23,787,543. 
+# 
+# According to the World Bank, the population of Gabon as of July 2020 is 2.2 million.)
 ```
 
 For more examples of LLM functions and LLM chat objects see the notebook 
@@ -82,10 +97,12 @@ For more examples of LLM functions and LLM chat objects see the notebook
 
 ### LLM cells
 
+The LLMs of OpenAI (ChatGPT, DALL-E) and Google (PaLM) can be interacted with using "dedicated" notebook cells.
+
 Here is an example of a code cell with PaLM magic spec:
 
 ```
-%%palm, max-tokens=600
+%% palm, max-tokens=600
 Generate a horror story about a little girl lost in the forest and getting possessed.
 ```
 
@@ -93,10 +110,44 @@ For more examples see the notebook ["Chatbook-LLM-cells.ipynb"](./eg/Chatbook-LL
 
 ### Notebook-wide chats
 
-Chatbooks have the ability to maintain an LLM conversation over multiple notebook cells.
-One chatbook can have more than one LLM conversation.
+Chatbooks have the ability to maintain LLM conversations over multiple notebook cells.
+A chatbook can have more than one LLM conversations.
+"Under the hood" each chatbook maintains a database of chat objects.
+Chat cells are used to give messages to those chat objects.
 
-For concrete examples see the notebook ["Chatbook-LLM-chats.ipynb"](./eg/Chatbook-LLM-chats.ipynb).
+For example, here is a chat cell with which a new "Email Writer" chat object is made,
+and that new chat object has the identifier "ew12":  
+
+```
+%% chat-em12, prompt = «Given a topic, write emails in a concise, professional manner»
+Write a vacation email.
+```
+
+Here is a chat cell in which another message is given to the chat object with identifier "ew1":
+
+```
+%% chat-em12
+Rewrite with manager's name being Jane Doe, and start- and end dates being 8/20 and 9/5.
+```
+
+In this chat cell a new chat object is created:
+
+```
+%% chat-snowman, prompt = ⎡Pretend you are a friendly snowman. Stay in character for every response you give me. Keep your responses short.⎦
+Hi!
+```
+
+And here is a chat cell that sends another message to the "snowman" chat object:
+
+```
+%% chat-snowman
+Who build you? Where?
+```
+
+**Remark:** Specifying chat object identifier is not required. I.e. only the magic spec `%% chat` can be used.
+The "default" chat object ID identifier "NONE".
+
+For more examples see the notebook ["Chatbook-LLM-chats.ipynb"](./eg/Chatbook-LLM-chats.ipynb).
 
 Here is a flowchart that summarizes the way chatbooks create and utilize LLM chat objects:
 
