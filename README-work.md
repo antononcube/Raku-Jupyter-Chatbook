@@ -199,16 +199,6 @@ and the creation of LLM functions and LLM chat objects.
 influenced by the chatbooks in Mathematica 13.3. 
 Earlier versions of Mathematica WL paclet ["Chatbook"](https://resources.wolframcloud.com/PacletRepository/resources/Wolfram/Chatbook/).
 
-------
-
-## Examples
-
-- LLM cells : ["Chatbook-LLM-cells.ipynb"](./eg/Chatbook-LLM-cells.ipynb)
-
-- Mermaid-JS cells : ["Chatbook-Mermaid-JS-cells.ipynb"](./eg/Chatbook-Mermaid-JS-cells.ipynb)
-
-- Chatbook LLM chats : ... 
-
 -------
 
 ## Motivation extended 

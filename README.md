@@ -64,7 +64,7 @@ use LLM::Functions;
 my &fcp = llm-function({"What is the population of the country $_ ?"});
 ```
 ```
-# -> **@args, *%args { #`(Block|4466628313472) ... }
+# -> **@args, *%args { #`(Block|5708007162384) ... }
 ```
 
 Here is another cell that might evaluated multiple times using different country names:
@@ -73,7 +73,7 @@ Here is another cell that might evaluated multiple times using different country
 &fcp('Botswana')
 ```
 ```
-# As of 2020, the population of Botswana is estimated to be 2,356,941.
+# The population of Botswana was 2,323,706 as of July 2020.
 ```
 
 For more examples of LLM functions and LLM chat objects see the notebook 
@@ -204,16 +204,6 @@ and the creation of LLM functions and LLM chat objects.
 **Remark:** The sequential execution of chat cells mentioned in the previous section is heavily
 influenced by the chatbooks in Mathematica 13.3. 
 Earlier versions of Mathematica WL paclet ["Chatbook"](https://resources.wolframcloud.com/PacletRepository/resources/Wolfram/Chatbook/).
-
-------
-
-## Examples
-
-- LLM cells : ["Chatbook-LLM-cells.ipynb"](./eg/Chatbook-LLM-cells.ipynb)
-
-- Mermaid-JS cells : ["Chatbook-Mermaid-JS-cells.ipynb"](./eg/Chatbook-Mermaid-JS-cells.ipynb)
-
-- Chatbook LLM chats : ... 
 
 -------
 
