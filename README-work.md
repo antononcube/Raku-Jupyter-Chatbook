@@ -63,17 +63,11 @@ use LLM::Functions;
 
 my &fcp = llm-function({"What is the population of the country $_ ?"});
 ```
-```
-# -> **@args, *%args { #`(Block|4466628313472) ... }
-```
 
 Here is another cell that might evaluated multiple times using different country names:
 
 ```perl6
 &fcp('Botswana')
-```
-```
-# As of 2020, the population of Botswana is estimated to be 2,356,941.
 ```
 
 For more examples of LLM functions and LLM chat objects see the notebook 
