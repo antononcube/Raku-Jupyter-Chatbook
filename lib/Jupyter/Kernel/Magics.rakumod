@@ -207,16 +207,12 @@ my class Magic::Chat is Magic::LLM {
         # Process arguments
         self.pre-process-args;
 
-        self.chat-id = self.args<chat-id> // 'NONE';
+        self.chat-id = self.chat-id // self.args<chat-id> // 'NONE';
 
         self.args = %(conf => 'ChatPaLM', chat-id => self.chat-id) , self.args;
 
-        #note 'self.args.raku : ' , self.args.raku;
-
         # Get chat object
         my $chatObj = %chats{self.chat-id} // llm-chat(|self.args);
-
-        #note $chatObj;
 
         # Call LLM's interface function
         my $res = $chatObj.eval($code);
@@ -342,15 +338,17 @@ grammar Magic::Grammar {
     rule TOP { <magic> }
     rule magic {
         [ '%%' | '#%' ]
-        [ <args> || <simple> || <filter> || <always> ]
+        [ <chat-id-spec> || <args> || <simple> || <filter> || <always> ]
     }
     token simple {
         $<key>=[ 'javascript' | 'bash' | <mermaid> ]
     }
     token args {
-        #|| $<key>=[ 'openai' | 'dalle' | 'palm' | 'chat' [ ['-' | '_' | ':'] <-[,;\s]>* ]? ] [\h* ',' \h* <magic-list-of-params> \h*]?
         || $<key>=[ 'openai' | 'dalle' | 'palm' | 'chat' ] [\h* ',' \h* <magic-list-of-params> \h*]?
         || $<key>='run' $<rest>=.*
+    }
+    token chat-id-spec {
+      <chat> ['-' | '_' | ':'] $<chat-id>=(<-[,;\s]>*) [\h* ',' \h* <magic-list-of-params> \h*]?
     }
     rule filter {
         [
@@ -404,13 +402,13 @@ grammar Magic::Grammar {
     regex magic-list-of-params { <magic-assign-pair>+ % [ \h* ',' \h* ] }
 
     # Magic pair assignment
-    regex magic-assign-pair { $<param>=([<.alpha> | '.' | '_' | '-']+) \h* '=' \h* $<value>=(<-[{},\s]>* | '{' ~ '}' <-[{}]>* | '⎡' ~ '⎦' <-[⎡⎦]>* ) }
+    regex magic-assign-pair { $<param>=([<.alpha> | '.' | '_' | '-']+) \h* '=' \h* $<value>=(<-[{},\s]>* | '{' ~ '}' <-[{}]>* | '⎡' ~ '⎦' <-[⎡⎦]>* | '«' ~ '»' <-[«»]>* ) }
 }
 
 class Magic::Actions {
     method TOP($/) { $/.make: $<magic>.made }
     method magic($/) {
-        $/.make: $<simple>.made // $<filter>.made // $<args>.made // $<always>.made;
+        $/.make: $<simple>.made // $<filter>.made // $<args>.made // $<chat-id-spec>.made // $<always>.made;
     }
     method simple($/) {
         given "$<key>" {
@@ -447,12 +445,12 @@ class Magic::Actions {
                 my $chat-id = 'NONE';
                 $/.make: Magic::Chat.new(:%args, :$chat-id);
             }
-            when $_ ~~ / ^ chat ['-' | '_' | ':' ] .* / {
-                my %args = $<magic-list-of-params>.made // %();
-                my $chat-id = do with $_ ~~ / ^ chat ['-' | '_' | ':' ] (.*) $ / { $0.Str.trim; }
-                $/.make: Magic::Chat.new(:%args, :$chat-id);
-            }
         }
+    }
+    method chat-id-spec($/) {
+        my $chat-id = $<chat-id>.Str;
+        my %args = $<magic-list-of-params>.made // %();
+        $/.make: Magic::Chat.new(:%args, :$chat-id);
     }
     method always($/) {
         my $subcommand = ~$<subcommand> || 'prepend';
