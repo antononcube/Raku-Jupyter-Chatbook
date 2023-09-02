@@ -6,6 +6,7 @@ use WWW::MermaidInk;
 use Clipboard;  # copy-to-clipboard
 use Text::Plot; # from-base64
 use Text::SubParsers;
+use LLM::Functions;
 
 my class Result does Jupyter::Kernel::Response {
     has $.output is default(Nil);
@@ -30,6 +31,8 @@ my class Always {
 #| Globals
 my $always = Always.new;
 
+my %chats;
+
 #===========================================================
 
 our sub to-single-quoted(Str $s) {
@@ -39,6 +42,8 @@ our sub to-single-quoted(Str $s) {
 our sub to-unquoted(Str $ss is copy) {
     if $ss ~~ / ^ '\'' (.*) '\'' $ / { return ~$0; }
     if $ss ~~ / ^ '"' (.*) '"' $ / { return ~$0; }
+    if $ss ~~ / ^ '{' (.*) '}' $ / { return ~$0; }
+    if $ss ~~ / ^ '⎡' (.*) '⎦' $ / { return ~$0; }
     return $ss;
 }
 
@@ -195,6 +200,45 @@ my class Magic::PaLM is Magic::LLM {
     }
 }
 
+my class Magic::Chat is Magic::LLM {
+    has $.chat-id is rw;
+    method preprocess($code) {
+
+        # Process arguments
+        self.pre-process-args;
+
+        self.chat-id = self.args<chat-id> // 'NONE';
+
+        self.args = %(conf => 'ChatPaLM', chat-id => self.chat-id) , self.args;
+
+        #note 'self.args.raku : ' , self.args.raku;
+
+        # Get chat object
+        my $chatObj = %chats{self.chat-id} // llm-chat(|self.args);
+
+        #note $chatObj;
+
+        # Call LLM's interface function
+        my $res = $chatObj.eval($code);
+
+        # Make sure it is registered
+        %chats{self.chat-id} = $chatObj;
+
+        # Copy to clipboard
+        if $*DISTRO eq 'macos' {
+            copy-to-clipboard($res);
+        }
+
+        # Result
+        return Result.new:
+                output => $res,
+                output-mime-type => 'text/plain',
+                stdout => $res,
+                stdout-mime-type => 'text/plain',
+                ;
+    }
+}
+
 my class Magic::MermaidInk is Magic {
     method preprocess($code) {
         my $imgResB64 = mermaid-ink($code, format => 'md-image');
@@ -304,7 +348,8 @@ grammar Magic::Grammar {
         $<key>=[ 'javascript' | 'bash' | <mermaid> ]
     }
     token args {
-        || $<key>=[ 'openai' | 'dalle' | 'palm' ] [\h* ',' \h* <magic-list-of-params> \h*]?
+        #|| $<key>=[ 'openai' | 'dalle' | 'palm' | 'chat' [ ['-' | '_' | ':'] <-[,;\s]>* ]? ] [\h* ',' \h* <magic-list-of-params> \h*]?
+        || $<key>=[ 'openai' | 'dalle' | 'palm' | 'chat' ] [\h* ',' \h* <magic-list-of-params> \h*]?
         || $<key>='run' $<rest>=.*
     }
     rule filter {
@@ -325,6 +370,7 @@ grammar Magic::Grammar {
         | <dalle>
         | <palm>
         | <mermaid>
+        | <chat>
     }
     token html {
         'html'
@@ -350,12 +396,15 @@ grammar Magic::Grammar {
     token mermaid {
         'mermaid' || 'mmd'
     }
+    token chat {
+        'chat'
+    }
 
     # Magic list of assignments
     regex magic-list-of-params { <magic-assign-pair>+ % [ \h* ',' \h* ] }
 
     # Magic pair assignment
-    regex magic-assign-pair { $<param>=([<.alpha> | '.' | '_' | '-']+) \h* '=' \h* $<value>=(<-[{},\s]>* | '{' ~ '}' <-[{}]>* ) }
+    regex magic-assign-pair { $<param>=([<.alpha> | '.' | '_' | '-']+) \h* '=' \h* $<value>=(<-[{},\s]>* | '{' ~ '}' <-[{}]>* | '⎡' ~ '⎦' <-[⎡⎦]>* ) }
 }
 
 class Magic::Actions {
@@ -392,6 +441,16 @@ class Magic::Actions {
             when 'palm' {
                 my %args = $<magic-list-of-params>.made // %();
                 $/.make: Magic::PaLM.new(:%args);
+            }
+            when 'chat' {
+                my %args = $<magic-list-of-params>.made // %();
+                my $chat-id = 'NONE';
+                $/.make: Magic::Chat.new(:%args, :$chat-id);
+            }
+            when $_ ~~ / ^ chat ['-' | '_' | ':' ] .* / {
+                my %args = $<magic-list-of-params>.made // %();
+                my $chat-id = do with $_ ~~ / ^ chat ['-' | '_' | ':' ] (.*) $ / { $0.Str.trim; }
+                $/.make: Magic::Chat.new(:%args, :$chat-id);
             }
         }
     }
