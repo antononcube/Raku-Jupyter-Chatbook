@@ -256,6 +256,9 @@ my class Magic::ChatMeta is Magic::Chat {
                         when 'messages' {
                             $chatObj.messages.map({ $_.Str }).List
                         }
+                        when 'llm-evaluator' {
+                            $chatObj.llm-evaluator.Str
+                        }
                         when $_ ∈ @knownMethods {
                             $chatObj."$_"();
                         }
