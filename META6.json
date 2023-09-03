@@ -1,7 +1,7 @@
 {
   "name": "Jupyter::Chatbook",
   "description": "Jupyter Raku Kernel that produces LLM-aware notebooks (or chatbooks.)",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "authors": [
     "Brian Duggan",
     "Anton Antonov"
@@ -12,6 +12,7 @@
     "Digest::HMAC",
     "Digest::SHA256::Native",
     "JSON::Tiny",
+    "LLM::Functions:ver<0.1.8+>",
     "Log::Async",
     "Net::ZMQ:ver<0.8>",
     "Text::Plot:ver<0.1.0+>",
