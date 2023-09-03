@@ -16,7 +16,7 @@
     "Log::Async",
     "Net::ZMQ:ver<0.8>",
     "Text::Plot:ver<0.1.0+>",
-    "Text::SubParsers:ver<0.1.3+>",
+    "Text::SubParsers:ver<0.1.4+>",
     "UUID",
     "WWW:MermaidInk:ver<0.1.1+>",
     "WWW:OpenAI:ver<0.2.8+>",
