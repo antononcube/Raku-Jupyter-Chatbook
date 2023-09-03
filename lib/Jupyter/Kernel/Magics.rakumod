@@ -235,6 +235,48 @@ my class Magic::Chat is Magic::LLM {
     }
 }
 
+my class Magic::ChatMeta is Magic::Chat {
+    has $.all is rw;
+    method preprocess($code) {
+
+        # Process arguments
+        self.pre-process-args;
+
+        self.chat-id = self.chat-id // self.args<chat-id> // 'NONE';
+
+        # Get chat object
+        my $res;
+        if %chats{self.chat-id}:exists {
+            my $chatObj = %chats{self.chat-id};
+
+            my @knownMethods = <Str gist say chat-id llm-evaluator messages context examples>;
+            $res = do given $code.trim {
+                when $_ ∈ @knownMethods {
+                    $chatObj."$_"();
+                }
+                default {
+                    "Do not know how to process {$_.raku} known chat object methods {@knownMethods.raku}.\nContinuing with .gist.\n\n" ~ $chatObj.gist;
+                }
+            }
+        } else {
+            $res = "Cannot find a chat object with ID: {self.chat-id}";
+        }
+
+        # Copy to clipboard
+        if $*DISTRO eq 'macos' {
+            copy-to-clipboard($res);
+        }
+
+        # Result
+        return Result.new:
+                output => $res,
+                output-mime-type => 'text/plain',
+                stdout => $res,
+                stdout-mime-type => 'text/plain',
+                ;
+    }
+}
+
 my class Magic::MermaidInk is Magic {
     method preprocess($code) {
         my $imgResB64 = mermaid-ink($code, format => 'md-image');
@@ -348,7 +390,8 @@ grammar Magic::Grammar {
         || $<key>='run' $<rest>=.*
     }
     token chat-id-spec {
-      <chat> ['-' | '_' | ':'] $<chat-id>=(<-[,;\s]>*) [\h* ',' \h* <magic-list-of-params> \h*]?
+      || <chat> ['-' | '_' | ':'] $<chat-id>=(<-[,;\s]>*) \h+ $<meta>='meta' [\h+ $<all>='all']? \h*
+      || <chat> ['-' | '_' | ':'] $<chat-id>=(<-[,;\s]>*) [\h* ',' \h* <magic-list-of-params> \h*]?
     }
     rule filter {
         [
@@ -450,7 +493,13 @@ class Magic::Actions {
     method chat-id-spec($/) {
         my $chat-id = $<chat-id>.Str;
         my %args = $<magic-list-of-params>.made // %();
-        $/.make: Magic::Chat.new(:%args, :$chat-id);
+
+        with $<meta> {
+            my $all = $<all> // False;
+            $/.make: Magic::ChatMeta.new(:%args, :$chat-id, :$all);
+        } else {
+            $/.make: Magic::Chat.new(:%args, :$chat-id);
+        }
     }
     method always($/) {
         my $subcommand = ~$<subcommand> || 'prepend';
