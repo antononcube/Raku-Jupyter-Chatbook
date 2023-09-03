@@ -78,7 +78,7 @@ use LLM::Functions;
 my &fcp = llm-function({"What is the population of the country $_ ?"});
 ```
 ```
-# -> **@args, *%args { #`(Block|4150649103136) ... }
+# -> **@args, *%args { #`(Block|4965956124128) ... }
 ```
 
 Here is another cell that can be evaluated multiple times using different country names:
@@ -89,9 +89,9 @@ Here is another cell that can be evaluated multiple times using different countr
 ```
 # (
 # 
-# As of July 2020, the population of Niger is estimated to be 24,128,741. 
+# As of July 2020, the population of Niger is estimated to be 22,893,736 people. 
 # 
-# As of 2019, the estimated population of Gabon is 2,278,286.)
+# The population of Gabon is estimated to be 2.2 million people, according to 2020 estimates from the World Bank.)
 ```
 
 For more examples of LLM functions and LLM chat objects see the notebook 
@@ -140,26 +140,29 @@ Rewrite with manager's name being Jane Doe, and start- and end dates being 8/20 
 In this chat cell a new chat object is created:
 
 ```
-%% chat-snowman, prompt = ⎡Pretend you are a friendly snowman. Stay in character for every response you give me. Keep your responses short.⎦
+%% chat snowman, prompt = ⎡Pretend you are a friendly snowman. Stay in character for every response you give me. Keep your responses short.⎦
 Hi!
 ```
 
 And here is a chat cell that sends another message to the "snowman" chat object:
 
 ```
-%% chat-snowman
+%% chat snowman
 Who build you? Where?
 ```
 
 **Remark:** Specifying a chat object identifier is not required. I.e. only the magic spec `%% chat` can be used.
 The "default" chat object ID identifier "NONE".
 
+**Remark:** The magic keyword "chat" can be separated from the identifier of the chat object with
+the symbols "-", "_", ":", or with any number of (horizontal) white spaces.
+
 For more examples see the notebook ["Chatbook-LLM-chats.ipynb"](./eg/Chatbook-LLM-chats.ipynb).
 
 Here is a flowchart that summarizes the way chatbooks create and utilize LLM chat objects:
 
 ```mermaid
-flowchart LR
+flowchart TD
     OpenAI{{OpenAI}}
     PaLM{{PaLM}}
     LLMFunc[[LLM::Functions]]
@@ -193,17 +196,104 @@ flowchart LR
 
 ------
 
+## Chat meta cells
+
+Each chatbook session has a Hash of chat objects.
+Chatbooks can have chat meta cells that allow the access of the chat object "database" as whole, 
+or its idividual objects.  
+
+Here is an example of a chat meta cell (that applies the method `say` to the chat object with ID "snowman"):
+
+```
+%% chat snowman meta
+say
+```
+
+Here is an example of chat meta cell that creates a new chat chat object with the LLM prompt
+specified in the cell:
+
+```
+%% chat-WordGuesser prompt
+We're playing a game. I'm thinking of a word, and I need to get you to guess that word. 
+But I can't say the word itself. 
+I'll give you clues, and you'll respond with a guess. 
+Your guess should be a single word only.
+```
+
+Here is a table with examples of magic specs for chat meta cells and their interpretation:
+
+| cell magic line  | cell content                         | interpretation                                                  |
+|:-----------------|:-------------------------------------|:----------------------------------------------------------------|
+| chat-ew12 meta   | say                                  | Give the "print out" of the chat object with ID "ew12"          |   
+| chat-ew12 meta   | messages                             | Give the "print out" of the chat object with ID "ew12"          |   
+| chat sn22 prompt | You pretend to be a melting snowman. | create a chat object with ID "sn22" with the prompt in the cell |   
+| chat meta all    | keys                                 | show the keys of the session chat objects DB                    |   
+| chat all         | keys                                 | same as above                                                   |   
+
+Here is a flowchart that summarizes the chat meta cell processing:
+
+```mermaid
+flowchart LR
+    LLMFunc[[LLM::Functions]]
+    CODB[(Chat objects)]
+    CCell[/Chat meta cell/]
+    CRCell[/Chat meta cell result/]
+    CIDQ{Chat ID<br>specified?}
+    KCOMQ{Known<br>chat object<br>method?}
+    AKWQ{Keyword 'all'<br>specified?} 
+    KCODBMQ{Known<br>chat objects<br>DB method?}
+    CIDEQ{Chat ID<br>exists in DB?}
+    RECO[Retrieve existing<br>chat object]
+    COEval[Chat object<br>method<br>invocation]
+    CODBEval[Chat objects DB<br>method<br>invocation]
+    CNCO[Create new<br>chat object]
+    CIDNone["Assume chat ID<br>is 'NONE'"] 
+    NoCOM[/Cannot find<br>chat object<br>message/]
+    CntCmd[/Cannot interpret<br>command<br>message/]
+    subgraph Chatbook
+        CCell
+        NoCOM
+        CntCmd
+        CRCell
+    end
+    CCell --> CIDQ
+    CIDQ --> |yes| CIDEQ  
+    CIDEQ --> |yes| RECO
+    RECO --> KCOMQ
+    KCOMQ --> |yes| COEval --> CRCell
+    KCOMQ --> |no| CntCmd
+    CIDEQ -.- CODB
+    CIDEQ --> |no| NoCOM
+    LLMFunc -.- CNCO -.- CODB
+    CNCO --> COEval
+    CIDQ --> |no| AKWQ
+    AKWQ --> |yes| KCODBMQ
+    KCODBMQ --> |yes| CODBEval
+    KCODBMQ --> |no| CntCmd
+    CODBEval -.- CODB
+    CODBEval --> CRCell
+    AKWQ --> |no| CIDNone
+    CIDNone --> CIDEQ
+    COEval -.- LLMFunc
+```
+
+------
+
 ## TODO
 
 1. [ ] TODO Features
-   1. [ ] TODO DSL G4T cells
-   2. [ ] TODO Chat-meta cells (simple)
-   3. [ ] TODO Chat-meta cells (via LLM)
+   1. [X] DONE Chat-meta cells (simple)
+      - [X] DONE meta  
+      - [X] DONE all  
+      - [X] DONE prompt  
+   2. [ ] TODO Chat-meta cells (via LLM)
+   3. [ ] TODO DSL G4T cells
 2. [ ] TODO Unit tests
    1. [X] DONE PaLM cells
    2. [X] DONE OpenAI cells
    3. [X] DONE MermaidInk cells
    4. [ ] TODO DALL-E cells
+   5. [X] DONE Chat meta cells
 3. [ ] TODO Documentation
    1. [ ] TODO Long chat
    2. [ ] TODO All parameters of OpenAI API in Raku
