@@ -253,6 +253,9 @@ my class Magic::ChatMeta is Magic::Chat {
 
                     my @knownMethods = <Str gist say chat-id llm-evaluator messages context examples>;
                     $res = do given $code.trim {
+                        when 'messages' {
+                            $chatObj.messages.map({ $_.Str }).List
+                        }
                         when $_ ∈ @knownMethods {
                             $chatObj."$_"();
                         }
@@ -278,8 +281,14 @@ my class Magic::ChatMeta is Magic::Chat {
             when 'all' {
                 if %chats {
 
-                    my @knownMethods = <keys values kv pairs Str gist>;
+                    my @knownMethods = <keys values pairs Str gist>;
                     $res = do given $code.trim {
+                        when 'values' {
+                            %chats.values.map({ $_.Str }).List
+                        }
+                        when 'pairs' {
+                            %chats.map({ $_.key => $_.value.Str }).List
+                        }
                         when $_ ∈ @knownMethods {
                             %chats."$_"();
                         }
