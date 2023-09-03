@@ -55,15 +55,18 @@ After installing the package "Jupyter::Chatbook" follow the setup instructions o
 
 There are four ways to use LLMs in a chatbook:
 
-1. LLM functions, [AA3, AAp4]
-2. LLM chat objects, [AA4, AAp4]
-3. OpenAI, [AAp2], or PaLM, [AAp3], code cells with magics
-4. Notebook-wide chats that are distributed over multiple code cells with chat-magic specs
+1. [LLM functions](https://github.com/antononcube/Raku-Jupyter-Chatbook/blob/master/eg/Chatbook-LLM-functions-and-chat-objects.ipynb), [AA3, AAp4]
+2. [LLM chat objects](https://github.com/antononcube/Raku-Jupyter-Chatbook/blob/master/eg/Chatbook-LLM-functions-and-chat-objects.ipynb), [AA4, AAp4]
+3. OpenAI, [AAp2], or PaLM, [AAp3], [code cells with magics](https://github.com/antononcube/Raku-Jupyter-Chatbook/blob/master/eg/Chatbook-LLM-cells.ipynb)
+4. [Notebook-wide chats](https://github.com/antononcube/Raku-Jupyter-Chatbook/blob/master/eg/Chatbook-LLM-chats.ipynb) 
+   that are distributed over multiple code cells with chat-magic specs
 
-The sub-sections below briefly describe each of these ways and have links to notebooks with
+The sections below briefly describe each of these ways and have links to notebooks with
 more detailed examples.
 
-### LLM functions and chat objects
+-------
+
+## LLM functions and chat objects
 
 LLM functions as described in [AA3] are best utilized via a certain REPL tool or environment.
 Notebooks are the perfect media for LLM functions workflows. 
@@ -75,7 +78,7 @@ use LLM::Functions;
 my &fcp = llm-function({"What is the population of the country $_ ?"});
 ```
 ```
-# -> **@args, *%args { #`(Block|5977720762960) ... }
+# -> **@args, *%args { #`(Block|4150649103136) ... }
 ```
 
 Here is another cell that can be evaluated multiple times using different country names:
@@ -86,16 +89,18 @@ Here is another cell that can be evaluated multiple times using different countr
 ```
 # (
 # 
-# As of July 2020, the population of Niger is estimated at 23,787,543. 
+# As of July 2020, the population of Niger is estimated to be 24,128,741. 
 # 
-# According to the World Bank, the population of Gabon as of July 2020 is 2.2 million.)
+# As of 2019, the estimated population of Gabon is 2,278,286.)
 ```
 
 For more examples of LLM functions and LLM chat objects see the notebook 
 ["Chatbook-LLM-functions-and-chat-objects.ipynb"](./eg/Chatbook-LLM-functions-and-chat-objects.ipynb).
 
 
-### LLM cells
+-------
+
+## LLM cells
 
 The LLMs of OpenAI (ChatGPT, DALL-E) and Google (PaLM) can be interacted with using "dedicated" notebook cells.
 
@@ -108,7 +113,9 @@ Generate a horror story about a little girl lost in the forest and getting posse
 
 For more examples see the notebook ["Chatbook-LLM-cells.ipynb"](./eg/Chatbook-LLM-cells.ipynb).
 
-### Notebook-wide chats
+------
+
+## Notebook-wide chats
 
 Chatbooks have the ability to maintain LLM conversations over multiple notebook cells.
 A chatbook can have more than one LLM conversations.
@@ -116,14 +123,14 @@ A chatbook can have more than one LLM conversations.
 Chat cells are used to give messages to those chat objects.
 
 For example, here is a chat cell with which a new "Email Writer" chat object is made,
-and that new chat object has the identifier "ew12":  
+and that new chat object has the identifier "em12":  
 
 ```
 %% chat-em12, prompt = «Given a topic, write emails in a concise, professional manner»
 Write a vacation email.
 ```
 
-Here is a chat cell in which another message is given to the chat object with identifier "ew1":
+Here is a chat cell in which another message is given to the chat object with identifier "em12":
 
 ```
 %% chat-em12
@@ -144,7 +151,7 @@ And here is a chat cell that sends another message to the "snowman" chat object:
 Who build you? Where?
 ```
 
-**Remark:** Specifying chat object identifier is not required. I.e. only the magic spec `%% chat` can be used.
+**Remark:** Specifying a chat object identifier is not required. I.e. only the magic spec `%% chat` can be used.
 The "default" chat object ID identifier "NONE".
 
 For more examples see the notebook ["Chatbook-LLM-chats.ipynb"](./eg/Chatbook-LLM-chats.ipynb).
@@ -184,108 +191,25 @@ flowchart LR
     LLMFunc <-.-> PaLM
 ```
 
+------
 
--------
+## TODO
 
-## Alternative Raku Literate programming solutions
-
-### Computational Markdown documents
-
-The Raku package
-["Text::CodeProcessing"](https://raku.land/zef%3Aantononcube/Text%3A%3ACodeProcessing)
-can be used to do 
-[Literate programming](https://en.wikipedia.org/wiki/Literate_programming)
-with Raku; see [AA1, AAv1].
-
-"Text::CodeProcessing" works with Markdown, Org-mode, and Pod6 files.
-
-Here is typical workflow:
-
-1. One can use a Markdown editor (
-[Visual Studio Code](https://en.wikipedia.org/wiki/Visual_Studio_Code) / 
-[Emacs](https://www.gnu.org/software/emacs/) / 
-[CommaIDE](https://commaide.com) / 
-[IntelliJ IDEA](https://www.jetbrains.com/idea/) / 
-[One Markdown](https://apps.apple.com/us/app/one-markdown/id1507139439)) 
-to write a "work" Markdown document. 
-
-2. That Markdown file can be "executed" using "Text::CodeProcessing". 
-
-3. The obtained, "woven" Markdown file has the results of 
-the Raku, Shell, OpenAI, and PaLM code cells in the original document.
-
-4. The content of the "work" document can be refined based in the results displayed in
-the "woven" document.
-
-5. If a "more intensive interaction" is needed one of the Markdown files can be converted into a notebook:
-   - ["Markdown::Grammar"](https://raku.land/zef:antononcube/Markdown::Grammar), [AAp3], can convert to Mathematica notebooks.
-   - ["jupytext"](https://jupytext.readthedocs.io/) can convert to Jupyter notebooks.
-
-See the demo recording
-["Raku Literate Programming via command line pipelines"](https://www.youtube.com/watch?v=2UjAdQaKof8), [AAv1], (4.5 min.)
-
-**LLM usage:** Markdown cells with messages to be send to OpenAI or PaLM can be specified.
-See [AA2, AA3]. Additionally, Raku has dedicated packages for accessing OpenAI and PaLM,
-and the creation of LLM functions and LLM chat objects.
-
-### Mathematica notebooks
-
-The creation of Jupyter notebooks was inspired from
-[Mathematica's](https://www.wolfram.com/mathematica/?source=nav)
-notebooks. Jupyter, instead of hierarchical S-expressions uses the hierarchical JSON format.
-
-So, instead of using Jupyter's framework for having a *Raku notebook solution*, 
-the much more mature framework of Mathematica can be used. See: 
-
-- The Raku package ["Text::CodeProcessing"](https://raku.land/zef%3Aantononcube/Text%3A%3ACodeProcessing), [AAp1]
-- The WL paclet ["RakuMode"](https://resources.wolframcloud.com/PacletRepository/resources/AntonAntonov/RakuMode/), [AAp2]
-
-See the demo recordings:
-- ["Racoons playing with pearls and onions"](https://www.youtube.com/watch?v=zlkoNZK8MpU), [AAv2]
-- ["Streamlining ChatGPT code generation and narration workflows (Raku)"](https://www.youtube.com/watch?v=mI-oWLz5dYY), [AAv2]
-
-**LLM usage (WL):** Fully integrated LLM utilization of all four points in the previous section. See [SW1].
-
-**LLM usage (Raku):** The paclet ["RakuMode"](https://resources.wolframcloud.com/PacletRepository/resources/AntonAntonov/RakuMode/) 
-is based the "Chatbook style". 
-I.e. Raku can be used in WL chatbooks. Additionally, Raku has dedicated packages for accessing OpenAI and PaLM,
-and the creation of LLM functions and LLM chat objects.
-
-
-**Remark:** The sequential execution of chat cells mentioned in the previous section is heavily
-influenced by the chatbooks in Mathematica 13.3. 
-Earlier versions of Mathematica WL paclet ["Chatbook"](https://resources.wolframcloud.com/PacletRepository/resources/Wolfram/Chatbook/).
-
--------
-
-## Motivation extended 
-
-*(... or just a rant...)*
-
-One of my "missions" with Raku is to have a reasonable set of Machine Learning (ML) algorithms implemented (only) with Raku.
-Another "mission" is to endow Raku with a Large Language Models (LLMs) system that integrates very well with Raku and Raku's ecosystem.
-Having "simple" ML algorithms, integrated LLMs interaction,
-and Raku's text processing abilities should produce a very attractive system for doing science and mathematics.
-(At least to a point.)
-
-When Raku is "not enough" I am trying to use natural Domain Specific Languages (DSLs) to generate executable code to other programming languages and their ecosystems.
-I mostly target Mathematica, R, and Python. (In that order of priority.)
-(The DSLs parsers-interpreters are, of course, written in Raku.)
-
-I think the main and most challenging Raku deficiencies for doing science and mathematics are not having:
-1. Robust, interactive "notebook solution"
-2. Easy to invoke and use graphics system
-
-There are half a dozen efforts for point 1: "Jupyter::Kernel", "Text::CodeProcessing" and "RakuMode", VSCode LSP, Emacs-mode, and maybe others.
-
-I do not consider "Jupyter::Kernel" and "RakuMode" reliable.
-For point 2 -- there are a few graphics solutions for Raku. In my opinion none of them:
-- Is easy to install and invoke
-- And is easy to use
-- And produces pretty, tunable, useful graphics
-
-The last point strongly depends upon having a robust interactive notebook solution.
-
+1. [ ] TODO Features
+   1. [ ] TODO DSL G4T cells
+   2. [ ] TODO Chat-meta cells (simple)
+   3. [ ] TODO Chat-meta cells (via LLM)
+2. [ ] TODO Unit tests
+   1. [X] DONE PaLM cells
+   2. [X] DONE OpenAI cells
+   3. [X] DONE MermaidInk cells
+   4. [ ] TODO DALL-E cells
+3. [ ] TODO Documentation
+   1. [ ] TODO Long chat
+   2. [ ] TODO All parameters of OpenAI API in Raku
+   3. [ ] TODO All parameters of PaLM API in Raku
+   4. [ ] TODO More details on prompts
+   5. [ ] TODO Introductory video(s)
 
 ------
 
