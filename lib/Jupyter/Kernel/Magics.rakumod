@@ -236,7 +236,7 @@ my class Magic::Chat is Magic::LLM {
 }
 
 my class Magic::ChatMeta is Magic::Chat {
-    has $.all is rw;
+    has $.meta-command is rw;
     method preprocess($code) {
 
         # Process arguments
@@ -246,21 +246,57 @@ my class Magic::ChatMeta is Magic::Chat {
 
         # Get chat object
         my $res;
-        if %chats{self.chat-id}:exists {
-            my $chatObj = %chats{self.chat-id};
+        given $.meta-command {
+            when 'meta' {
+                if %chats{self.chat-id}:exists {
+                    my $chatObj = %chats{self.chat-id};
 
-            my @knownMethods = <Str gist say chat-id llm-evaluator messages context examples>;
-            $res = do given $code.trim {
-                when $_ ∈ @knownMethods {
-                    $chatObj."$_"();
-                }
-                default {
-                    "Do not know how to process {$_.raku} known chat object methods {@knownMethods.raku}.\nContinuing with .gist.\n\n" ~ $chatObj.gist;
+                    my @knownMethods = <Str gist say chat-id llm-evaluator messages context examples>;
+                    $res = do given $code.trim {
+                        when $_ ∈ @knownMethods {
+                            $chatObj."$_"();
+                        }
+                        default {
+                            "Do not know how to process {$_.raku} known chat object methods {@knownMethods.raku}.\nContinuing with .gist.\n\n" ~ $chatObj.gist;
+                        }
+                    }
+                } else {
+                    $res = "Cannot find a chat object with ID: {self.chat-id}.";
                 }
             }
-        } else {
-            $res = "Cannot find a chat object with ID: {self.chat-id}";
+
+            when 'prompt' {
+                self.args = %(prompt => $code, conf => 'ChatPaLM', chat-id => self.chat-id) , self.args;
+
+                my $chatObj = llm-chat(|self.args);
+
+                %chats{self.chat-id} = $chatObj;
+
+                $res = "Chat object created with ID : {self.chat-id}.";
+            }
+
+            when 'all' {
+                if %chats {
+
+                    my @knownMethods = <keys values kv pairs Str gist>;
+                    $res = do given $code.trim {
+                        when $_ ∈ @knownMethods {
+                            %chats."$_"();
+                        }
+                        default {
+                            "Do not know how to process {$_.raku} over the Hash of known chat objects.\nContinuing with .gist.\n\n" ~ %chats.gist;
+                        }
+                    }
+                } else {
+                    $res = "No chat objects.";
+                }
+            }
+
+            default {
+                $res = "Do not know how to process the chat meta command $_.";
+            }
         }
+
 
         # Copy to clipboard
         if $*DISTRO eq 'macos' {
@@ -380,7 +416,7 @@ grammar Magic::Grammar {
     rule TOP { <magic> }
     rule magic {
         [ '%%' | '#%' ]
-        [ <chat-id-spec> || <args> || <simple> || <filter> || <always> ]
+        [ <chat-meta-spec> || <chat-id-spec> || <args> || <simple> || <filter> || <always> ]
     }
     token simple {
         $<key>=[ 'javascript' | 'bash' | <mermaid> ]
@@ -390,8 +426,11 @@ grammar Magic::Grammar {
         || $<key>='run' $<rest>=.*
     }
     token chat-id-spec {
-      || <chat> ['-' | '_' | ':'] $<chat-id>=(<-[,;\s]>*) \h+ $<meta>='meta' [\h+ $<all>='all']? \h*
-      || <chat> ['-' | '_' | ':'] $<chat-id>=(<-[,;\s]>*) [\h* ',' \h* <magic-list-of-params> \h*]?
+      <chat> [ '-' | '_' | ':' | \h+ ] $<chat-id>=(<-[,;\s]>*) [\h* ',' \h* <magic-list-of-params> \h*]?
+    }
+    token chat-meta-spec {
+       || <chat> \h+ ['meta' \h+]? $<meta-command>='all'
+       || <chat> [ '-' | '_' | ':' | \h+ ] $<chat-id>=(<-[,;\s]>*) \h+ $<meta-command>= [ 'meta' | 'prompt' | 'all' ] [\h* ',' \h* <magic-list-of-params> \h*]?
     }
     rule filter {
         [
@@ -445,13 +484,13 @@ grammar Magic::Grammar {
     regex magic-list-of-params { <magic-assign-pair>+ % [ \h* ',' \h* ] }
 
     # Magic pair assignment
-    regex magic-assign-pair { $<param>=([<.alpha> | '.' | '_' | '-']+) \h* '=' \h* $<value>=(<-[{},\s]>* | '{' ~ '}' <-[{}]>* | '⎡' ~ '⎦' <-[⎡⎦]>* | '«' ~ '»' <-[«»]>* ) }
+    regex magic-assign-pair { $<param>=([<.alpha> | '.' | '_' | '-']+) \h* '=' \h* $<value>=(<-[{},\s]>* | '{' ~ '}' <-[{}]>* | '⎡' ~ '⎦' <-[⎡⎦]>* | '«' ~ '»' <-[«»]>*) }
 }
 
 class Magic::Actions {
     method TOP($/) { $/.make: $<magic>.made }
     method magic($/) {
-        $/.make: $<simple>.made // $<filter>.made // $<args>.made // $<chat-id-spec>.made // $<always>.made;
+        $/.make: $<simple>.made // $<filter>.made // $<args>.made // $<chat-id-spec>.made // $<chat-meta-spec>.made // $<always>.made;
     }
     method simple($/) {
         given "$<key>" {
@@ -493,13 +532,14 @@ class Magic::Actions {
     method chat-id-spec($/) {
         my $chat-id = $<chat-id>.Str;
         my %args = $<magic-list-of-params>.made // %();
+        $/.make: Magic::Chat.new(:%args, :$chat-id);
+    }
+    method chat-meta-spec($/) {
+        my $chat-id = $<chat-id> ?? $<chat-id>.Str !! 'NONE';
+        my %args = $<magic-list-of-params>.made // %();
 
-        with $<meta> {
-            my $all = $<all> // False;
-            $/.make: Magic::ChatMeta.new(:%args, :$chat-id, :$all);
-        } else {
-            $/.make: Magic::Chat.new(:%args, :$chat-id);
-        }
+        my $meta-command = $<meta-command>.Str;
+        $/.make: Magic::ChatMeta.new(:%args, :$chat-id, :$meta-command);
     }
     method always($/) {
         my $subcommand = ~$<subcommand> || 'prepend';
