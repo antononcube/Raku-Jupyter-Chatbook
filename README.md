@@ -12,13 +12,12 @@ Here are the top opening statements of the README of "Jupyter::Kernel":
 > Jupyter notebooks provide a web-based (or console-based)
 Read Eval Print Loop (REPL) for running code and serializing input and output.
 
-It is desirable to include the interaction with Large Language Models (LLMs) to the "typical" 
-REPL systems or workflows.
-
-Having LLM-aware and LLM-chat-endowed notebooks -- **chatbooks** -- can really speed up the:
+It is desirable to include the interaction with Large Language Models (LLMs) into 
+the "typical" REPL systems or workflows. Having LLM-aware and LLM-chat-endowed 
+notebooks -- **chatbooks** -- can really speed up the:
 - Writing and preparation of documents on variety of subjects
-- Derivation of useful Raku (actionable) code
-- Adoption of Raku by newcomers
+- Derivation of useful programming code
+- Adoption of programming languages by newcomers
 
 This repository is mostly for experimental work, but it aims to be *always* very
 useful for interacting with LLMs via Raku.
@@ -57,7 +56,8 @@ There are four ways to use LLMs in a chatbook:
 
 1. [LLM functions](https://github.com/antononcube/Raku-Jupyter-Chatbook/blob/master/eg/Chatbook-LLM-functions-and-chat-objects.ipynb), [AA3, AAp4]
 2. [LLM chat objects](https://github.com/antononcube/Raku-Jupyter-Chatbook/blob/master/eg/Chatbook-LLM-functions-and-chat-objects.ipynb), [AA4, AAp4]
-3. OpenAI, [AAp2], or PaLM, [AAp3], [code cells with magics](https://github.com/antononcube/Raku-Jupyter-Chatbook/blob/master/eg/Chatbook-LLM-cells.ipynb)
+3. [Code cells with magics](https://github.com/antononcube/Raku-Jupyter-Chatbook/blob/master/eg/Chatbook-LLM-cells.ipynb)
+   accessing LLMs, like, OpenAI's, [AAp2], or PaLM's, [AAp3]
 4. [Notebook-wide chats](https://github.com/antononcube/Raku-Jupyter-Chatbook/blob/master/eg/Chatbook-LLM-chats.ipynb) 
    that are distributed over multiple code cells with chat-magic specs
 
@@ -78,7 +78,7 @@ use LLM::Functions;
 my &fcp = llm-function({"What is the population of the country $_ ?"});
 ```
 ```
-# -> **@args, *%args { #`(Block|4965956124128) ... }
+# -> **@args, *%args { #`(Block|5016320795216) ... }
 ```
 
 Here is another cell that can be evaluated multiple times using different country names:
@@ -89,13 +89,13 @@ Here is another cell that can be evaluated multiple times using different countr
 ```
 # (
 # 
-# As of July 2020, the population of Niger is estimated to be 22,893,736 people. 
+# As of July 2020, the population of Niger is estimated to be 23,843,341. 
 # 
-# The population of Gabon is estimated to be 2.2 million people, according to 2020 estimates from the World Bank.)
+# As of July 2019, the population of Gabon is estimated to be 2,210,823 people.)
 ```
 
 For more examples of LLM functions and LLM chat objects see the notebook 
-["Chatbook-LLM-functions-and-chat-objects.ipynb"](./eg/Chatbook-LLM-functions-and-chat-objects.ipynb).
+["Chatbook-LLM-functions-and-chat-objects.ipynb"](https://github.com/antononcube/Raku-Jupyter-Chatbook/blob/master/eg/Chatbook-LLM-functions-and-chat-objects.ipynb).
 
 
 -------
@@ -111,7 +111,8 @@ Here is an example of a code cell with PaLM magic spec:
 Generate a horror story about a little girl lost in the forest and getting possessed.
 ```
 
-For more examples see the notebook ["Chatbook-LLM-cells.ipynb"](./eg/Chatbook-LLM-cells.ipynb).
+For more examples see the notebook 
+["Chatbook-LLM-cells.ipynb"](https://github.com/antononcube/Raku-Jupyter-Chatbook/blob/master/eg/Chatbook-LLM-cells.ipynb).
 
 ------
 
@@ -122,8 +123,9 @@ A chatbook can have more than one LLM conversations.
 "Under the hood" each chatbook maintains a database of chat objects.
 Chat cells are used to give messages to those chat objects.
 
-For example, here is a chat cell with which a new "Email Writer" chat object is made,
-and that new chat object has the identifier "em12":  
+For example, here is a chat cell with which a new 
+["Email writer"](https://developers.generativeai.google/prompts/email-writer) 
+chat object is made, and that new chat object has the identifier "em12":  
 
 ```
 %% chat-em12, prompt = «Given a topic, write emails in a concise, professional manner»
@@ -157,12 +159,13 @@ The "default" chat object ID identifier "NONE".
 **Remark:** The magic keyword "chat" can be separated from the identifier of the chat object with
 the symbols "-", "_", ":", or with any number of (horizontal) white spaces.
 
-For more examples see the notebook ["Chatbook-LLM-chats.ipynb"](./eg/Chatbook-LLM-chats.ipynb).
+For more examples see the notebook 
+["Chatbook-LLM-chats.ipynb"](https://github.com/antononcube/Raku-Jupyter-Chatbook/blob/master/eg/Chatbook-LLM-chats.ipynb).
 
 Here is a flowchart that summarizes the way chatbooks create and utilize LLM chat objects:
 
 ```mermaid
-flowchart TD
+flowchart LR
     OpenAI{{OpenAI}}
     PaLM{{PaLM}}
     LLMFunc[[LLM::Functions]]
@@ -200,7 +203,7 @@ flowchart TD
 
 Each chatbook session has a Hash of chat objects.
 Chatbooks can have chat meta cells that allow the access of the chat object "database" as whole, 
-or its idividual objects.  
+or its individual objects.  
 
 Here is an example of a chat meta cell (that applies the method `say` to the chat object with ID "snowman"):
 
@@ -210,7 +213,8 @@ say
 ```
 
 Here is an example of chat meta cell that creates a new chat chat object with the LLM prompt
-specified in the cell:
+specified in the cell
+(["Guess the word"](https://developers.generativeai.google/prompts/guess-the-word)):
 
 ```
 %% chat-WordGuesser prompt
@@ -288,6 +292,9 @@ flowchart LR
       - [X] DONE prompt  
    2. [ ] TODO Chat-meta cells (via LLM)
    3. [ ] TODO DSL G4T cells
+   4. [ ] TODO Using pre-prepared prompts
+      - This requires implementing "LLM::Prompts".
+        - And populating it with a good number of prompts.
 2. [ ] TODO Unit tests
    1. [X] DONE PaLM cells
    2. [X] DONE OpenAI cells
@@ -295,11 +302,13 @@ flowchart LR
    4. [ ] TODO DALL-E cells
    5. [X] DONE Chat meta cells
 3. [ ] TODO Documentation
-   1. [ ] TODO Long chat
-   2. [ ] TODO All parameters of OpenAI API in Raku
-   3. [ ] TODO All parameters of PaLM API in Raku
-   4. [ ] TODO More details on prompts
-   5. [ ] TODO Introductory video(s)
+   - [X] DONE LLM functions and chat objects in chatbooks
+   - [X] DONE LLM cells in chatbooks
+   - [X] DONE Notebook-wide chats and chat meta cells 
+   - [ ] TODO All parameters of OpenAI API in Raku
+   - [ ] TODO All parameters of PaLM API in Raku
+   - [ ] TODO More details on prompts
+   - [ ] TODO Introductory video(s)
 
 ------
 
