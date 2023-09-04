@@ -17,7 +17,7 @@
     "LLM::Functions:ver<0.1.8+>",
     "Log::Async",
     "Net::ZMQ:ver<0.8>",
-    "Text::Plot:ver<0.1.0+>",
+    "Text::Plot:ver<0.1.1+>",
     "Text::SubParsers:ver<0.1.4+>",
     "UUID",
     "WWW:MermaidInk:ver<0.1.1+>",
