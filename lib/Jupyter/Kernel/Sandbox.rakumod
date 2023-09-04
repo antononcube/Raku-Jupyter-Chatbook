@@ -85,6 +85,11 @@ class Jupyter::Kernel::Sandbox is export {
                 Proxy.new( FETCH => method () { $last },
                            STORE => method ($x) { $last = $x } );
             }
+            use LLM::Functions;
+            use Text::SubParsers;
+            use Data::Translators;
+            use Clipboard :ALL;
+            use Text::Plot;
         INIT
     }
 
