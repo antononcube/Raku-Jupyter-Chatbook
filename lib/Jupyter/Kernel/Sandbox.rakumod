@@ -88,6 +88,7 @@ class Jupyter::Kernel::Sandbox is export {
             use LLM::Functions;
             use Text::SubParsers;
             use Data::Translators;
+            use Data::TypeSystem;
             use Clipboard :ALL;
             use Text::Plot;
         INIT
