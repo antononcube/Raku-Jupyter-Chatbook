@@ -3,7 +3,7 @@
 ## In brief
 
 This Raku package is a fork of Brian Duggan's 
-["Jupyter::Kernel"](https://github.com/bduggan/raku-jupyter-kernel).
+["Jupyter::Kernel"](https://github.com/bduggan/raku-jupyter-kernel), [BDp1].
 
 Here are the top opening statements of the README of "Jupyter::Kernel":
 
@@ -44,9 +44,13 @@ From GitHub:
 zef install https://github.com/antononcube/Raku-Jupyter-Chatbook.git
 ```
 
-
 After installing the package "Jupyter::Chatbook" follow the setup instructions of
 ["Jupyter::Kernel"](https://github.com/bduggan/raku-jupyter-kernel).
+
+The default API keys for the chat cells, LLM functions, and chat objects are taken from 
+the Operating System (OS) environmental variables `OPENAI_API_KEY` and `PALM_API_KEY`. 
+The api keys can also be specified using LLM evaluator and configuration options and objects; 
+see [AA3, AAp2].
 
 -------
 
@@ -54,10 +58,10 @@ After installing the package "Jupyter::Chatbook" follow the setup instructions o
 
 There are four ways to use LLMs in a chatbook:
 
-1. [LLM functions](https://github.com/antononcube/Raku-Jupyter-Chatbook/blob/master/eg/Chatbook-LLM-functions-and-chat-objects.ipynb), [AA3, AAp4]
-2. [LLM chat objects](https://github.com/antononcube/Raku-Jupyter-Chatbook/blob/master/eg/Chatbook-LLM-functions-and-chat-objects.ipynb), [AA4, AAp4]
+1. [LLM functions](https://github.com/antononcube/Raku-Jupyter-Chatbook/blob/master/eg/Chatbook-LLM-functions-and-chat-objects.ipynb), [AA3, AAp2]
+2. [LLM chat objects](https://github.com/antononcube/Raku-Jupyter-Chatbook/blob/master/eg/Chatbook-LLM-functions-and-chat-objects.ipynb), [AA4, AAp2]
 3. [Code cells with magics](https://github.com/antononcube/Raku-Jupyter-Chatbook/blob/master/eg/Chatbook-LLM-cells.ipynb)
-   accessing LLMs, like, OpenAI's, [AAp2], or PaLM's, [AAp3]
+   accessing LLMs, like, OpenAI's, [AAp3], or PaLM's, [AAp4]
 4. [Notebook-wide chats](https://github.com/antononcube/Raku-Jupyter-Chatbook/blob/master/eg/Chatbook-LLM-chats.ipynb) 
    that are distributed over multiple code cells with chat-magic specs
 
@@ -87,6 +91,17 @@ Here is another cell that can be evaluated multiple times using different countr
 For more examples of LLM functions and LLM chat objects see the notebook 
 ["Chatbook-LLM-functions-and-chat-objects.ipynb"](https://github.com/antononcube/Raku-Jupyter-Chatbook/blob/master/eg/Chatbook-LLM-functions-and-chat-objects.ipynb).
 
+**Remark:** 
+Chatbooks load in their initialization phase the package
+["LLM::Functions"](https://github.com/antononcube/Raku-LLM-Functions), [AAp2].
+Also, in the initialization phase are loaded the packages
+["Clipboard"](https://github.com/antononcube/Raku-Clipboard), [AAp5],
+["Data::Translators"](https://github.com/antononcube/Raku-Data-Translators), [AAp6],
+["Data::TypeSystem"](https://github.com/antononcube/Raku-Data-Translators), [AAp7],
+["Text::Plot"](https://github.com/antononcube/Raku-Text-Plot), [AAp8],
+and
+["Text::SubParsers"](https://github.com/antononcube/Raku-Text-SubParsers), [AAp9],
+that can be used to post-process LLM outputs.
 
 -------
 
@@ -220,9 +235,9 @@ Here is a table with examples of magic specs for chat meta cells and their inter
 |:-----------------|:-------------------------------------|:----------------------------------------------------------------|
 | chat-ew12 meta   | say                                  | Give the "print out" of the chat object with ID "ew12"          |   
 | chat-ew12 meta   | messages                             | Give the "print out" of the chat object with ID "ew12"          |   
-| chat sn22 prompt | You pretend to be a melting snowman. | create a chat object with ID "sn22" with the prompt in the cell |   
-| chat meta all    | keys                                 | show the keys of the session chat objects DB                    |   
-| chat all         | keys                                 | same as above                                                   |   
+| chat sn22 prompt | You pretend to be a melting snowman. | Create a chat object with ID "sn22" with the prompt in the cell |   
+| chat meta all    | keys                                 | Show the keys of the session chat objects DB                    |   
+| chat all         | keys                                 | *«same as above»*                                               |   
 
 Here is a flowchart that summarizes the chat meta cell processing:
 
@@ -334,37 +349,47 @@ flowchart LR
 ### Packages
 
 [AAp1] Anton Antonov,
-[Text::CodeProcessing Raku package](https://github.com/antononcube/Raku-Text-CodeProcessing),
-(2021),
+[Jupyter::Chatbook Raku package](https://github.com/antononcube/Raku-Jupyter-Chatbook),
+(2023),
 [GitHub/antononcube](https://github.com/antononcube).
 
 [AAp2] Anton Antonov,
-[WWW::OpenAI Raku package](https://github.com/antononcube/Raku-WWW-OpenAI),
-(2023),
-[GitHub/antononcube](https://github.com/antononcube).
-
-[AAp3] Anton Antonov,
-[WWW::PaLM Raku package](https://github.com/antononcube/Raku-WWW-PaLM),
-(2023),
-[GitHub/antononcube](https://github.com/antononcube).
-
-[AAp4] Anton Antonov,
 [LLM::Functions Raku package](https://github.com/antononcube/Raku-LLM-Functions),
 (2023),
 [GitHub/antononcube](https://github.com/antononcube).
 
+[AAp3] Anton Antonov,
+[WWW::OpenAI Raku package](https://github.com/antononcube/Raku-WWW-OpenAI),
+(2023),
+[GitHub/antononcube](https://github.com/antononcube).
+
 [AAp4] Anton Antonov,
-[Text::SubParsers Raku package](https://github.com/antononcube/Raku-Text-SubParsers),
+[WWW::PaLM Raku package](https://github.com/antononcube/Raku-WWW-PaLM),
 (2023),
 [GitHub/antononcube](https://github.com/antononcube).
 
 [AAp5] Anton Antonov,
+[Clipboard Raku package](https://github.com/antononcube/Raku-Clipboard),
+(2023),
+[GitHub/antononcube](https://github.com/antononcube).
+
+[AAp6] Anton Antonov,
 [Data::Translators Raku package](https://github.com/antononcube/Raku-Data-Translators),
 (2023),
 [GitHub/antononcube](https://github.com/antononcube).
 
-[AAp4] Anton Antonov,
-[Clipboard Raku package](https://github.com/antononcube/Raku-Clipboard),
+[AAp7] Anton Antonov,
+[Data::TypeSystem Raku package](https://github.com/antononcube/Raku-Data-TypeSystem),
+(2023),
+[GitHub/antononcube](https://github.com/antononcube).
+
+[AAp8] Anton Antonov,
+[Text::Plot Raku package](https://github.com/antononcube/Raku-Text-Plot),
+(2022),
+[GitHub/antononcube](https://github.com/antononcube).
+
+[AAp9] Anton Antonov,
+[Text::SubParsers Raku package](https://github.com/antononcube/Raku-Text-SubParsers),
 (2023),
 [GitHub/antononcube](https://github.com/antononcube).
 
