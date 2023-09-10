@@ -86,6 +86,7 @@ class Jupyter::Kernel::Sandbox is export {
                            STORE => method ($x) { $last = $x } );
             }
             use LLM::Functions;
+            use LLM::Prompts;
             use Text::SubParsers;
             use Data::Translators;
             use Data::TypeSystem;
