@@ -7,6 +7,7 @@ use Clipboard;  # copy-to-clipboard
 use Text::Plot; # from-base64
 use Text::SubParsers;
 use LLM::Functions;
+use LLM::Prompts;
 
 my class Result does Jupyter::Kernel::Response {
     has $.output is default(Nil);
@@ -109,6 +110,7 @@ my class Magic::Bash is Magic {
 
 my class Magic::LLM is Magic {
     has %.args;
+    has $.output-mime-type is rw = 'text/plain';
     method pre-process-args() {
         my $ep = exact-parser([{.Numeric}, {.Str}]);
 
@@ -138,9 +140,9 @@ my class Magic::OpenAI is Magic::LLM {
         # Result
         return Result.new:
                 output => $res,
-                output-mime-type => 'text/plain',
+                output-mime-type => self.output-mime-type,
                 stdout => $res,
-                stdout-mime-type => 'text/plain',
+                stdout-mime-type => self.output-mime-type,
                 ;
     }
 }
@@ -193,9 +195,9 @@ my class Magic::PaLM is Magic::LLM {
         # Result
         return Result.new:
                 output => $res,
-                output-mime-type => 'text/plain',
+                output-mime-type => self.output-mime-type,
                 stdout => $res,
-                stdout-mime-type => 'text/plain',
+                stdout-mime-type => self.output-mime-type,
                 ;
     }
 }
@@ -209,13 +211,19 @@ my class Magic::Chat is Magic::LLM {
 
         self.chat-id = self.chat-id // self.args<chat-id> // 'NONE';
 
+        my $prompt = self.args<prompt> // '';
+        if $prompt {
+            $prompt = llm-prompt-expand($prompt);
+            self.args<prompt> = $prompt;
+        }
+
         self.args = %(conf => 'ChatPaLM', chat-id => self.chat-id) , self.args;
 
         # Get chat object
         my $chatObj = %chats{self.chat-id} // llm-chat(|self.args);
 
         # Call LLM's interface function
-        my $res = $chatObj.eval($code);
+        my $res = $chatObj.eval(llm-prompt-expand($code));
 
         # Make sure it is registered
         %chats{self.chat-id} = $chatObj;
@@ -228,9 +236,9 @@ my class Magic::Chat is Magic::LLM {
         # Result
         return Result.new:
                 output => $res,
-                output-mime-type => 'text/plain',
+                output-mime-type => self.output-mime-type,
                 stdout => $res,
-                stdout-mime-type => 'text/plain',
+                stdout-mime-type => self.output-mime-type,
                 ;
     }
 }
@@ -251,16 +259,22 @@ my class Magic::ChatMeta is Magic::Chat {
                 if %chats{self.chat-id}:exists {
                     my $chatObj = %chats{self.chat-id};
 
-                    my @knownMethods = <Str gist say chat-id llm-evaluator messages context examples>;
+                    my @knownMethods = <Str gist raku say chat-id llm-evaluator llm-configuration conf messages prompt examples>;
                     $res = do given $code.trim {
+                        when 'raku' {
+                            $chatObj.raku
+                        }
                         when 'messages' {
                             $chatObj.messages.map({ $_.Str }).List
                         }
                         when 'llm-evaluator' {
-                            $chatObj.llm-evaluator.Str
+                            $chatObj.llm-evaluator.raku
+                        }
+                        when $_ ∈ <llm-configuration conf> {
+                            $chatObj.llm-evaluator.conf.raku
                         }
                         when $_ ∈ @knownMethods {
-                            $chatObj."$_"();
+                            $chatObj."$_"().raku;
                         }
                         default {
                             "Do not know how to process {$_.raku} known chat object methods {@knownMethods.raku}.\nContinuing with .gist.\n\n" ~ $chatObj.gist;
@@ -272,13 +286,18 @@ my class Magic::ChatMeta is Magic::Chat {
             }
 
             when 'prompt' {
-                self.args = %(prompt => $code, conf => 'ChatPaLM', chat-id => self.chat-id) , self.args;
+                my $code2 = llm-prompt-expand($code);
+
+                self.args = %(prompt => $code2, conf => 'ChatPaLM', chat-id => self.chat-id) , self.args;
 
                 my $chatObj = llm-chat(|self.args);
 
                 %chats{self.chat-id} = $chatObj;
 
                 $res = "Chat object created with ID : {self.chat-id}.";
+                if $code ne $code2 {
+                    $res ~= "\nExpanded prompt:\n⎡$code2⎦";
+                }
             }
 
             when 'all' {
@@ -428,21 +447,24 @@ grammar Magic::Grammar {
     rule TOP { <magic> }
     rule magic {
         [ '%%' | '#%' ]
-        [ <chat-meta-spec> || <chat-id-spec> || <args> || <simple> || <filter> || <always> ]
+        [ <chat-meta-spec> || <chat-id-spec> || <llm-args> || <args> || <simple> || <filter> || <always> ]
     }
     token simple {
         $<key>=[ 'javascript' | 'bash' | <mermaid> ]
     }
+    token param-sep { \h* ',' \h* | \h+ }
     token args {
-        || $<key>=[ 'openai' | 'dalle' | 'palm' | 'chat' ] [\h* ',' \h* <magic-list-of-params> \h*]?
-        || $<key>='run' $<rest>=.*
+        $<key>='run' $<rest>=.*
+    }
+    regex llm-args {
+        $<key>=[ 'openai' | 'dalle' | 'palm' | 'chat' ] [\h* '>' \h* $<output-mime>=<mime> | \h* ] [ <.param-sep> <magic-list-of-params> \h*]? \h*
     }
     token chat-id-spec {
-      <chat> [ '-' | '_' | ':' | \h+ ] $<chat-id>=(<-[,;\s]>*) [\h* ',' \h* <magic-list-of-params> \h*]?
+      <chat> [ '-' | '_' | ':' | \h+ ] $<chat-id>=(<.alnum> <-[,;\s]>*) [\h* '>' \h* $<output-mime>=<mime>]? [<.param-sep> <magic-list-of-params> \h*]? \h*
     }
     token chat-meta-spec {
        || <chat> \h+ ['meta' \h+]? $<meta-command>='all'
-       || <chat> [ '-' | '_' | ':' | \h+ ] $<chat-id>=(<-[,;\s]>*) \h+ $<meta-command>= [ 'meta' | 'prompt' | 'all' ] [\h* ',' \h* <magic-list-of-params> \h*]?
+       || <chat> [ '-' | '_' | ':' | \h+ ] $<chat-id>=(<-[,;\s]>*) \h+ $<meta-command>= [ 'meta' | 'prompt' | 'all' ] [<.param-sep> <magic-list-of-params> \h*]? \h*
     }
     rule filter {
         [
@@ -493,7 +515,7 @@ grammar Magic::Grammar {
     }
 
     # Magic list of assignments
-    regex magic-list-of-params { <magic-assign-pair>+ % [ \h* ',' \h* ] }
+    regex magic-list-of-params { <magic-assign-pair>+ % [\h* ',' \h*] }
 
     # Magic pair assignment
     regex magic-assign-pair { $<param>=([<.alpha> | '.' | '_' | '-']+) \h* '=' \h* $<value>=(<-[{},\s]>* | '{' ~ '}' <-[{}]>* | '⎡' ~ '⎦' <-[⎡⎦]>* | '«' ~ '»' <-[«»]>*) }
@@ -502,7 +524,7 @@ grammar Magic::Grammar {
 class Magic::Actions {
     method TOP($/) { $/.make: $<magic>.made }
     method magic($/) {
-        $/.make: $<simple>.made // $<filter>.made // $<args>.made // $<chat-id-spec>.made // $<chat-meta-spec>.made // $<always>.made;
+        $/.make: $<simple>.made // $<filter>.made // $<llm-args>.made // $<args>.made // $<chat-id-spec>.made // $<chat-meta-spec>.made // $<always>.made;
     }
     method simple($/) {
         given "$<key>" {
@@ -522,29 +544,35 @@ class Magic::Actions {
             when 'run' {
                 $/.make: Magic::Run.new(file => trim ~$<rest>);
             }
+        }
+    }
+    method llm-args($/) {
+        note 'HERE';
+        note $/;
+        my %args = $<magic-list-of-params>.made // %();
+        my $output-mime-type = $<output-mime>.made.mime-type // 'text/plain';
+
+        given ("$<key>") {
             when 'openai' {
-                my %args = $<magic-list-of-params>.made // %();
-                $/.make: Magic::OpenAI.new(:%args);
+                $/.make: Magic::OpenAI.new(:%args, :$output-mime-type);
             }
             when 'dalle' {
-                my %args = $<magic-list-of-params>.made // %();
-                $/.make: Magic::OpenAIDallE.new(:%args);
+                $/.make: Magic::OpenAIDallE.new(:%args, :$output-mime-type);
             }
             when 'palm' {
-                my %args = $<magic-list-of-params>.made // %();
-                $/.make: Magic::PaLM.new(:%args);
+                $/.make: Magic::PaLM.new(:%args, :$output-mime-type);
             }
             when 'chat' {
-                my %args = $<magic-list-of-params>.made // %();
                 my $chat-id = 'NONE';
-                $/.make: Magic::Chat.new(:%args, :$chat-id);
+                $/.make: Magic::Chat.new(:%args, :$chat-id, :$output-mime-type);
             }
         }
     }
     method chat-id-spec($/) {
         my $chat-id = $<chat-id>.Str;
         my %args = $<magic-list-of-params>.made // %();
-        $/.make: Magic::Chat.new(:%args, :$chat-id);
+        my $output-mime-type = $<output-mime>.made.mime-type // 'text/plain';
+        $/.make: Magic::Chat.new(:%args, :$chat-id, :$output-mime-type);
     }
     method chat-meta-spec($/) {
         my $chat-id = $<chat-id> ?? $<chat-id>.Str !! 'NONE';
