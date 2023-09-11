@@ -222,8 +222,13 @@ my class Magic::Chat is Magic::LLM {
         # Get chat object
         my $chatObj = %chats{self.chat-id} // llm-chat(|self.args);
 
+        # We get a  delimiter from the configuration
+        # my $sep = $chatObj.llm-evaluator.conf.prompt-delimiter;
+        # But for prompt expansions it is most like better to use new line
+        my $sep = "\n";
+
         # Call LLM's interface function
-        my $res = $chatObj.eval(llm-prompt-expand($code));
+        my $res = $chatObj.eval(llm-prompt-expand($code, messages => $chatObj.messages, :$sep));
 
         # Make sure it is registered
         %chats{self.chat-id} = $chatObj;
@@ -297,6 +302,15 @@ my class Magic::ChatMeta is Magic::Chat {
                 $res = "Chat object created with ID : {self.chat-id}.";
                 if $code ne $code2 {
                     $res ~= "\nExpanded prompt:\n⎡$code2⎦";
+                }
+            }
+
+            when 'drop' {
+                if %chats{self.chat-id}:exists {
+                    $res = "Deleted: { self.chat-id }\nGist: { %chats{self.chat-id}.gist }";
+                    %chats{self.chat-id}:delete;
+                } else {
+                    $res = "Cannot find chat with ID : { self.chat-id }";
                 }
             }
 
@@ -464,7 +478,7 @@ grammar Magic::Grammar {
     }
     token chat-meta-spec {
        || <chat> \h+ ['meta' \h+]? $<meta-command>='all'
-       || <chat> [ '-' | '_' | ':' | \h+ ] $<chat-id>=(<-[,;\s]>*) \h+ $<meta-command>= [ 'meta' | 'prompt' | 'all' ] [<.param-sep> <magic-list-of-params> \h*]? \h*
+       || <chat> [ '-' | '_' | ':' | \h+ ] $<chat-id>=(<-[,;\s]>*) \h+ $<meta-command>= [ 'meta' | 'prompt' | 'drop' | 'all' ] [<.param-sep> <magic-list-of-params> \h*]? \h*
     }
     rule filter {
         [
@@ -547,8 +561,6 @@ class Magic::Actions {
         }
     }
     method llm-args($/) {
-        note 'HERE';
-        note $/;
         my %args = $<magic-list-of-params>.made // %();
         my $output-mime-type = $<output-mime>.made.mime-type // 'text/plain';
 
