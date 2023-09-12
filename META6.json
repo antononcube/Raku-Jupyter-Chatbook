@@ -15,6 +15,7 @@
     "Data::TypeSystem:ver<0.1.2+>",
     "JSON::Tiny",
     "LLM::Functions:ver<0.1.8+>",
+    "LLM::Prompts:ver<0.1.1+>",
     "Log::Async",
     "Net::ZMQ:ver<0.8>",
     "Text::Plot:ver<0.1.1+>",
