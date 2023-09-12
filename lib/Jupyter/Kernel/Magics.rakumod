@@ -257,14 +257,20 @@ my class Magic::ChatMeta is Magic::Chat {
 
         self.chat-id = self.chat-id // self.args<chat-id> // 'NONE';
 
-        # Get chat object
+        # Redirecting to drop
+        if $.meta-command eq 'meta' && $code.trim ∈ <drop delete> {
+            $.meta-command = 'drop'
+        }
+
+        # Process commands
         my $res;
         given $.meta-command {
             when 'meta' {
                 if %chats{self.chat-id}:exists {
+                    # Get chat object
                     my $chatObj = %chats{self.chat-id};
 
-                    my @knownMethods = <Str gist raku say chat-id llm-evaluator llm-configuration conf messages prompt examples>;
+                    my @knownMethods = <Str gist raku say chat-id drop llm-evaluator llm-configuration conf messages prompt examples>;
                     $res = do given $code.trim {
                         when 'raku' {
                             $chatObj.raku
