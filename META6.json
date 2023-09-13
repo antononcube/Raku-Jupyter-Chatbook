@@ -21,9 +21,9 @@
     "Text::Plot:ver<0.1.1+>",
     "Text::SubParsers:ver<0.1.4+>",
     "UUID",
-    "WWW:MermaidInk:ver<0.1.1+>",
-    "WWW:OpenAI:ver<0.2.8+>",
-    "WWW:PaLM:ver<0.1.8+>"
+    "WWW::MermaidInk:ver<0.1.1+>",
+    "WWW::OpenAI:ver<0.2.8+>",
+    "WWW::PaLM:ver<0.1.8+>"
   ],
   "build-depends": [],
   "test-depends": [],
