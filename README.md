@@ -1,6 +1,6 @@
 # Jupyter::Chatbook
 
-https://raku.land/zef:antononcube/Jupyter::Chatbook/badges/version
+[![https://raku.land/zef:antononcube/Jupyter::Chatbook](https://raku.land/zef:antononcube/Jupyter::Chatbook/badges/version)](https://raku.land/zef:antononcube/Jupyter::Chatbook)
 
 ## In brief
 
