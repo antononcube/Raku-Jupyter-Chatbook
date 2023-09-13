@@ -1,5 +1,7 @@
 # Jupyter::Chatbook
 
+https://raku.land/zef:antononcube/Jupyter::Chatbook/badges/version
+
 ## In brief
 
 This Raku package is a fork of Brian Duggan's 
