@@ -1,5 +1,9 @@
 # Jupyter::Chatbook
 
+[![MacOS](https://github.com/antononcube/Raku-Jupyter-Chatbook/actions/workflows/macos.yml/badge.svg)](https://github.com/antononcube/Raku-Jupyter-Chatbook/actions/workflows/macos.yml)
+[![Linux](https://github.com/antononcube/Raku-Jupyter-Chatbook/actions/workflows/linux.yml/badge.svg)](https://github.com/antononcube/Raku-Jupyter-Chatbook/actions/workflows/linux.yml)
+[![https://raku.land/zef:antononcube/Jupyter::Chatbook](https://raku.land/zef:antononcube/Jupyter::Chatbook/badges/version)](https://raku.land/zef:antononcube/Jupyter::Chatbook)
+
 ## In brief
 
 This Raku package is a fork of Brian Duggan's 
