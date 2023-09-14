@@ -24,7 +24,7 @@ jobs:
           raku-version: ${{ matrix.raku-version }}
       - name: Install Dependencies
         run: |
-          sudo brew install zmq
+          brew install zmq
           zef install --/test --deps-only .
           zef install --/test App::Prove6
       - name: Run Tests
