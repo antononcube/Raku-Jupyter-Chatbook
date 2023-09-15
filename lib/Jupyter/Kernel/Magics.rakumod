@@ -160,11 +160,30 @@ my class Magic::OpenAIDallE is Magic::LLM {
                   format => 'values',
                   method => 'tiny') , self.args;
 
+        my $res = '';
+        my @imgResB64;
         # Call LLM's interface function
-        my @imgResB64 = |openai-create-image($code, |self.args);
+        if $code.trim.starts-with('@') && $code.trim.substr(1).IO.f {
+
+            try {
+                my $file = $code.trim.substr(1).IO.absolute.Str;
+                @imgResB64 = |openai-variate-image($file, |self.args);
+            }
+
+            if $! || !(@imgResB64.all ~~ Str) {
+                @imgResB64 = Empty;
+                $res = 'Cannot process file.';
+
+            }
+
+        } else {
+            @imgResB64 = |openai-create-image($code, |self.args);
+        }
 
         # Transform base64 images into HTML images
-        my $res = @imgResB64.map({ from-base64($_) }).join("\n\n");
+        if @imgResB64 {
+            $res = @imgResB64.map({ from-base64($_) }).join("\n\n");
+        }
 
         # Result
         return Result.new:
