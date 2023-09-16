@@ -179,9 +179,8 @@ my class Magic::OpenAIDallE is Magic::LLM {
             }
 
             if $! || !(@imgResB64.all ~~ Str) {
+                $res = "Cannot process file -- non-image result:\n" ~ @imgResB64.raku;
                 @imgResB64 = Empty;
-                $res = 'Cannot process file.';
-
             }
 
         } else {
