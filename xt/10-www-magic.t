@@ -86,4 +86,46 @@ class MockResult {
     is $r.output-mime-type, 'text/html', 'mermaid magic set the mime type';
 }
 
+{
+    my $code = q:to/DONE/;
+    %% dalle
+
+    @resources/logo-64x64.png
+
+    DONE
+
+    ok my $magic = $m.find-magic($code), 'preprocess recognized %% dalle';
+    is $code.trim.starts-with('@'), True, 'find-magic removed magic line';
+
+    my $r = $magic.preprocess($code);
+
+    #note $r.output;
+    is $r.output.starts-with('<img src="data:image/png;base64'),
+            True,
+            'got HTML base64 string from dalle';
+
+    is $r.output-mime-type, 'text/html', 'dalle magic set the mime type';
+}
+
+{
+    my $code = q:to/DONE/;
+    %% dalle, prompt='Better butterfly.'
+
+    @resources/logo-64x64.png
+
+    DONE
+
+    ok my $magic = $m.find-magic($code), 'preprocess recognized %% dalle with prompt';
+    is $code.trim.starts-with('@'), True, 'find-magic removed magic line';
+
+    my $r = $magic.preprocess($code);
+
+    #note $r.output;
+    is $r.output.starts-with('<img src="data:image/png;base64'),
+            True,
+            'got HTML base64 string from dalle with prompt';
+
+    is $r.output-mime-type, 'text/html', 'dalle with prompt magic set the mime type';
+}
+
 done-testing;
