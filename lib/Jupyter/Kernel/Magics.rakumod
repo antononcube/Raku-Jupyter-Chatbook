@@ -160,6 +160,9 @@ my class Magic::OpenAIDallE is Magic::LLM {
                   format => 'values',
                   method => 'tiny') , self.args;
 
+        my $prompt = self.args<prompt> // '';
+        $prompt = to-unquoted($prompt);
+
         my $res = '';
         my @imgResB64;
         # Call LLM's interface function
@@ -167,7 +170,12 @@ my class Magic::OpenAIDallE is Magic::LLM {
 
             try {
                 my $file = $code.trim.substr(1).IO.absolute.Str;
-                @imgResB64 = |openai-variate-image($file, |self.args);
+                if $prompt {
+                    self.args<prompt>:delete;
+                    @imgResB64 = |openai-edit-image($file, $prompt, |self.args);
+                } else {
+                    @imgResB64 = |openai-variate-image($file, |self.args);
+                }
             }
 
             if $! || !(@imgResB64.all ~~ Str) {
@@ -499,7 +507,7 @@ grammar Magic::Grammar {
         $<key>=[ 'openai' | 'dalle' | 'palm' | 'chat' ] [\h* '>' \h* $<output-mime>=<mime> | \h* ] [ <.param-sep> <magic-list-of-params> \h*]? \h*
     }
     token chat-id-spec {
-      <chat> [ '-' | '_' | ':' | \h+ ] $<chat-id>=(<.alnum> <-[,;\s]>*) [\h* '>' \h* $<output-mime>=<mime>]? [<.param-sep> <magic-list-of-params> \h*]? \h*
+        <chat> [ '-' | '_' | ':' | \h+ ] $<chat-id>=(<.alnum> <-[,;\s]>*) [\h* '>' \h* $<output-mime>=<mime>]? [<.param-sep> <magic-list-of-params> \h*]? \h*
     }
     token chat-meta-spec {
        || <chat> \h+ ['meta' \h+]? $<meta-command>='all'
@@ -556,8 +564,11 @@ grammar Magic::Grammar {
     # Magic list of assignments
     regex magic-list-of-params { <magic-assign-pair>+ % [\h* ',' \h*] }
 
+    # Quoted string, mostly for prompts
+    regex quoted-string { '\'' ~ '\'' <-[']>*  || '"' ~ '"' <-["]>*  || '{' ~ '}' <-[{}]>* || '⎡' ~ '⎦' <-[⎡⎦]>* || '«' ~ '»' <-[«»]>* }
+
     # Magic pair assignment
-    regex magic-assign-pair { $<param>=([<.alpha> | '.' | '_' | '-']+) \h* '=' \h* $<value>=(<-[{},\s]>* | '{' ~ '}' <-[{}]>* | '⎡' ~ '⎦' <-[⎡⎦]>* | '«' ~ '»' <-[«»]>*) }
+    regex magic-assign-pair { $<param>=([<.alpha> | '.' | '_' | '-']+) \h* '=' \h* $<value>=(<quoted-string> || <-[{},\s]>*) }
 }
 
 class Magic::Actions {
