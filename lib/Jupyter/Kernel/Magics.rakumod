@@ -254,7 +254,15 @@ my class Magic::Chat is Magic::LLM {
         my $sep = "\n";
 
         # Call LLM's interface function
-        my $res = $chatObj.eval(llm-prompt-expand($code, messages => $chatObj.messages, :$sep));
+        my $res;
+        try {
+            $res = $chatObj.eval(llm-prompt-expand($code, messages => $chatObj.messages, :$sep));
+        }
+
+        if $! {
+            note "Cannot process the input with chat object's LLM evaluator.";
+            $res = $!.payload;
+        }
 
         # Make sure it is registered
         %chats{self.chat-id} = $chatObj;
