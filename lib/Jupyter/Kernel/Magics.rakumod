@@ -237,13 +237,20 @@ my class Magic::Chat is Magic::LLM {
 
         self.chat-id = self.chat-id // self.args<chat-id> // 'NONE';
 
+        # Expand the prompt if given
         my $prompt = self.args<prompt> // '';
         if $prompt {
             $prompt = llm-prompt-expand($prompt);
             self.args<prompt> = $prompt;
         }
 
-        self.args = %(conf => 'ChatPaLM', chat-id => self.chat-id) , self.args;
+        # Warn if an existing chat-id is used and are also given a prompt and configuration spec
+        if ( (self.args<prompt> // False) || (self.args<conf> // False) ) && (%chats{self.chat-id}:exists) {
+            note "No new chat object is created.\nUsing chat object with id: ⎡{self.chat-id}⎦, and number of messages: {%chats{self.chat-id}.messages.elems}.";
+        }
+
+        # Merge magic arguments with defaults
+        self.args = %(conf => 'ChatGPT', chat-id => self.chat-id) , self.args;
 
         # Get chat object
         my $chatObj = %chats{self.chat-id} // llm-chat(|self.args);
