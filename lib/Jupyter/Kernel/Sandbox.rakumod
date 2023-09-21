@@ -76,10 +76,10 @@ class Jupyter::Kernel::Sandbox is export {
         $!repl = REPL.new($!compiler, {});
         $!completer = Jupyter::Kernel::Sandbox::Autocomplete.new(:$.handler);
         self.eval(q:to/INIT/);
-            my $In = [];
-            sub In { $In };
             my $Out = [];
+            my $In  = [];
             sub Out { $Out };
+            sub In { $In };
             my \_ = do {
                 state $last;
                 Proxy.new( FETCH => method () { $last },
@@ -112,10 +112,8 @@ class Jupyter::Kernel::Sandbox is export {
                 );
                 \$*JUPYTER.set-lang( \$?LANG );
                 \$*JUPYTER.add-lexicals( MY::.keys );
-                \$In[$store] := q:to/END99erx3ds00e0xxdreREIFer929eecw143/;
-                $code
-                END99erx3ds00e0xxdreREIFer929eecw143
                 \$Out[$store] := _$store;
+                \$In[$store] := q⁅⁅⁅⁅⁅⁅$code⁆⁆⁆⁆⁆⁆;
                 _ = _$store;
                 DONE
         }
