@@ -178,27 +178,60 @@ flowchart LR
     OpenAI{{OpenAI}}
     PaLM{{PaLM}}
     LLMFunc[[LLM::Functions]]
+    LLMProm[[LLM::Prompts]]
     CODB[(Chat objects)]
+    PDB[(Prompts)]
     CCell[/Chat cell/]
     CRCell[/Chat result cell/]
     CIDQ{Chat ID<br>specified?}
     CIDEQ{Chat ID<br>exists in DB?}
     RECO[Retrieve existing<br>chat object]
     COEval[Message<br>evaluation]
+    PromParse[Prompt<br>DSL spec parsing]
+    KPFQ{Known<br>prompts<br>found?}
+    PromExp[Prompt<br>expansion]
     CNCO[Create new<br>chat object]
     CIDNone["Assume chat ID<br>is 'NONE'"] 
-    subgraph Chatbook
+    subgraph Chatbook frontend    
         CCell
         CRCell
+    end
+    subgraph Chatbook backend
+        CIDQ
+        CIDEQ
+        CIDNone
+        RECO
+        CNCO
+        CODB
+    end
+    subgraph Prompt processing
+        PDB
+        LLMProm
+        PromParse
+        KPFQ
+        PromExp 
+    end
+    subgraph LLM interaction
+      COEval
+      LLMFunc
+      PaLM
+      OpenAI
     end
     CCell --> CIDQ
     CIDQ --> |yes| CIDEQ
     CIDEQ --> |yes| RECO
-    RECO --> COEval --> CRCell
+    RECO --> PromParse
+    COEval --> CRCell
     CIDEQ -.- CODB
     CIDEQ --> |no| CNCO
     LLMFunc -.- CNCO -.- CODB
-    CNCO --> COEval
+    CNCO --> PromParse --> KPFQ
+    KPFQ --> |yes| PromExp
+    KPFQ --> |no| COEval
+    PromParse -.- LLMProm 
+    PromExp -.- LLMProm
+    PromExp --> COEval 
+    LLMProm -.- PDB
     CIDQ --> |no| CIDNone
     CIDNone --> CIDEQ
     COEval -.- LLMFunc
@@ -231,6 +264,14 @@ We're playing a game. I'm thinking of a word, and I need to get you to guess tha
 But I can't say the word itself. 
 I'll give you clues, and you'll respond with a guess. 
 Your guess should be a single word only.
+```
+
+Here is another chat object creation cell using a prompt from the package
+["LLM::Prompts"](https://raku.land/zef:antononcube/LLM::Prompts), [AAp4]:
+
+```
+%% chat yoda1 prompt
+@Yoda
 ```
 
 Here is a table with examples of magic specs for chat meta cells and their interpretation:
@@ -394,6 +435,11 @@ flowchart LR
 
 [AAp9] Anton Antonov,
 [Text::SubParsers Raku package](https://github.com/antononcube/Raku-Text-SubParsers),
+(2023),
+[GitHub/antononcube](https://github.com/antononcube).
+
+[AAp10] Anton Antonov,
+[LLM::Prompts Raku package](https://github.com/antononcube/Raku-LLM-Prompts),
 (2023),
 [GitHub/antononcube](https://github.com/antononcube).
 
