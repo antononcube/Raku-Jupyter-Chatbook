@@ -60,4 +60,23 @@ class MockResult {
     is $r.output-mime-type, 'text/markdown', 'chat magic set the mime type';
 }
 
+{
+    my $code = q:to/DONE/;
+    %% chat, conf=ChatPaLM
+    !Translated|German> To live for tomorrow?
+    DONE
+
+    ok my $magic = $m.find-magic($code), 'preprocess recognized %% chat';
+    is $code.starts-with('@Yoda'), True, 'content of the chat cell';
+    my $r = $magic.preprocess($code);
+    note $r.output;
+
+    # Dear <name>....
+    is $r.output.contains('morgen', :i) || $r.output.contains('Zukunft', :i),
+            True,
+            'response contains "tomorrow" or "future';
+
+    is $r.output-mime-type, 'text/plain', 'chat magic set the mime type';
+}
+
 done-testing;
