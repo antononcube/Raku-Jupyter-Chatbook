@@ -240,6 +240,8 @@ my class Magic::Chat is Magic::LLM {
         # Expand the prompt if given
         my $prompt = self.args<prompt> // '';
         if $prompt {
+            # I am not sure is this better:
+            # $prompt = llm-prompt-expand($prompt, messages => %chats{self.chat-id}.messages.map({ $_.<content> }).Array // Empty, sep => "\n");
             $prompt = llm-prompt-expand($prompt);
             self.args<prompt> = $prompt;
         }
@@ -263,7 +265,7 @@ my class Magic::Chat is Magic::LLM {
         # Call LLM's interface function
         my $res;
         try {
-            $res = $chatObj.eval(llm-prompt-expand($code, messages => $chatObj.messages, :$sep));
+            $res = $chatObj.eval(llm-prompt-expand($code, messages => $chatObj.messages.map({ $_<content> }).Array, :$sep));
         }
 
         if $! {
@@ -298,9 +300,13 @@ my class Magic::ChatMeta is Magic::Chat {
 
         self.chat-id = self.chat-id // self.args<chat-id> // 'NONE';
 
-        # Redirecting to drop
-        if $.meta-command eq 'meta' && $code.trim ∈ <drop delete> {
-            $.meta-command = 'drop'
+        # Redirecting to drop or clear
+        if $.meta-command eq 'meta' {
+            if $code.trim ∈ <drop delete> {
+                $.meta-command = 'drop'
+            } elsif $code.trim ∈ <clear empty> {
+                $.meta-command = 'clear'
+            }
         }
 
         # Process commands
@@ -356,6 +362,15 @@ my class Magic::ChatMeta is Magic::Chat {
                 if %chats{self.chat-id}:exists {
                     $res = "Deleted: { self.chat-id }\nGist: { %chats{self.chat-id}.gist }";
                     %chats{self.chat-id}:delete;
+                } else {
+                    $res = "Cannot find chat with ID : { self.chat-id }";
+                }
+            }
+
+            when 'clear' {
+                if %chats{self.chat-id}:exists {
+                    %chats{self.chat-id}.messages = [];
+                    $res = "Cleared messages of: { self.chat-id }\nGist: { %chats{self.chat-id}.gist }";
                 } else {
                     $res = "Cannot find chat with ID : { self.chat-id }";
                 }
@@ -525,7 +540,7 @@ grammar Magic::Grammar {
     }
     token chat-meta-spec {
        || <chat> \h+ ['meta' \h+]? $<meta-command>='all'
-       || <chat> [ '-' | '_' | ':' | \h+ ] $<chat-id>=(<-[,;\s]>*) \h+ $<meta-command>= [ 'meta' | 'prompt' | 'drop' | 'all' ] [<.param-sep> <magic-list-of-params> \h*]? \h*
+       || <chat> [ '-' | '_' | ':' | \h+ ] $<chat-id>=(<-[,;\s]>*) \h+ $<meta-command>= [ 'meta' | 'prompt' | 'drop' | 'clear' | 'all' ] [<.param-sep> <magic-list-of-params> \h*]? \h*
     }
     rule filter {
         [
