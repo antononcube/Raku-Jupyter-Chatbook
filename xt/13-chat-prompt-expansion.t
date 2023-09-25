@@ -63,11 +63,11 @@ class MockResult {
 {
     my $code = q:to/DONE/;
     %% chat, conf=ChatPaLM
-    !Translated|German> To live for tomorrow?
+    !Translate|German> To live for tomorrow?
     DONE
 
     ok my $magic = $m.find-magic($code), 'preprocess recognized %% chat';
-    is $code.starts-with('@Yoda'), True, 'content of the chat cell';
+    is $code.contains('Translate'):i, True, 'content of the chat cell';
     my $r = $magic.preprocess($code);
     note $r.output;
 
