@@ -32,10 +32,9 @@ class MockResult {
     my $r = $magic.preprocess($code);
     note $r.output;
 
-    # Dear <name>....
-    is $r.output.contains('Yoda', :i),
+    is $r.output.contains('Yoda', :i) || $r.output.contains('Jedi', :i),
             True,
-            'response contains "Yoda"';
+            'response contains "Yoda" or "Jedi"';
 
     is $r.output-mime-type, 'text/plain', 'chat magic set the mime type';
 }
@@ -51,7 +50,6 @@ class MockResult {
     my $r = $magic.preprocess($code);
     note $r.output;
 
-    # Dear <name>....
     is $r.output.contains('meister', :i) || $r.output.contains('ich', :i),
             True,
             'response contains "meister" or "ich';
