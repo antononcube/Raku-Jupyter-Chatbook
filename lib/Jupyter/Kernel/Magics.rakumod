@@ -346,7 +346,7 @@ my class Magic::ChatMeta is Magic::Chat {
             when 'prompt' {
                 my $code2 = llm-prompt-expand($code);
 
-                self.args = %(prompt => $code2, conf => 'ChatPaLM', chat-id => self.chat-id) , self.args;
+                self.args = %(prompt => $code2, conf => 'ChatGPT', chat-id => self.chat-id) , self.args;
 
                 my $chatObj = llm-chat(|self.args);
 
