@@ -1,7 +1,7 @@
 {
   "name": "Jupyter::Chatbook",
   "description": "Jupyter Raku Kernel that produces LLM-aware notebooks (or chatbooks.)",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "authors": [
     "Brian Duggan",
     "Anton Antonov"
@@ -33,6 +33,7 @@
     "Jupyter::Kernel::Comms": "lib/Jupyter/Kernel/Comms.rakumod",
     "Jupyter::Kernel::Handler": "lib/Jupyter/Kernel/Handler.rakumod",
     "Jupyter::Kernel::History": "lib/Jupyter/Kernel/History.rakumod",
+    "Jupyter::Kernel::Magic::Grammar": "lib/Jupyter/Kernel/Magic/Grammar.rakumod",
     "Jupyter::Kernel::Magics": "lib/Jupyter/Kernel/Magics.rakumod",
     "Jupyter::Kernel::Paths": "lib/Jupyter/Kernel/Paths.rakumod",
     "Jupyter::Kernel::Response": "lib/Jupyter/Kernel/Response.rakumod",
