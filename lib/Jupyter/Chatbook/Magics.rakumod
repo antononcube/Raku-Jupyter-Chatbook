@@ -1,6 +1,6 @@
-unit class Jupyter::Kernel::Magics;
-use Jupyter::Kernel::Response;
-use Jupyter::Kernel::Magic::Grammar;
+unit class Jupyter::Chatbook::Magics;
+use Jupyter::Chatbook::Response;
+use Jupyter::Chatbook::Magic::Grammar;
 use WWW::OpenAI;
 use WWW::PaLM;
 use WWW::MermaidInk;
@@ -10,7 +10,7 @@ use Text::SubParsers;
 use LLM::Functions;
 use LLM::Prompts;
 
-my class Result does Jupyter::Kernel::Response {
+my class Result does Jupyter::Chatbook::Response {
     has $.output is default(Nil);
     method output-raw { $.output }
     has $.output-mime-type is rw;
@@ -498,7 +498,7 @@ class Magic::Always is Magic {
 class Magic::AlwaysWorker is Magic {
     #= Applyer for always magics on each line
     method unmagicify($code is rw) {
-        my $magic-action = Jupyter::Kernel::Magics.new.parse-magic($code);
+        my $magic-action = Jupyter::Chatbook::Magics.new.parse-magic($code);
         return $magic-action.preprocess($code) if $magic-action;
         return Nil;
     }
@@ -623,10 +623,10 @@ method parse-magic($code is rw) {
     my $magic-line = $code.lines[0] or return Nil;
     $magic-line ~~ /^ [ '#%' | '%%' ] / or return Nil;
     my $actions = Magic::Actions.new;
-    my $match = Jupyter::Kernel::Magic::Grammar.new.parse($magic-line,:$actions) or return Nil;
+    my $match = Jupyter::Chatbook::Magic::Grammar.new.parse($magic-line,:$actions) or return Nil;
     # Parse full cell if always
     if $match<magic><always> {
-        $match = Jupyter::Kernel::Magic::Grammar.new.parse($code,:$actions);
+        $match = Jupyter::Chatbook::Magic::Grammar.new.parse($code,:$actions);
         $code = '';
         # Parse only first line otherwise
     } else {

@@ -1,4 +1,4 @@
-unit module Jupyter::Kernel::Paths;
+unit module Jupyter::Chatbook::Paths;
 # see https://github.com/jupyter/jupyter_core/blob/master/jupyter_core/paths.py
 
 sub data-dir is export {

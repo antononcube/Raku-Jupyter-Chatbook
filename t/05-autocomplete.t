@@ -2,11 +2,11 @@
 use lib 'lib';
 use Test;
 use Log::Async;
-use Jupyter::Kernel::Sandbox::Autocomplete;
+use Jupyter::Chatbook::Sandbox::Autocomplete;
 
 logger.add-tap(  -> $msg { diag $msg<msg> } );
 
-my $c = Jupyter::Kernel::Sandbox::Autocomplete.new;
+my $c = Jupyter::Chatbook::Sandbox::Autocomplete.new;
 
 ok $c.complete('prin')[2].grep(/print/), 'print';
 ok $c.complete('(')[2] ⊃ <∩ ∪ ⊂ ⊃>, 'found set ops';

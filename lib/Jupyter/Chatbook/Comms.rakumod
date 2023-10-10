@@ -1,5 +1,5 @@
-unit class Jupyter::Kernel::Comms;
-use Jupyter::Kernel::Comm;
+unit class Jupyter::Chatbook::Comms;
+use Jupyter::Chatbook::Comm;
 use Log::Async;
 
 our %COMM-CALLBACKS;  # keyed on global names
@@ -13,7 +13,7 @@ method add-comm-callback($name,&callback) {
 method add-comm(Str:D :$id, :$name, :$data) {
     %COMM-CALLBACKS{ $name }:exists or return;
     my &cb = %COMM-CALLBACKS{ $name };
-    my $new = Jupyter::Kernel::Comm.new(:$id,:$data,:$name,:&cb);
+    my $new = Jupyter::Chatbook::Comm.new(:$id,:$data,:$name,:&cb);
     %.running{ $id } = start $new.run($data);
     %.comms{ $id } = $new;
     return $new;

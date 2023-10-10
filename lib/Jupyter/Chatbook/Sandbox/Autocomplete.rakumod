@@ -1,12 +1,12 @@
 #= Autocompletion for the sandbox.
-unit class Jupyter::Kernel::Sandbox::Autocomplete;
+unit class Jupyter::Chatbook::Sandbox::Autocomplete;
 use Log::Async;
-use Jupyter::Kernel::Handler;
+use Jupyter::Chatbook::Handler;
 
 has $.handler;
 
 method BUILD (:$!handler){
-    $!handler = Jupyter::Kernel::Handler.new unless $.handler;
+    $!handler = Jupyter::Chatbook::Handler.new unless $.handler;
 };
 
 constant set-operators = <<

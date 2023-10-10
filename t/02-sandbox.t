@@ -4,7 +4,7 @@ use lib 'lib';
 use lib 't/lib';
 
 use Test;
-use Jupyter::Kernel::Sandbox;
+use Jupyter::Chatbook::Sandbox;
 use Log::Async;
 
 plan 54;
@@ -18,7 +18,7 @@ logger.add-tap: {
 
 
 my $iopub_supplier = Supplier.new;
-my $sandbox = Jupyter::Kernel::Sandbox.new(:$iopub_supplier);
+my $sandbox = Jupyter::Chatbook::Sandbox.new(:$iopub_supplier);
 my $iopub_channel = $iopub_supplier.Supply.Channel;
 ok defined($sandbox), 'make a new sandbox';
 

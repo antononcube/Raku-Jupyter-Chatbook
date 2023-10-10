@@ -1,22 +1,22 @@
-unit class Jupyter::Kernel;
+unit class Jupyter::Chatbook;
 
 use JSON::Tiny;
 use Log::Async;
 use Net::ZMQ4::Constants;
 use UUID;
 
-use Jupyter::Kernel::Service;
-use Jupyter::Kernel::Sandbox;
-use Jupyter::Kernel::Magics;
-use Jupyter::Kernel::Comms;
-use Jupyter::Kernel::History;
+use Jupyter::Chatbook::Service;
+use Jupyter::Chatbook::Sandbox;
+use Jupyter::Chatbook::Magics;
+use Jupyter::Chatbook::Comms;
+use Jupyter::Chatbook::History;
 
 has $.engine-id = ~UUID.new: :version(4);
 has $.kernel-info = {
     status => 'ok',
     protocol_version => '5.0',
-    implementation => 'p6-jupyter-kernel',
-    implementation_version => '0.0.21',
+    implementation => 'Raku-Jupyter-Chatbook',
+    implementation_version => '0.2.0',
     language_info => {
         name => 'raku',
         version => ~$*RAKU.version,
@@ -25,10 +25,10 @@ has $.kernel-info = {
     },
     banner => "Welcome to Raku 🦋 ({ $*RAKU.compiler.name } { $*RAKU.compiler.version })."
 }
-has $.magics = Jupyter::Kernel::Magics.new;
+has $.magics = Jupyter::Chatbook::Magics.new;
 has Int $.execution_count = 1;
 has $.sandbox;
-has $.handler = Jupyter::Kernel::Handler.new;
+has $.handler = Jupyter::Chatbook::Handler.new;
 
 method resources {
     return %?RESOURCES;
@@ -40,13 +40,13 @@ method run($spec-file!) {
     my $spec = from-json($spec-file.IO.slurp);
     my $url = "$spec<transport>://$spec<ip>";
     my $key = $spec<key> or die "no key";
-    my Jupyter::Kernel::History $history;
+    my Jupyter::Chatbook::History $history;
 
     debug "read $spec-file";
     debug "listening on $url";
 
     sub svc($name, $type) {
-        Jupyter::Kernel::Service.new( :$name, :socket-type($type),
+        Jupyter::Chatbook::Service.new( :$name, :socket-type($type),
                 :port($spec{"{ $name }_port"}), :$key, :$url).setup;
     }
 
@@ -70,8 +70,8 @@ method run($spec-file!) {
             $iopub_supplier.emit: ('stream', { :text( "The kernel is dead, long live the kernel!\n" ), :name<stdout> });
 
             # Reset context
-            $!handler = Jupyter::Kernel::Handler.new;
-            $!sandbox = Jupyter::Kernel::Sandbox.new(:$.handler, :$iopub_supplier);
+            $!handler = Jupyter::Chatbook::Handler.new;
+            $!sandbox = Jupyter::Chatbook::Sandbox.new(:$.handler, :$iopub_supplier);
             $!execution_count = 1;
 
             $ctl.send: 'shutdown_reply', { :$restart }
@@ -120,7 +120,7 @@ method run($spec-file!) {
 
     # Shell
     my $promise = start {
-    $!sandbox = Jupyter::Kernel::Sandbox.new(:$.handler, :$iopub_supplier);
+    $!sandbox = Jupyter::Chatbook::Sandbox.new(:$.handler, :$iopub_supplier);
     self.register-ciao;
     loop {
     try {
@@ -147,7 +147,7 @@ method run($spec-file!) {
                   my $p = start $.sandbox.eval($code, :store($!execution_count), :$out-mime-type);
                   my $r = await Promise.anyof($p, $sigint);
                   if $sigint {
-                    $result = Jupyter::Kernel::Response::Abort.new;
+                    $result = Jupyter::Chatbook::Response::Abort.new;
                     $sigint = Promise.new;
                   } else {
                     $result = $p.result;
@@ -218,7 +218,7 @@ method run($spec-file!) {
                 self.ciao($msg<content><restart>);
             }
             when 'history_request' {
-                $history = Jupyter::Kernel::History.new.init;
+                $history = Jupyter::Chatbook::History.new.init;
                 $shell.send: 'history_reply', { :history($history.read) };
             }
             when 'comm_open' {

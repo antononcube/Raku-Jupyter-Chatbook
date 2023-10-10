@@ -7,11 +7,11 @@
 ## In brief
 
 This Raku package is a fork of Brian Duggan's 
-["Jupyter::Kernel"](https://github.com/bduggan/raku-jupyter-kernel), [BDp1].
+["Jupyter::Chatbook"](https://github.com/bduggan/raku-jupyter-kernel), [BDp1].
 
-Here are the top opening statements of the README of "Jupyter::Kernel":
+Here are the top opening statements of the README of "Jupyter::Chatbook":
 
-> "Jupyter::Kernel" is a pure Raku implementation of a Raku kernel for Jupyter clients¹.
+> "Jupyter::Chatbook" is a pure Raku implementation of a Raku kernel for Jupyter clients¹.
 
 > Jupyter notebooks provide a web-based (or console-based)
 Read Eval Print Loop (REPL) for running code and serializing input and output.
@@ -27,7 +27,7 @@ This repository is mostly for experimental work, but it aims to be *always* very
 useful for interacting with LLMs via Raku.
 
 **Remark:** The reason to have a separate package -- a fork of
-["Jupyter::Kernel"](https://github.com/bduggan/raku-jupyter-kernel) --
+["Jupyter::Chatbook"](https://github.com/bduggan/raku-jupyter-kernel) --
 is because:
 - I plan to introduce 4-6 new package dependencies
 - I expect to do a fair amount of UX experimental implementations and refactoring
@@ -49,7 +49,7 @@ zef install https://github.com/antononcube/Raku-Jupyter-Chatbook.git
 ```
 
 After installing the package "Jupyter::Chatbook" follow the setup instructions of
-["Jupyter::Kernel"](https://github.com/bduggan/raku-jupyter-kernel).
+["Jupyter::Chatbook"](https://github.com/bduggan/raku-jupyter-kernel).
 
 The default API keys for the chat cells, LLM functions, and chat objects are taken from 
 the Operating System (OS) environmental variables `OPENAI_API_KEY` and `PALM_API_KEY`. 
@@ -469,6 +469,6 @@ flowchart LR
 
 ## *Footnotes*
 
-¹ Jupyter clients are user interfaces to interact with an interpreter kernel like "Jupyter::Kernel".
+¹ Jupyter clients are user interfaces to interact with an interpreter kernel like "Jupyter::Chatbook".
 Jupyter [Lab | Notebook | Console | QtConsole ] are the jupyter maintained clients.
 More info in the [jupyter documentations site](https://jupyter.org/documentation).

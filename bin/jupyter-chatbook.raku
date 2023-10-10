@@ -1,12 +1,12 @@
 #!/usr/bin/env perl6
 
 use Log::Async;
-use Jupyter::Kernel;
-use Jupyter::Kernel::Paths;
+use Jupyter::Chatbook;
+use Jupyter::Chatbook::Paths;
 
 multi MAIN($spec-file, :$logfile = './jupyter.log') {
     logger.send-to($logfile);
-    Jupyter::Kernel.new.run($spec-file);
+    Jupyter::Chatbook.new.run($spec-file);
 }
 
 
@@ -29,10 +29,10 @@ multi MAIN(Bool :$generate-config!,
     # Declare kernel.json content
     my $spec = q:to/DONE/;
         {
-            "display_name": "Raku",
+            "display_name": "RakuChatbook",
             "language": "raku",
             "argv": [
-                "jupyter-kernel.raku",
+                "jupyter-chatbook.raku",
                 "{connection_file}"
             ]
         }
@@ -45,7 +45,7 @@ multi MAIN(Bool :$generate-config!,
     $dest-spec.spurt($spec);
     for <32 64> {
         my $file = "logo-{ $_ }x{ $_ }.png";
-        my $resources = Jupyter::Kernel.resources;
+        my $resources = Jupyter::Chatbook.resources;
         my $resource = $resources{ $file } // $?FILE.IO.parent.parent.child('resources').child($file);
         $resource.IO.e or do {
             say "Can't find resource $file";
@@ -58,7 +58,7 @@ multi MAIN(Bool :$generate-config!,
     # Say Success
     say "Congratulations, configuration files have been "
         ~ $green~"successfully"~$clear ~ " written!";
-    say $green~"Happy Perling!"~$clear
+    say $green~"Happy Chatting!"~$clear
         ~ " <- " ~ $yellow~"jupyter console --kernel=raku"~$clear;
     say '';
 }

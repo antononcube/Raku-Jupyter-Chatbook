@@ -1,7 +1,7 @@
-unit class Jupyter::Kernel::History;
+unit class Jupyter::Chatbook::History;
 use JSON::Tiny;
 use Log::Async;
-use Jupyter::Kernel::Paths;
+use Jupyter::Chatbook::Paths;
 
 has IO::Path $.history-file = history-file;
 has Int $.session-count = 1;

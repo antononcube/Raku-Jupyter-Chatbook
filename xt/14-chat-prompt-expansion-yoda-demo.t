@@ -2,14 +2,14 @@
 use lib 'lib';
 use Test;
 use Log::Async;
-use Jupyter::Kernel::Magics;
+use Jupyter::Chatbook::Magics;
 use LLM::Prompts;
 
 logger.add-tap( -> $msg { diag $msg<msg> } );
 
 plan *;
 
-my $m = Jupyter::Kernel::Magics.new;
+my $m = Jupyter::Chatbook::Magics.new;
 class MockResult {
     has $.output;
     has $.output-mime-type;

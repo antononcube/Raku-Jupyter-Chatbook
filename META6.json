@@ -1,7 +1,7 @@
 {
   "name": "Jupyter::Chatbook",
-  "description": "Jupyter Raku Kernel that produces LLM-aware notebooks (or chatbooks.)",
-  "version": "0.1.7",
+  "description": "Jupyter Raku Chatbook that produces LLM-aware notebooks (or chatbooks.)",
+  "version": "0.2.0",
   "authors": [
     "Brian Duggan",
     "Anton Antonov"
@@ -28,18 +28,18 @@
   "build-depends": [],
   "test-depends": [],
   "provides": {
-    "Jupyter::Kernel": "lib/Jupyter/Kernel.rakumod",
-    "Jupyter::Kernel::Comm": "lib/Jupyter/Kernel/Comm.rakumod",
-    "Jupyter::Kernel::Comms": "lib/Jupyter/Kernel/Comms.rakumod",
-    "Jupyter::Kernel::Handler": "lib/Jupyter/Kernel/Handler.rakumod",
-    "Jupyter::Kernel::History": "lib/Jupyter/Kernel/History.rakumod",
-    "Jupyter::Kernel::Magic::Grammar": "lib/Jupyter/Kernel/Magic/Grammar.rakumod",
-    "Jupyter::Kernel::Magics": "lib/Jupyter/Kernel/Magics.rakumod",
-    "Jupyter::Kernel::Paths": "lib/Jupyter/Kernel/Paths.rakumod",
-    "Jupyter::Kernel::Response": "lib/Jupyter/Kernel/Response.rakumod",
-    "Jupyter::Kernel::Sandbox": "lib/Jupyter/Kernel/Sandbox.rakumod",
-    "Jupyter::Kernel::Sandbox::Autocomplete": "lib/Jupyter/Kernel/Sandbox/Autocomplete.rakumod",
-    "Jupyter::Kernel::Service": "lib/Jupyter/Kernel/Service.rakumod"
+    "Jupyter::Chatbook": "lib/Jupyter/Chatbook.rakumod",
+    "Jupyter::Chatbook::Comm": "lib/Jupyter/Chatbook/Comm.rakumod",
+    "Jupyter::Chatbook::Comms": "lib/Jupyter/Chatbook/Comms.rakumod",
+    "Jupyter::Chatbook::Handler": "lib/Jupyter/Chatbook/Handler.rakumod",
+    "Jupyter::Chatbook::History": "lib/Jupyter/Chatbook/History.rakumod",
+    "Jupyter::Chatbook::Magic::Grammar": "lib/Jupyter/Chatbook/Magic/Grammar.rakumod",
+    "Jupyter::Chatbook::Magics": "lib/Jupyter/Chatbook/Magics.rakumod",
+    "Jupyter::Chatbook::Paths": "lib/Jupyter/Chatbook/Paths.rakumod",
+    "Jupyter::Chatbook::Response": "lib/Jupyter/Chatbook/Response.rakumod",
+    "Jupyter::Chatbook::Sandbox": "lib/Jupyter/Chatbook/Sandbox.rakumod",
+    "Jupyter::Chatbook::Sandbox::Autocomplete": "lib/Jupyter/Chatbook/Sandbox/Autocomplete.rakumod",
+    "Jupyter::Chatbook::Service": "lib/Jupyter/Chatbook/Service.rakumod"
   },
   "resources": [
     "logo-32x32.png",

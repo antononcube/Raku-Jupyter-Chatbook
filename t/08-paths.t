@@ -1,5 +1,5 @@
 use lib 'lib';
-use Jupyter::Kernel::Paths;
+use Jupyter::Chatbook::Paths;
 use Test;
 
 plan 1;

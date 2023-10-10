@@ -3,7 +3,7 @@
 use lib 'lib';
 
 use Net::ZMQ4::Constants;
-use Jupyter::Kernel::Service;
+use Jupyter::Chatbook::Service;
 use Log::Async;
 
 use Test;
@@ -18,7 +18,7 @@ logger.add-tap: {
     note "# $_<msg>" if $VERBOSE;
 };
 
-my $s = Jupyter::Kernel::Service.new:
+my $s = Jupyter::Chatbook::Service.new:
     :url('tcp://127.0.0.1'),
     :name<test>,
     :port<9099>,
@@ -28,7 +28,7 @@ my $s = Jupyter::Kernel::Service.new:
 
 ok $s.setup, 'setup worked';
 
-my $d = Jupyter::Kernel::Service.new:
+my $d = Jupyter::Chatbook::Service.new:
     :url('tcp://127.0.0.1'),
     :name<test>,
     :port<9099>,

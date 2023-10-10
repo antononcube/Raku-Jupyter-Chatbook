@@ -1,4 +1,4 @@
-unit class Jupyter::Kernel::Comm;
+unit class Jupyter::Chatbook::Comm;
 use Log::Async;
 
 has $.id;

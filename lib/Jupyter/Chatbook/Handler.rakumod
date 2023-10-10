@@ -1,12 +1,12 @@
 #= Lexical variable container for completion
 
-unit class Jupyter::Kernel::Handler;
-use Jupyter::Kernel::Comms;
+unit class Jupyter::Chatbook::Handler;
+use Jupyter::Chatbook::Comms;
 use Log::Async;
 
 has SetHash $.lexicals is rw = SetHash.new;
 has $.comms handles <comm-ids comm-names>
-   = Jupyter::Kernel::Comms.new;
+   = Jupyter::Chatbook::Comms.new;
 has Array $.imports is rw;
 has Array $.keywords is rw;
 my Mu $lang = $?LANG;

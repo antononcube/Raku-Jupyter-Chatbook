@@ -6,9 +6,9 @@ use lib 't/lib';
 use JSON::Tiny;
 use Net::ZMQ4::Constants;
 use Jupyter::Client;
-use Jupyter::Kernel;
-use Jupyter::Kernel::Paths;
-use Jupyter::Kernel::Service;
+use Jupyter::Chatbook;
+use Jupyter::Chatbook::Paths;
+use Jupyter::Chatbook::Service;
 use Log::Async;
 
 use Test;

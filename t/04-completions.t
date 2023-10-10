@@ -1,8 +1,8 @@
 #!/usr/bin/env perl6
 use lib 'lib';
 use Test;
-use Jupyter::Kernel::Sandbox;
-use Jupyter::Kernel::Handler;
+use Jupyter::Chatbook::Sandbox;
+use Jupyter::Chatbook::Handler;
 use Log::Async;
 
 logger.add-tap( -> $msg { diag $msg<msg> } );
@@ -18,7 +18,7 @@ unless %*ENV<MVM_SPESH_DISABLE> {
 }
 
 my $iopub_channel = Channel.new;
-my $r = Jupyter::Kernel::Sandbox.new(:$iopub_channel);
+my $r = Jupyter::Chatbook::Sandbox.new(:$iopub_channel);
 
 my ($pos, $end, $completions) = $r.completions('sa', 2);
 is-deeply $completions, [ <samecase samemark samewith say> ], 'completions for "sa"';

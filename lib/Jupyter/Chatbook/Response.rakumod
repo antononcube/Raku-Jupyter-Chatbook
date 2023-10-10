@@ -1,4 +1,4 @@
-role Jupyter::Kernel::Response {
+role Jupyter::Chatbook::Response {
     method output { ... }
     method output-mime-type { ... }
     method exception { ... }
@@ -6,7 +6,7 @@ role Jupyter::Kernel::Response {
     method output-raw { ... }
 }
 
-class Jupyter::Kernel::Response::Abort does Jupyter::Kernel::Response {
+class Jupyter::Chatbook::Response::Abort does Jupyter::Chatbook::Response {
     method output { "[got sigint on thread {$*THREAD.id}]" }
     method output-mime-type { 'text/plain' }
     method exception { True }

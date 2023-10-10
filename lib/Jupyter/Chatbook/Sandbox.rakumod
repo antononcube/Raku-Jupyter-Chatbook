@@ -1,9 +1,9 @@
 #!perl6
 
 use Log::Async;
-use Jupyter::Kernel::Sandbox::Autocomplete;
-use Jupyter::Kernel::Response;
-use Jupyter::Kernel::Handler;
+use Jupyter::Chatbook::Sandbox::Autocomplete;
+use Jupyter::Chatbook::Response;
+use Jupyter::Chatbook::Handler;
 use nqp;
 
 %*ENV<RAKUDO_LINE_EDITOR> = 'none';
@@ -24,7 +24,7 @@ sub mime-type($str) {
     }
 }
 
-my class Result does Jupyter::Kernel::Response {
+my class Result does Jupyter::Chatbook::Response {
     has Str $.output;
     has $.output-raw is default(Nil);
     has $.exception;
@@ -62,19 +62,19 @@ class Std {
 class Out is Std { method stream_name { 'stdout' } }
 class Err is Std { method stream_name { 'stderr' } }
 
-class Jupyter::Kernel::Sandbox is export {
+class Jupyter::Chatbook::Sandbox is export {
     has $.save_ctx;
     has $.compiler;
     has $.repl;
-    has Jupyter::Kernel::Sandbox::Autocomplete $.completer;
+    has Jupyter::Chatbook::Sandbox::Autocomplete $.completer;
     has $.handler;
 
     method TWEAK (:$!handler, :$iopub_supplier) {
-        $!handler = Jupyter::Kernel::Handler.new unless $.handler;
+        $!handler = Jupyter::Chatbook::Handler.new unless $.handler;
         $OUTERS::iopub_supplier = $iopub_supplier;
         $!compiler := nqp::getcomp("Raku") || nqp::getcomp('perl6');
         $!repl = REPL.new($!compiler, {});
-        $!completer = Jupyter::Kernel::Sandbox::Autocomplete.new(:$.handler);
+        $!completer = Jupyter::Chatbook::Sandbox::Autocomplete.new(:$.handler);
         self.eval(q:to/INIT/);
             my $Out = [];
             my $In  = [];

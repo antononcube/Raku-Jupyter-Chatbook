@@ -2,13 +2,13 @@
 use lib 'lib';
 use Test;
 use Log::Async;
-use Jupyter::Kernel::Magics;
+use Jupyter::Chatbook::Magics;
 
 logger.add-tap( -> $msg { diag $msg<msg> } );
 
 plan 56;
 
-my $m = Jupyter::Kernel::Magics.new;
+my $m = Jupyter::Chatbook::Magics.new;
 class MockResult {
     has $.output;
     has $.output-mime-type;
@@ -115,7 +115,7 @@ class MockResult {
 {
     my $code = '#% html > html';
     ok my $magic = $m.find-magic($code), 'found magic for mime';
-    is $magic.^name, 'Jupyter::Kernel::Magics::Magic::Filters', 'right magic';
+    is $magic.^name, 'Jupyter::Chatbook::Magics::Magic::Filters', 'right magic';
     ok !$magic.preprocess($code), 'preprocess does not return true';
     my $result = MockResult.new(:output('going out'),:stdout('going to stdout'));
     ok $result = $magic.postprocess(:$result), 'postprocess returned a result';

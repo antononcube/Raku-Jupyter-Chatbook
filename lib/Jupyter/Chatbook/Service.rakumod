@@ -1,4 +1,4 @@
-unit class Jupyter::Kernel::Service;
+unit class Jupyter::Chatbook::Service;
 
 use Net::ZMQ4;
 use Net::ZMQ4::Constants;

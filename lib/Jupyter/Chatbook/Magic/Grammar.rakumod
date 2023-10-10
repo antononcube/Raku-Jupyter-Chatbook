@@ -1,4 +1,4 @@
-grammar Jupyter::Kernel::Magic::Grammar {
+grammar Jupyter::Chatbook::Magic::Grammar {
     rule TOP { <magic> }
     rule magic {
         [ '%%' | '#%' ]

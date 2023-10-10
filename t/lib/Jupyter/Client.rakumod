@@ -9,17 +9,17 @@ unit class Jupyter::Client;
 
 use JSON::Tiny;
 use Net::ZMQ4::Constants;
-use Jupyter::Kernel::Service;
+use Jupyter::Chatbook::Service;
 
-has Jupyter::Kernel::Service $.ctl is rw;
-has Jupyter::Kernel::Service $.shell is rw;
-has Jupyter::Kernel::Service $.iopub is rw;
-has Jupyter::Kernel::Service $.hb is rw;
+has Jupyter::Chatbook::Service $.ctl is rw;
+has Jupyter::Chatbook::Service $.shell is rw;
+has Jupyter::Chatbook::Service $.iopub is rw;
+has Jupyter::Chatbook::Service $.hb is rw;
 has Hash $.spec;
 
 submethod BUILD(:$!spec) {
     sub clt($name, $type, $is-client=True) {
-        Jupyter::Kernel::Service.new(
+        Jupyter::Chatbook::Service.new(
             :$name,
             :url('tcp://127.0.0.1'),
             :socket-type($type),

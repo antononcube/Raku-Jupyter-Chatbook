@@ -1,13 +1,13 @@
 #!/usr/bin/env perl6
 use lib 'lib';
 use Test;
-use Jupyter::Kernel::Comms;
+use Jupyter::Chatbook::Comms;
 use Log::Async;
 logger.add-tap( -> $msg { diag $msg<msg> } );
 
 plan 11;
 
-my $m = Jupyter::Kernel::Comms.new;
+my $m = Jupyter::Chatbook::Comms.new;
 ok $m, 'made comm manager';
 
 $m.add-comm-callback('hello',
