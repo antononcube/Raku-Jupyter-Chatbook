@@ -1,8 +1,8 @@
 {
- "display_name": "Raku",
+ "display_name": "RakuChatbook",
  "language": "raku",
  "argv": [
-  "jupyter-kernel.raku",
+  "jupyter-chatbook.raku",
   "{connection_file}"
  ]
 }
