@@ -48,8 +48,87 @@ From GitHub:
 zef install https://github.com/antononcube/Raku-Jupyter-Chatbook.git
 ```
 
-After installing the package "Jupyter::Chatbook" follow the setup instructions of
+-------
+
+## Jupyter kernel configuration
+
+**Remark:** The instructions in this section follow the instructions in
 ["Jupyter::Chatbook"](https://github.com/bduggan/raku-jupyter-kernel).
+The "main" change is using `jupyter-chatbook.raku` instead of `jupyter-kernel.raku`. 
+
+### Server Configuration
+
+To generate a configuration directory, and to install a kernel
+config file and icons into the default location:
+
+```
+jupyter-chatbook.raku --generate-config
+```
+
+* Use `--location=XXX` to specify another location.
+* Use `--force` to override an existing configuration.
+
+### Logging
+
+By default a log file `jupyter.log` will be written in the
+current directory.  An option `--logfile=XXX` argument can be
+added to the argv argument of the server configuration file
+(located at `$(jupyter --data)/kernels/raku/kernel.json`)
+to change this.
+
+### Client configuration
+
+The jupyter documentation describes the client configuration.
+To start, you can generate files for the notebook or
+console clients like this:
+
+```
+jupyter notebook --generate-config
+jupyter console --generate-config
+```
+
+Some suggested configuration changes for the console client:
+
+* set `kernel_is_complete_timeout` to a high number.  Otherwise,
+  if the kernel takes more than 1 second to respond, then from
+  then on, the console client uses internal (non-Raku) heuristics
+  to guess when a block of code is complete.
+
+* set `highlighting_style` to `vim`.  This avoids having dark blue
+  on a black background in the console client.
+
+### Running
+
+Start the web UI with:
+
+```
+jupyter-notebook
+Then select New -> Raku.
+```
+
+You can also use it in the console like this:
+
+```
+jupyter-console --kernel=raku
+```
+
+Or make a handy shell alias:
+
+```
+alias iraku='jupyter-console --kernel=raku'
+```
+
+### macOS specific
+
+Consider copying the 
+[RakuChatbook kernel specifications](./resources) 
+in the directory "~/Library/Jupyter/kernels/raku". That way IDEs like 
+[Visual Studio Code](https://code.visualstudio.com)
+would find the "RakuChatbook" kernel "quicker" or "more directly." 
+
+------
+
+## LLM API keys
 
 The default API keys for the chat cells, LLM functions, and chat objects are taken from 
 the Operating System (OS) environmental variables `OPENAI_API_KEY` and `PALM_API_KEY`. 
@@ -96,8 +175,19 @@ For more examples of LLM functions and LLM chat objects see the notebook
 ["Chatbook-LLM-functions-and-chat-objects.ipynb"](https://github.com/antononcube/Raku-Jupyter-Chatbook/blob/master/eg/Chatbook-LLM-functions-and-chat-objects.ipynb).
 
 **Remark:** 
-Chatbooks load in their initialization phase the package
-["LLM::Functions"](https://github.com/antononcube/Raku-LLM-Functions), [AAp2].
+Chatbooks load in their initialization phase the packages
+["LLM::Functions"](https://github.com/antononcube/Raku-LLM-Functions), [AAp2], and
+["LLM::Prompts"](https://github.com/antononcube/Raku-LLM-Prompts), [AAp10].
+"LLM::Prompts" provides a prompt expansion DSL that allows specifications like:
+
+```
+#% chat
+@Yoda How many students did you train? #Translated|German
+```
+
+See the movie ["Jupyter Chatbook multi cell LLM chats teaser (Raku)"](https://www.youtube.com/watch?v=wNpIGUAwZB8), [AAv5].
+
+**Remark:**
 Also, in the initialization phase are loaded the packages
 ["Clipboard"](https://github.com/antononcube/Raku-Clipboard), [AAp5],
 ["Data::Translators"](https://github.com/antononcube/Raku-Data-Translators), [AAp6],
@@ -163,13 +253,15 @@ Who build you? Where?
 ```
 
 **Remark:** Specifying a chat object identifier is not required. I.e. only the magic spec `%% chat` can be used.
-The "default" chat object ID identifier "NONE".
+The "default" chat object ID identifier is "NONE".
 
 **Remark:** The magic keyword "chat" can be separated from the identifier of the chat object with
 the symbols "-", "_", ":", or with any number of (horizontal) white spaces.
 
 For more examples see the notebook 
 ["Chatbook-LLM-chats.ipynb"](https://github.com/antononcube/Raku-Jupyter-Chatbook/blob/master/eg/Chatbook-LLM-chats.ipynb).
+For a quick demo see the movie
+["Jupyter Chatbook multi cell LLM chats teaser (Raku)"](https://www.youtube.com/watch?v=wNpIGUAwZB8), [AAv5].
 
 Here is a flowchart that summarizes the way chatbooks create and utilize LLM chat objects:
 
@@ -183,15 +275,15 @@ flowchart LR
     PDB[(Prompts)]
     CCell[/Chat cell/]
     CRCell[/Chat result cell/]
-    CIDQ{Chat ID<br>specified?}
-    CIDEQ{Chat ID<br>exists in DB?}
-    RECO[Retrieve existing<br>chat object]
-    COEval[Message<br>evaluation]
-    PromParse[Prompt<br>DSL spec parsing]
-    KPFQ{Known<br>prompts<br>found?}
-    PromExp[Prompt<br>expansion]
-    CNCO[Create new<br>chat object]
-    CIDNone["Assume chat ID<br>is 'NONE'"] 
+    CIDQ{Chat ID<br/>specified?}
+    CIDEQ{Chat ID<br/>exists in DB?}
+    RECO[Retrieve existing<br/>chat object]
+    COEval[Message<br/>evaluation]
+    PromParse[Prompt<br/>DSL spec parsing]
+    KPFQ{Known<br/>prompts<br/>found?}
+    PromExp[Prompt<br/>expansion]
+    CNCO[Create new<br/>chat object]
+    CIDNone["Assume chat ID<br/>is 'NONE'"] 
     subgraph Chatbook frontend    
         CCell
         CRCell
@@ -292,18 +384,18 @@ flowchart LR
     CODB[(Chat objects)]
     CCell[/Chat meta cell/]
     CRCell[/Chat meta cell result/]
-    CIDQ{Chat ID<br>specified?}
-    KCOMQ{Known<br>chat object<br>method?}
-    AKWQ{Keyword 'all'<br>specified?} 
-    KCODBMQ{Known<br>chat objects<br>DB method?}
-    CIDEQ{Chat ID<br>exists in DB?}
-    RECO[Retrieve existing<br>chat object]
-    COEval[Chat object<br>method<br>invocation]
-    CODBEval[Chat objects DB<br>method<br>invocation]
-    CNCO[Create new<br>chat object]
-    CIDNone["Assume chat ID<br>is 'NONE'"] 
-    NoCOM[/Cannot find<br>chat object<br>message/]
-    CntCmd[/Cannot interpret<br>command<br>message/]
+    CIDQ{Chat ID<br/>specified?}
+    KCOMQ{Known<br/>chat object<br/>method?}
+    AKWQ{Keyword 'all'<br/>specified?} 
+    KCODBMQ{Known<br/>chat objects<br/>DB method?}
+    CIDEQ{Chat ID<br/>exists in DB?}
+    RECO[Retrieve existing<br/>chat object]
+    COEval[Chat object<br/>method<br/>invocation]
+    CODBEval[Chat objects DB<br/>method<br/>invocation]
+    CNCO[Create new<br/>chat object]
+    CIDNone["Assume chat ID<br/>is 'NONE'"] 
+    NoCOM[/Cannot find<br/>chat object<br/>message/]
+    CntCmd[/Cannot interpret<br/>command<br/>message/]
     subgraph Chatbook
         CCell
         NoCOM
@@ -341,10 +433,13 @@ flowchart LR
       - [X] DONE all  
       - [X] DONE prompt  
    2. [ ] TODO Chat-meta cells (via LLM)
-   3. [ ] TODO DSL G4T cells
-   4. [ ] TODO Using pre-prepared prompts
-      - This requires implementing "LLM::Prompts".
+   3. [ ] TODO DSL ["ProdGDT"](https://github.com/antononcube/Raku-WWW-ProdGDT) cells
+   4. [X] DONE Using pre-prepared prompts
+      - This requires implementing ["LLM::Prompts"](https://github.com/antononcube/Raku-LLM-Prompts).
         - And populating it with a good number of prompts.
+   5. [ ] TODO Parse Python style magics
+      - See ["JupyterChatbook"](https://github.com/antononcube/Python-JupyterChatbook)
+      - See ["Getopt::Long::Grammar"](https://github.com/antononcube/Raku-Getopt-Long-Grammar)
 2. [ ] TODO Unit tests
    1. [X] DONE PaLM cells
    2. [X] DONE OpenAI cells
@@ -464,6 +559,17 @@ flowchart LR
 ["Streamlining ChatGPT code generation and narration workflows (Raku)"](https://www.youtube.com/watch?v=mI-oWLz5dYY)
 (2023),
 [YouTube/@AAA4Prediction](https://www.youtube.com/@AAA4prediction).
+
+[AAv4] Anton Antonov,
+["Jupyter Chatbook LLM cells demo (Raku)"](https://www.youtube.com/watch?v=cICgnzYmQZg)
+(2023),
+[YouTube/@AAA4Prediction](https://www.youtube.com/@AAA4prediction).
+
+[AAv5] Anton Antonov,
+["Jupyter Chatbook multi cell LLM chats teaser (Raku)"](https://www.youtube.com/watch?v=wNpIGUAwZB8)
+(2023),
+[YouTube/@AAA4Prediction](https://www.youtube.com/@AAA4prediction).
+
 
 ------
 
