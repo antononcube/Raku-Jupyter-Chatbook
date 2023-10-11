@@ -133,7 +133,7 @@ would find the "RakuChatbook" kernel "quicker" or "more directly."
 The default API keys for the chat cells, LLM functions, and chat objects are taken from 
 the Operating System (OS) environmental variables `OPENAI_API_KEY` and `PALM_API_KEY`. 
 The api keys can also be specified using LLM evaluator and configuration options and objects; 
-see [AA3, AAp2].
+see [AA3, AAp2, AAv4].
 
 -------
 

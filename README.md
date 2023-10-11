@@ -133,7 +133,7 @@ would find the "RakuChatbook" kernel "quicker" or "more directly."
 The default API keys for the chat cells, LLM functions, and chat objects are taken from 
 the Operating System (OS) environmental variables `OPENAI_API_KEY` and `PALM_API_KEY`. 
 The api keys can also be specified using LLM evaluator and configuration options and objects; 
-see [AA3, AAp2].
+see [AA3, AAp2, AAv4].
 
 -------
 
@@ -165,7 +165,7 @@ use LLM::Functions;
 my &fcp = llm-function({"What is the population of the country $_ ?"});
 ```
 ```
-# -> **@args, *%args { #`(Block|3838714436216) ... }
+# -> **@args, *%args { #`(Block|4939278375832) ... }
 ```
 
 Here is another cell that can be evaluated multiple times using different country names:
@@ -176,9 +176,9 @@ Here is another cell that can be evaluated multiple times using different countr
 ```
 # (
 # 
-# As of July 2020, the population of Niger is approximately 24 million. 
+# As of July 2020, the population of Niger is estimated to be 24,054,653 people. 
 # 
-# According to the CIA World Factbook, the population of Gabon was estimated to be 2,183,942 in 2020.)
+# According to the World Bank, the population of Gabon was 2,244,646 in 2020.)
 ```
 
 For more examples of LLM functions and LLM chat objects see the notebook 
