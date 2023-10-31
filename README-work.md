@@ -7,11 +7,11 @@
 ## In brief
 
 This Raku package is a fork of Brian Duggan's 
-["Jupyter::Chatbook"](https://github.com/bduggan/raku-jupyter-kernel), [BDp1].
+["Jupyter::Kernel"](https://github.com/bduggan/raku-jupyter-kernel), [BDp1].
 
 Here are the top opening statements of the README of "Jupyter::Chatbook":
 
-> "Jupyter::Chatbook" is a pure Raku implementation of a Raku kernel for Jupyter clients¹.
+> "Jupyter::Kernel" is a pure Raku implementation of a Raku kernel for Jupyter clients¹.
 
 > Jupyter notebooks provide a web-based (or console-based)
 Read Eval Print Loop (REPL) for running code and serializing input and output.
@@ -371,7 +371,7 @@ Here is a table with examples of magic specs for chat meta cells and their inter
 | cell magic line  | cell content                         | interpretation                                                  |
 |:-----------------|:-------------------------------------|:----------------------------------------------------------------|
 | chat-ew12 meta   | say                                  | Give the "print out" of the chat object with ID "ew12"          |   
-| chat-ew12 meta   | messages                             | Give the "print out" of the chat object with ID "ew12"          |   
+| chat-ew12 meta   | messages                             | Give the messages of the chat object with ID "ew12"             |   
 | chat sn22 prompt | You pretend to be a melting snowman. | Create a chat object with ID "sn22" with the prompt in the cell |   
 | chat meta all    | keys                                 | Show the keys of the session chat objects DB                    |   
 | chat all         | keys                                 | *«same as above»*                                               |   
