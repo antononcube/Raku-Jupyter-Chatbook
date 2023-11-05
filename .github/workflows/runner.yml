@@ -1,0 +1,101 @@
+# save as .github/workflows/runner.yml
+name: runner
+
+on:
+  workflow_call:
+    inputs:
+      os:
+        description: Operating System to run on
+        required: false
+        default: ubuntu
+        type: string
+      os_version:
+        description: OS version
+        required: false
+        default: latest
+        type: string
+      raku_version:
+        description: Raku version latest or 2023.10, etc.
+        required: false
+        default: latest
+        type: string
+      verbosity:
+        description: verbosity
+        required: false
+        default: error
+        type: string
+      skip_deps_tests:
+        description: skip dependency tests
+        required: false
+        default: false
+        type: boolean
+      run_prove6:
+        description: run prove6
+        required: false
+        default: false
+        type: boolean
+      run_tests_script:
+        description: run-tests.raku
+        required: false
+        default: false
+        type: boolean
+      install_module:
+        description: install module
+        required: false
+        default: true
+        type: boolean
+      ad_hoc_pre_command:
+        description: ad-hoc-pre command
+        required: false
+        type: string
+      ad_hoc_post_command:
+        description: ad-hoc-post command
+        required: false
+        type: string
+
+jobs:
+  runner:
+    runs-on: ${{ inputs.os }}-${{ inputs.os_version }}
+
+    env:
+      zef_fetch_degree: 4
+      zef_test_degree: 2
+
+    steps:
+
+    - uses: Raku/setup-raku@v1
+      with:
+        raku-version: ${{ inputs.raku_version }}
+
+    - uses: actions/checkout@v4
+
+    - name: Ad-hoc pre command
+      if: ${{ inputs.ad_hoc_pre_command }}
+      run: ${{ inputs.ad_hoc_pre_command }}
+
+    - name: Install Dependencies
+      if: ${{ ! inputs.skip_deps_tests }}
+      run: zef --${{ inputs.verbosity }} --deps-only --fetch-degree=${{ env.zef_fetch_degree }} --test-degree=${{ env.zef_test_degree }} install .
+
+    - name: Install Dependencies quick and dirty - skip tests
+      if: ${{ inputs.skip_deps_tests }}
+      run: zef --${{ inputs.verbosity }} --deps-only --/test --fetch-degree=${{ env.zef_fetch_degree }} install .
+
+    - name: Install Module
+      if: ${{ inputs.install_module }}
+      run: zef --${{ inputs.verbosity }} --/depends --fetch-degree=${{ env.zef_fetch_degree }} --test-degree=${{ env.zef_test_degree }} install .
+
+    - name: Run run-tests.raku
+      if: ${{ inputs.run_tests_script }}
+      run: raku -- run-tests.raku --author=True
+
+    - name: Run prove6
+      if: ${{ inputs.run_prove6 }}
+      run: |
+        zef install --/test --fetch-degree=${{ env.zef_fetch_degree }} --test-degree=${{ env.zef_test_degree }} App::Prove6
+        prove6 --version
+        prove6 --jobs ${{ env.zef_test_degree }} --lib --timer --verbose
+
+    - name: Ad-hoc post command
+      if: ${{ inputs.ad_hoc_post_command }}
+      run: ${{ inputs.ad_hoc_post_command }}

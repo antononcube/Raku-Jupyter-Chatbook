@@ -1,31 +1,19 @@
-name: Win64
-
-env:
-  TEST_JOBS: 1
+# save as .github/workflows/Windows.yml
+name: Windows
 
 on:
   push:
     branches:
-      - '*'
-    tags-ignore:
-      - '*'
+          - main
+          - master
+          - 'releases/**'
   pull_request:
+  schedule: # MIN HOUR DAYOFMONTH MONTH DAYOFWEEK - schedule at least a bi-monthly run - just to keep an eye on long-time-not-touched repositories
+    - cron: '15 10 5 * *'
 
 jobs:
-  raku:
-    strategy:
-      matrix:
-        os:
-          - windows-latest
-        raku-version:
-          - 'latest'
-    runs-on: ${{ matrix.os }}
-    steps:
-      - uses: actions/checkout@v3
-      - uses: Raku/setup-raku@v1
-        with:
-          raku-version: ${{ matrix.raku-version }}
-      - name: Install Dependencies
-        run: zef install --/test --test-depends --deps-only .
-      - name: Run Tests
-        run: zef --debug --/prove --/tap-harness test .
+  launch:
+    uses: ./.github/workflows/runner.yml
+    with:
+      os: ${{ github.workflow }}
+      
