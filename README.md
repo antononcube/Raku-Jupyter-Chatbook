@@ -9,7 +9,7 @@
 This Raku package is a fork of Brian Duggan's 
 ["Jupyter::Kernel"](https://github.com/bduggan/raku-jupyter-kernel), [BDp1].
 
-Here are the top opening statements of the README of "Jupyter::Chatbook":
+Here are the top opening statements of the README of "Jupyter::Kernel":
 
 > "Jupyter::Kernel" is a pure Raku implementation of a Raku kernel for Jupyter clients¹.
 
