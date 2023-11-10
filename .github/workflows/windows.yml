@@ -27,5 +27,6 @@ jobs:
           raku-version: ${{ matrix.raku-version }}
       - name: Install Dependencies
         run: zef install --/test --test-depends --deps-only .
+        run: zef install --/test Clipboard
       - name: Run Tests
         run: zef --debug --/prove --/tap-harness test .
