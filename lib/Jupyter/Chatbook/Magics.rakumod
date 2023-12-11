@@ -5,10 +5,10 @@ use WWW::OpenAI;
 use WWW::PaLM;
 use WWW::MermaidInk;
 use Clipboard;  # copy-to-clipboard
-use Text::Plot; # from-base64
 use Text::SubParsers;
 use LLM::Functions;
 use LLM::Prompts;
+use Image::Markup::Utilities; # image-from-base64
 
 my class Result does Jupyter::Chatbook::Response {
     has $.output is default(Nil);
@@ -131,7 +131,17 @@ my class Magic::OpenAI is Magic::LLM {
         self.args = %(max-tokens => 300, format => 'values') , self.args;
 
         # Call LLM's interface function
-        my $res = openai-completion($code, |self.args);
+        my $res;
+        try {
+            $res = openai-completion($code, |self.args);
+        }
+
+        if $! {
+            $res = "Cannot process request.";
+            if $! ~~ X::AdHoc {
+                $res ~= "\n" ~ $!.Str;
+            }
+        }
 
         # Copy to clipboard
         if $*DISTRO eq 'macos' {
@@ -157,7 +167,7 @@ my class Magic::OpenAIDallE is Magic::LLM {
         self.args =
                 %(response-format => 'b64_json',
                   n => 1,
-                  size => 'small',
+                  size => Whatever,
                   format => 'values',
                   method => 'tiny') , self.args;
 
@@ -185,12 +195,22 @@ my class Magic::OpenAIDallE is Magic::LLM {
             }
 
         } else {
-            @imgResB64 = |openai-create-image($code, |self.args);
+            try {
+                @imgResB64 = |openai-create-image($code, |self.args);
+            }
+
+            if $! || !(@imgResB64.all ~~ Str) {
+                $res = "Cannot process request.";
+                if $! ~~ X::AdHoc {
+                    $res ~= "\n" ~ $!.Str;
+                }
+                @imgResB64 = Empty;
+            }
         }
 
         # Transform base64 images into HTML images
         if @imgResB64 {
-            $res = @imgResB64.map({ from-base64($_) }).join("\n\n");
+            $res = @imgResB64.map({ image-from-base64($_) }).join("\n\n");
         }
 
         # Result
@@ -212,7 +232,17 @@ my class Magic::PaLM is Magic::LLM {
         self.args = %(max-tokens => 300, format => 'values') , self.args;
 
         # Call LLM's interface function
-        my $res = palm-generate-text( $code, |self.args);
+        my $res;
+        try {
+            $res = palm-generate-text( $code, |self.args);
+        }
+
+        if $! {
+            $res = "Cannot process request.";
+            if $! ~~ X::AdHoc {
+                $res ~= "\n" ~ $!.Str;
+            }
+        }
 
         # Copy to clipboard
         if $*DISTRO eq 'macos' {
@@ -425,7 +455,7 @@ my class Magic::MermaidInk is Magic {
     method preprocess($code) {
         my $imgResB64 = mermaid-ink($code, format => 'md-image');
 
-        my $res = from-base64($imgResB64);
+        my $res = image-from-base64($imgResB64);
 
         return Result.new:
                 output => $res,
