@@ -92,6 +92,10 @@ class Jupyter::Chatbook::Sandbox is export {
             use Data::TypeSystem;
             use Clipboard :ALL;
             use Text::Plot;
+            use Image::Markup::Utilities;
+            use WWW::MermaidInk;
+            use WWW::OpenAI;
+            use WWW::PaLM;
         INIT
     }
 
