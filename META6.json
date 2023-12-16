@@ -13,6 +13,7 @@
     "Digest::SHA256::Native",
     "Data::Translators:ver<0.1.3+>",
     "Data::TypeSystem:ver<0.1.2+>",
+    "Image::Markup::Utilities:ver<0.1.0+>",
     "JSON::Tiny",
     "LLM::Functions:ver<0.1.12+>",
     "LLM::Prompts:ver<0.1.2+>",
