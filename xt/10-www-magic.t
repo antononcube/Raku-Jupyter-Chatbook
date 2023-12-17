@@ -128,4 +128,23 @@ class MockResult {
     is $r.output-mime-type, 'text/html', 'dalle with prompt magic set the mime type';
 }
 
+{
+    my $code = q:to/DONE/;
+    %% dalle meta
+    @resources/no-images.png
+    DONE
+
+    ok my $magic = $m.find-magic($code), 'preprocess recognized %% dalle with meta';
+    is $code.trim.starts-with('@'), True, 'find-magic removed magic line';
+
+    my $r = $magic.preprocess($code);
+
+    #note $r.output;
+    is $r.output.trim.starts-with('No'),
+            True,
+            'got "No..." from dalle with meta';
+
+    is $r.output-mime-type, 'text/plain', 'dalle with meta magic set the mime type';
+}
+
 done-testing;
