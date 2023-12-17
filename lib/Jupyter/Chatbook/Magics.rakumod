@@ -265,6 +265,7 @@ my class Magic::OpenAIDallEMeta is Magic::LLM {
 
         my $index = self.args<index> // Whatever;
         my $sep = self.args<sep> // ' ';
+        my $prefix = self.args<prefix> // 'dalle';
 
         # Process commands
         my $res;
@@ -296,19 +297,26 @@ my class Magic::OpenAIDallEMeta is Magic::LLM {
 
             when 'export' {
                 if @dalle-images {
+                    my $path = $code.trim;
+                    $path .= subst(/ ^ '@'/);
+
+                    if $path.chars == 0 {
+                        $path = $*CWD ~ "/$prefix-" ~ now.DateTime.Str.subst(':','.', :g) ~ '.png';
+                    }
+                    my $copyToClipboard = False;
                     try {
-                        my $path = $code.trim;
-                        $path .= subst(/ ^ '@'/);
-
-                        if $path.chars == 0 {
-                            $path = $*CWD ~ '/dalle-' ~ now.DateTime.Str.subst(':','.', :g) ~ '.png';
-                        }
-
                         if $index.isa(Whatever) {
                             $res = image-export($path, @dalle-images.tail);
-                        } elsif $index ~~ Int && 0 ≤ $index ≤ @dalle-images.elems {
+                        } elsif $index ~~ Str:D && $index.lc eq 'all' {
+                            $res = do for ^@dalle-images.elems -> $k {
+                                my $path2 = $path.subst(/ '.png' $ /, "-$k.png");
+                                image-export($path2, @dalle-images[$k]);
+                            }
+                            $copyToClipboard = True;
+                        } elsif $index ~~ Int:D && 0 ≤ $index ≤ @dalle-images.elems {
                             $res = image-export($path, @dalle-images[$index]);
-                        } elsif $index ~~ Numeric {
+                            $copyToClipboard = True;
+                        } elsif $index ~~ Numeric:D {
                             $res = "The value of the option index is expeced to be Whatever or an integer between 0 and {@dalle-images.elems}.";
                         } else {
                             $res = 'Do not know how to process the given index.';
@@ -316,6 +324,11 @@ my class Magic::OpenAIDallEMeta is Magic::LLM {
                     }
                     if $! ~~ X::AdHoc {
                         $res ~= "\n" ~ $!.Str;
+                    } elsif $copyToClipboard {
+                        # Copy to clipboard
+                        if $*DISTRO eq 'macos' {
+                            copy-to-clipboard($res);
+                        }
                     }
                 } else {
                     $res = 'No images to export.';
