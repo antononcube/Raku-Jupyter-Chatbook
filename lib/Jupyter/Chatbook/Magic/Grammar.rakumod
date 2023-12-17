@@ -2,7 +2,7 @@ grammar Jupyter::Chatbook::Magic::Grammar {
     rule TOP { <magic> }
     rule magic {
         [ '%%' | '#%' ]
-        [ <chat-meta-spec> || <chat-id-spec> || <llm-args> || <args> || <simple> || <filter> || <always> ]
+        [ <chat-meta-spec> || <dalle-meta-spec> || <chat-id-spec> || <llm-args> || <args> || <simple> || <filter> || <always> ]
     }
     token simple {
         $<key>=[ 'javascript' | 'bash' | <mermaid> ]
@@ -20,6 +20,9 @@ grammar Jupyter::Chatbook::Magic::Grammar {
     token chat-meta-spec {
         || <chat> \h+ ['meta' \h+]? $<meta-command>='all'
         || <chat> [ '-' | '_' | ':' | \h+ ] $<chat-id>=(<-[,;\s]>*) \h+ $<meta-command>= [ 'meta' | 'prompt' | 'drop' | 'clear' | 'all' ] [<.param-sep> <magic-list-of-params> \h*]? \h*
+    }
+    token dalle-meta-spec {
+        <dalle> \h+ $<meta-command>= [ 'meta' | 'export' | 'drop' | 'clear' ] [<.param-sep> <magic-list-of-params> \h*]? \h*
     }
     rule filter {
         [
