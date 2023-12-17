@@ -35,6 +35,8 @@ my $always = Always.new;
 
 my %chats;
 
+my @dalle-images;
+
 #===========================================================
 
 our sub to-single-quoted(Str $s) {
@@ -210,6 +212,7 @@ my class Magic::OpenAIDallE is Magic::LLM {
 
         # Transform base64 images into HTML images
         if @imgResB64 {
+            @dalle-images.append(@imgResB64);
             $res = @imgResB64.map({ image-from-base64($_) }).join("\n\n");
         }
 
@@ -219,6 +222,99 @@ my class Magic::OpenAIDallE is Magic::LLM {
                 output-mime-type => 'text/html',
                 stdout => $res,
                 stdout-mime-type => 'text/html',
+                ;
+    }
+}
+
+my class Magic::OpenAIDallEMeta is Magic::LLM {
+    has $.meta-command is rw;
+    method preprocess($code) {
+
+        # Process arguments
+        self.pre-process-args;
+
+        # Redirecting to drop or clear
+        if $.meta-command eq 'meta' {
+            if $code.trim ∈ <drop delete> {
+                $.meta-command = 'drop'
+            } elsif $code.trim ∈ <clear empty> {
+                $.meta-command = 'clear'
+            }
+        }
+
+        # Process commands
+        my $res;
+        given $.meta-command {
+            when 'meta' {
+                if @dalle-images {
+
+                    my @knownMethods = <elems gist raku>;
+                    $res = do given $code.trim {
+                        when $_ ∈ ['elems', '.elems', '».elems', '>>.elems'] {
+                            @dalle-images.elems;
+                        }
+                        when $_ ∈ @knownMethods {
+                            @dalle-images."$_"();
+                        }
+                        default {
+                            "Do not know how to process {$_.raku}. The known DALL-E images object methods are: {@knownMethods.raku}.\nContinuing with .elems.\n\n" ~ @dalle-images.elems;
+                        }
+                    }
+
+                } else {
+                    $res = "No stored DALL-E images.";
+                }
+            }
+
+            when 'export' {
+                if @dalle-images {
+                    try {
+                        my $path = $code.trim;
+                        $path .= subst(/ ^ '@'/);
+
+                        if $path.chars == 0 {
+                            $path = $*CWD ~ '/dalle-' ~ now.DateTime.Str.subst(':','.', :g) ~ '.png';
+                        }
+
+                        $res = image-export($path, @dalle-images.tail);
+                    }
+                    if $! ~~ X::AdHoc {
+                        $res ~= "\n" ~ $!.Str;
+                    }
+                } else {
+                    $res = 'No images to export.';
+                }
+            }
+
+            when 'drop' {
+                if @dalle-images {
+                    @dalle-images.pop;
+                    $res = "Deleted the last image; {@dalle-images.elems} " ~ (@dalle-images.elems == 1 ?? 'is' !! 'are')  ~ ' left.';
+                } else {
+                    $res = "No stored images -- nothing to drop.";
+                }
+            }
+
+            when 'clear' {
+                if @dalle-images {
+                    $res = "Cleared {@dalle-images.elems} images.";
+                    @dalle-images = [];
+                } else {
+                    $res = "No stored images -- nothing to clear.";
+                }
+            }
+
+            default {
+                $res = "Do not know how to process the chat meta command $_.";
+            }
+        }
+
+        # Result
+        return Result.new:
+                output => $res,
+                output-mime-type => 'text/plain',
+                stdout => $res,
+                stdout-mime-type => 'text/plain',
                 ;
     }
 }
@@ -366,7 +462,7 @@ my class Magic::ChatMeta is Magic::Chat {
                             $chatObj."$_"().raku;
                         }
                         default {
-                            "Do not know how to process {$_.raku} known chat object methods {@knownMethods.raku}.\nContinuing with .gist.\n\n" ~ $chatObj.gist;
+                            "Do not know how to process '{$_.raku}'. The known chat object methods are: {@knownMethods.raku}.\nContinuing with .gist.\n\n" ~ $chatObj.gist;
                         }
                     }
                 } else {
@@ -553,7 +649,7 @@ class Magic::AlwaysWorker is Magic {
 class Magic::Actions {
     method TOP($/) { $/.make: $<magic>.made }
     method magic($/) {
-        $/.make: $<simple>.made // $<filter>.made // $<llm-args>.made // $<args>.made // $<chat-id-spec>.made // $<chat-meta-spec>.made // $<always>.made;
+        $/.make: $<simple>.made // $<filter>.made // $<llm-args>.made // $<args>.made // $<chat-id-spec>.made // $<chat-meta-spec>.made // $<dalle-meta-spec>.made // $<always>.made;
     }
     method simple($/) {
         given "$<key>" {
@@ -607,6 +703,12 @@ class Magic::Actions {
 
         my $meta-command = $<meta-command>.Str;
         $/.make: Magic::ChatMeta.new(:%args, :$chat-id, :$meta-command);
+    }
+    method dalle-meta-spec($/) {
+        my %args = $<magic-list-of-params>.made // %();
+
+        my $meta-command = $<meta-command>.Str;
+        $/.make: Magic::OpenAIDallEMeta.new(:%args, :$meta-command);
     }
     method always($/) {
         my $subcommand = ~$<subcommand> || 'prepend';
