@@ -130,7 +130,7 @@ my class Magic::OpenAI is Magic::LLM {
         # Process arguments
         self.pre-process-args;
 
-        self.args = %(max-tokens => 300, format => 'values') , self.args;
+        self.args = %(max-tokens => 900, format => 'values') , self.args;
 
         # Call LLM's interface function
         my $res;
@@ -197,16 +197,30 @@ my class Magic::OpenAIDallE is Magic::LLM {
             }
 
         } else {
-            try {
-                @imgResB64 = |openai-create-image($code, |self.args);
-            }
-
-            if $! || !(@imgResB64.all ~~ Str) {
-                $res = "Cannot process request.";
-                if $! ~~ X::AdHoc {
-                    $res ~= "\n" ~ $!.Str;
+            if self.args<response-format> eq 'b64_json' {
+                try {
+                    @imgResB64 = |openai-create-image($code, |self.args);
                 }
-                @imgResB64 = Empty;
+
+                if $! || !(@imgResB64.all ~~ Str) {
+                    $res = "Cannot process request.";
+                    if $! ~~ X::AdHoc {
+                        $res ~= "\n" ~ $!.Str;
+                    }
+                    @imgResB64 = Empty;
+                }
+            } else {
+                try {
+                    $res = openai-create-image($code, |self.args);
+                }
+
+                if $! {
+                    $res = "Cannot process request.";
+                    if $! ~~ X::AdHoc {
+                        $res ~= "\n" ~ $!.Str;
+                    }
+                    @imgResB64 = Empty;
+                }
             }
         }
 
@@ -230,6 +244,8 @@ my class Magic::OpenAIDallEMeta is Magic::LLM {
     has $.meta-command is rw;
     method preprocess($code) {
 
+        my $mimeType = 'text/plain';
+
         # Process arguments
         self.pre-process-args;
 
@@ -242,16 +258,23 @@ my class Magic::OpenAIDallEMeta is Magic::LLM {
             }
         }
 
+        my $index = self.args<index> // Whatever;
+        my $sep = self.args<sep> // ' ';
+
         # Process commands
         my $res;
         given $.meta-command {
             when 'meta' {
                 if @dalle-images {
 
-                    my @knownMethods = <elems gist raku>;
+                    my @knownMethods = <elems gist raku show>;
                     $res = do given $code.trim {
                         when $_ ∈ ['elems', '.elems', '».elems', '>>.elems'] {
                             @dalle-images.elems;
+                        }
+                        when $_ ∈ <show show-all display display-all> {
+                            $mimeType = 'text/html';
+                            @dalle-images.map({ image-from-base64($_) }).join($sep);
                         }
                         when $_ ∈ @knownMethods {
                             @dalle-images."$_"();
@@ -276,7 +299,15 @@ my class Magic::OpenAIDallEMeta is Magic::LLM {
                             $path = $*CWD ~ '/dalle-' ~ now.DateTime.Str.subst(':','.', :g) ~ '.png';
                         }
 
-                        $res = image-export($path, @dalle-images.tail);
+                        if $index.isa(Whatever) {
+                            $res = image-export($path, @dalle-images.tail);
+                        } elsif $index ~~ Int && 0 ≤ $index ≤ @dalle-images.elems {
+                            $res = image-export($path, @dalle-images[$index]);
+                        } elsif $index ~~ Numeric {
+                            $res = "The value of the option index is expeced to be Whatever or an integer between 0 and {@dalle-images.elems}.";
+                        } else {
+                            $res = 'Do not know how to process the given index.';
+                        }
                     }
                     if $! ~~ X::AdHoc {
                         $res ~= "\n" ~ $!.Str;
@@ -312,9 +343,9 @@ my class Magic::OpenAIDallEMeta is Magic::LLM {
         # Result
         return Result.new:
                 output => $res,
-                output-mime-type => 'text/plain',
+                output-mime-type => $mimeType,
                 stdout => $res,
-                stdout-mime-type => 'text/plain',
+                stdout-mime-type => $mimeType,
                 ;
     }
 }
@@ -325,7 +356,7 @@ my class Magic::PaLM is Magic::LLM {
         # Process arguments
         self.pre-process-args;
 
-        self.args = %(max-tokens => 300, format => 'values') , self.args;
+        self.args = %(max-tokens => 900, format => 'values') , self.args;
 
         # Call LLM's interface function
         my $res;
