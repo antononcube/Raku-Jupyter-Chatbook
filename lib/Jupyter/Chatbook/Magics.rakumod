@@ -220,6 +220,11 @@ my class Magic::OpenAIDallE is Magic::LLM {
                         $res ~= "\n" ~ $!.Str;
                     }
                     @imgResB64 = Empty;
+                } else {
+                    # Copy to clipboard
+                    if $*DISTRO eq 'macos' {
+                        copy-to-clipboard($res);
+                    }
                 }
             }
         }
