@@ -1,6 +1,7 @@
 unit class Jupyter::Chatbook::Magics;
 use Jupyter::Chatbook::Response;
 use Jupyter::Chatbook::Magic::Grammar;
+use WWW::MistralAI;
 use WWW::OpenAI;
 use WWW::PaLM;
 use WWW::MermaidInk;
@@ -122,6 +123,41 @@ my class Magic::LLM is Magic {
         %!args = $ep.process(%!args);
 
         return %!args;
+    }
+}
+
+my class Magic::MistralAI is Magic::LLM {
+    method preprocess($code) {
+        # Process arguments
+        self.pre-process-args;
+
+        self.args = %(max-tokens => 900, format => 'values') , self.args;
+
+        # Call LLM's interface function
+        my $res;
+        try {
+            $res = mistralai-chat-completion($code, |self.args);
+        }
+
+        if $! {
+            $res = "Cannot process request.";
+            if $! ~~ X::AdHoc {
+                $res ~= "\n" ~ $!.Str;
+            }
+        }
+
+        # Copy to clipboard
+        if $*DISTRO eq 'macos' {
+            copy-to-clipboard($res);
+        }
+
+        # Result
+        return Result.new:
+                output => $res,
+                output-mime-type => self.output-mime-type,
+                stdout => $res,
+                stdout-mime-type => self.output-mime-type,
+                ;
     }
 }
 
@@ -725,6 +761,9 @@ class Magic::Actions {
         my $output-mime-type = $<output-mime>.made.mime-type // 'text/plain';
 
         given ("$<key>") {
+            when 'mistralai' {
+                $/.make: Magic::MistralAI.new(:%args, :$output-mime-type);
+            }
             when 'openai' {
                 $/.make: Magic::OpenAI.new(:%args, :$output-mime-type);
             }
