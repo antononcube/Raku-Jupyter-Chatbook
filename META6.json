@@ -23,7 +23,7 @@
     "Text::SubParsers:ver<0.1.4+>",
     "UUID",
     "WWW::MermaidInk:ver<0.1.1+>",
-    "WWW::MistralAI:ver<0.1.1+>",
+    "WWW::MistralAI:ver<0.1.2+>",
     "WWW::OpenAI:ver<0.2.16+>",
     "WWW::PaLM:ver<0.1.9+>"
   ],
