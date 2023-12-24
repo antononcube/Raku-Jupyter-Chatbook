@@ -76,12 +76,12 @@ grammar Jupyter::Chatbook::Magic::Grammar {
     }
 
     # Magic list of assignments
-    regex magic-list-of-params { <magic-assign-pair>+ % [\h* ',' \h*] }
+    regex magic-list-of-params { <magic-assign-pair>+ % <.param-sep> }
 
     # Quoted string, mostly for prompts
     regex quoted-string { '\'' ~ '\'' <-[']>*  || '"' ~ '"' <-["]>*  || '{' ~ '}' <-[{}]>* || '⎡' ~ '⎦' <-[⎡⎦]>* || '«' ~ '»' <-[«»]>* }
 
     # Magic pair assignment
-    regex magic-assign-pair { $<param>=([<.alpha> | '.' | '_' | '-']+) \h* '=' \h* $<value>=(<quoted-string> || <-[{},\s]>*) }
+    regex magic-assign-pair { ['-' ** 1..2]? $<param>=([<.alpha> | '.' | '_' | '-']+) \h* '=' \h* $<value>=(<quoted-string> || <-[{},\s]>*) }
 }
 
