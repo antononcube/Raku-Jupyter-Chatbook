@@ -12,7 +12,7 @@ grammar Jupyter::Chatbook::Magic::Grammar {
         $<key>='run' $<rest>=.*
     }
     regex llm-args {
-        $<key>=[ 'mistralai' | 'openai' | 'dalle' | 'palm' | 'chat' ] [\h* '>' \h* $<output-mime>=<mime> | \h* ] [ <.param-sep> <magic-list-of-params> \h*]? \h*
+        $<key>=[ 'llama' | 'mistralai' | 'openai' | 'dalle' | 'palm' | 'chat' ] [\h* '>' \h* $<output-mime>=<mime> | \h* ] [ <.param-sep> <magic-list-of-params> \h*]? \h*
     }
     token chat-id-spec {
         <chat> [ '-' | '_' | ':' | \h+ ] $<chat-id>=(<.alnum> <-[,;\s]>*) [\h* '>' \h* $<output-mime>=<mime>]? [<.param-sep> <magic-list-of-params> \h*]? \h*
