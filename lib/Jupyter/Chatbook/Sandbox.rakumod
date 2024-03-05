@@ -93,6 +93,7 @@ class Jupyter::Chatbook::Sandbox is export {
             use Clipboard :ALL;
             use Text::Plot;
             use Image::Markup::Utilities;
+            use WWW::LLaMA;
             use WWW::MermaidInk;
             use WWW::OpenAI;
             use WWW::PaLM;
