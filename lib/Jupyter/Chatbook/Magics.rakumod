@@ -1,6 +1,7 @@
 unit class Jupyter::Chatbook::Magics;
 use Jupyter::Chatbook::Response;
 use Jupyter::Chatbook::Magic::Grammar;
+use WWW::LLaMA;
 use WWW::MistralAI;
 use WWW::OpenAI;
 use WWW::PaLM;
@@ -123,6 +124,47 @@ my class Magic::LLM is Magic {
         %!args = $ep.process(%!args);
 
         return %!args;
+    }
+}
+
+
+my class Magic::LLaMA is Magic::LLM {
+    method preprocess($code) {
+        # This is the same implementation as Magic::OpenAI::preprocess,
+        # except llama-completion is called instead of openai-completion.
+        # But I consider it better to be a separate one.
+        # Also, in principle Magic::OpenAI can be used if relevant base-url is given.
+        # (LLaMA chat completion should adhere to OpenAI's chat completion.)
+        # Process arguments
+        self.pre-process-args;
+
+        self.args = %(max-tokens => 2048, format => 'values') , self.args;
+
+        # Call LLM's interface function
+        my $res;
+        try {
+            $res = llama-completion($code, |self.args);
+        }
+
+        if $! {
+            $res = "Cannot process request.";
+            if $! ~~ X::AdHoc {
+                $res ~= "\n" ~ $!.Str;
+            }
+        }
+
+        # Copy to clipboard
+        if $*DISTRO eq 'macos' {
+            copy-to-clipboard($res);
+        }
+
+        # Result
+        return Result.new:
+                output => $res,
+                output-mime-type => self.output-mime-type,
+                stdout => $res,
+                stdout-mime-type => self.output-mime-type,
+                ;
     }
 }
 
@@ -761,6 +803,9 @@ class Magic::Actions {
         my $output-mime-type = $<output-mime>.made.mime-type // 'text/plain';
 
         given ("$<key>") {
+            when 'llama' {
+                $/.make: Magic::LLaMA.new(:%args, :$output-mime-type);
+            }
             when 'mistralai' {
                 $/.make: Magic::MistralAI.new(:%args, :$output-mime-type);
             }
