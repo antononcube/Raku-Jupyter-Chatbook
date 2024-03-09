@@ -1,0 +1,39 @@
+#!/usr/bin/env perl6
+use lib 'lib';
+use Test;
+use Log::Async;
+use Jupyter::Chatbook::Magics;
+use LLM::Prompts;
+
+logger.add-tap( -> $msg { diag $msg<msg> } );
+
+plan *;
+
+my $m = Jupyter::Chatbook::Magics.new;
+class MockResult {
+    has $.output;
+    has $.output-mime-type;
+    has $.stdout;
+    has $.stdout-mime-type;
+    has $.stderr;
+    has $.exception;
+    has $.incomplete;
+}
+
+{
+    my $code = q:to/DONE/;
+    %% mermaid, format=svg
+    graph TD
+      WL --> |ZMQ|Python --> |ZMQ|WL
+    DONE
+
+    ok my $magic = $m.find-magic($code), 'preprocess recognized %% mermaid';
+    is $code.starts-with('graph TD'), True, 'content of the mermaid cell';
+    my $r = $magic.preprocess($code);
+    #note $r.output;
+    # Something like:
+    # <svg id="mermaid-svg" width="100%" xmlns="http://www.w3.org/2000/svg" ...>
+    is $r.output-mime-type, 'text/html', 'mermaid magic set the mime type';
+}
+
+done-testing;
