@@ -1,7 +1,7 @@
 {
   "name": "Jupyter::Chatbook",
   "description": "Jupyter Raku Chatbook that produces LLM-aware notebooks (or chatbooks.)",
-  "version": "0.2.6",
+  "version": "0.2.7",
   "authors": [
     "Brian Duggan",
     "Anton Antonov"
@@ -23,7 +23,7 @@
     "Text::SubParsers:ver<0.1.4+>",
     "UUID",
     "WWW::LLaMA:ver<0.1.0+>",
-    "WWW::MermaidInk:ver<0.1.1+>",
+    "WWW::MermaidInk:ver<0.1.2+>",
     "WWW::MistralAI:ver<0.1.2+>",
     "WWW::OpenAI:ver<0.2.16+>",
     "WWW::PaLM:ver<0.1.9+>"
