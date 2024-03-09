@@ -675,16 +675,39 @@ my class Magic::ChatMeta is Magic::Chat {
 }
 
 my class Magic::MermaidInk is Magic {
+    has %.args;
+    has $.output-mime-type is rw = 'text/html';
     method preprocess($code) {
-        my $imgResB64 = mermaid-ink($code, format => 'md-image');
 
-        my $res = image-from-base64($imgResB64);
+        my $format = self.args<format> // 'svg';
+
+        my $background = self.args<background> // 'FFFFFF';
+
+        my $res = do given $format {
+            when $_.lc ∈ <md-image image img base64 markdown-image> {
+                my $imgResB64 = mermaid-ink($code, format => 'md-image', :$background);
+                # Is this needed?
+                image-from-base64($imgResB64);
+            }
+
+            when $_.lc ∈ <svg vector scalable-vector-graphics url md-url> {
+                mermaid-ink($code, :$format, :$background);
+            }
+
+            when $_.lc ∈ <hash raku> {
+                mermaid-ink($code, :$format, :$background);
+            }
+
+            default {
+                "Unknown format. Known format: <image svg hash>."
+            }
+        };
 
         return Result.new:
                 output => $res,
-                output-mime-type => 'text/html',
+                output-mime-type => self.output-mime-type,
                 stdout => $res,
-                stdout-mime-type => 'text/html',
+                stdout-mime-type => self.output-mime-type,
                 ;
     }
 }
@@ -776,7 +799,7 @@ class Magic::AlwaysWorker is Magic {
 class Magic::Actions {
     method TOP($/) { $/.make: $<magic>.made }
     method magic($/) {
-        $/.make: $<simple>.made // $<filter>.made // $<llm-args>.made // $<args>.made // $<chat-id-spec>.made // $<chat-meta-spec>.made // $<dalle-meta-spec>.made // $<always>.made;
+        $/.make: $<simple>.made // $<filter>.made // $<llm-args>.made // $<mermaid-args>.made // $<args>.made // $<chat-id-spec>.made // $<chat-meta-spec>.made // $<dalle-meta-spec>.made // $<always>.made;
     }
     method simple($/) {
         given "$<key>" {
@@ -786,9 +809,6 @@ class Magic::Actions {
             when 'bash' {
                 $/.make: Magic::Bash.new;
             }
-            when $_ ∈ <mermaid mmd> {
-                $/.make: Magic::MermaidInk.new;
-            }
         }
     }
     method args($/) {
@@ -797,6 +817,11 @@ class Magic::Actions {
                 $/.make: Magic::Run.new(file => trim ~$<rest>);
             }
         }
+    }
+    method mermaid-args($/) {
+        my %args = $<magic-list-of-params>.made // %();
+        my $output-mime-type = $<output-mime>.made.mime-type // 'text/html';
+        $/.make: Magic::MermaidInk.new(:%args, :$output-mime-type);
     }
     method llm-args($/) {
         my %args = $<magic-list-of-params>.made // %();
