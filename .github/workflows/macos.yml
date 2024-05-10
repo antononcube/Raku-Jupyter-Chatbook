@@ -25,6 +25,7 @@ jobs:
       - name: Install Dependencies
         run: |
           brew install zmq
+          export DYLD_LIBRARY_PATH=/opt/homebrew/lib:$DYLD_LIBRARY_PATH
           zef install --test --deps-only .
           zef install --test App::Prove6
       - name: Run Tests
