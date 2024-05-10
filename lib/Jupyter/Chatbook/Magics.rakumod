@@ -12,6 +12,7 @@ use Text::SubParsers;
 use LLM::Functions;
 use LLM::Prompts;
 use Image::Markup::Utilities; # image-from-base64
+use Lingua::Translation::DeepL;
 
 my class Result does Jupyter::Chatbook::Response {
     has $.output is default(Nil);
@@ -750,6 +751,58 @@ my class Magic::MermaidInk is Magic {
     }
 }
 
+my class Magic::DeepL is Magic {
+    has %.args;
+    has $.output-mime-type is rw = 'text/html';
+    method preprocess($code) {
+
+        # Process arguments
+        my $format = self.args<format> // 'text';
+        my $format2 = ($format.lc ∈ <values value text> ?? 'hash' !! $format);
+
+        self.args<format> = $format2;
+
+        # Call DeepL's interface function
+        my $res;
+        try {
+            $res = deepl-translation( $code, |self.args);
+        }
+
+        if $! {
+            $res = "Cannot process request.";
+            if $! ~~ X::AdHoc {
+                $res ~= "\n" ~ $!.Str;
+            }
+        }
+
+        # Post process
+        $res = do given $format.lc {
+            when $_ ∈ <hash raku> { $res.raku }
+            when $_ ∈ <values value text> {
+                if $res ~~ Iterable && $res.elems > 0 && $res.head ~~ Map && ($res.head<text>:exists) {
+                    $res.head<text>;
+                } else {
+                    $res.raku;
+                }
+            }
+            default { $res; }
+        }
+
+        # Copy to clipboard
+        if $*DISTRO eq 'macos' {
+            copy-to-clipboard($res);
+        }
+
+        # Result
+        return Result.new:
+                output => $res,
+                output-mime-type => self.output-mime-type,
+                stdout => $res,
+                stdout-mime-type => self.output-mime-type,
+                ;
+    }
+}
+
 my class Magic::Run is Magic {
     has Str:D $.file is required;
     method preprocess($code is rw) {
@@ -837,7 +890,7 @@ class Magic::AlwaysWorker is Magic {
 class Magic::Actions {
     method TOP($/) { $/.make: $<magic>.made }
     method magic($/) {
-        $/.make: $<simple>.made // $<filter>.made // $<llm-args>.made // $<mermaid-args>.made // $<args>.made // $<chat-id-spec>.made // $<chat-meta-spec>.made // $<dalle-meta-spec>.made // $<always>.made;
+        $/.make: $<simple>.made // $<filter>.made // $<llm-args>.made // $<mermaid-args>.made // $<deepl-args>.made // $<args>.made // $<chat-id-spec>.made // $<chat-meta-spec>.made // $<dalle-meta-spec>.made // $<always>.made;
     }
     method simple($/) {
         given "$<key>" {
@@ -860,6 +913,11 @@ class Magic::Actions {
         my %args = $<magic-list-of-params>.made // %();
         my $output-mime-type = $<output-mime>.made.mime-type // 'text/html';
         $/.make: Magic::MermaidInk.new(:%args, :$output-mime-type);
+    }
+    method deepl-args($/) {
+        my %args = $<magic-list-of-params>.made // %();
+        my $output-mime-type = $<output-mime>.made.mime-type // 'text/html';
+        $/.make: Magic::DeepL.new(:%args, :$output-mime-type);
     }
     method llm-args($/) {
         my %args = $<magic-list-of-params>.made // %();
