@@ -17,6 +17,7 @@
     "JSON::Tiny",
     "LLM::Functions:ver<0.1.12+>",
     "LLM::Prompts:ver<0.1.2+>",
+    "Lingua::Translation::DeepL:ver<0.1.5+>",
     "Log::Async",
     "Net::ZMQ:ver<0.8>",
     "Text::Plot:ver<0.1.1+>",
