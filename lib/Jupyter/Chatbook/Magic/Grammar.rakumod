@@ -12,7 +12,7 @@ grammar Jupyter::Chatbook::Magic::Grammar {
         $<key>='run' $<rest>=.*
     }
     regex llm-args {
-        $<key>=[ 'llama' | 'mistralai' | 'openai' | 'dalle' | 'palm' | 'chat' ] [\h* '>' \h* $<output-mime>=<mime> | \h* ] [ <.param-sep> <magic-list-of-params> \h*]? \h*
+        $<key>=[ 'gemini' | 'llama' | 'mistralai' | 'openai' | 'dalle' | 'palm' | 'chat' ] [\h* '>' \h* $<output-mime>=<mime> | \h* ] [ <.param-sep> <magic-list-of-params> \h*]? \h*
     }
     token chat-id-spec {
         <chat> [ '-' | '_' | ':' | \h+ ] $<chat-id>=(<.alnum> <-[,;\s]>*) [\h* '>' \h* $<output-mime>=<mime>]? [<.param-sep> <magic-list-of-params> \h*]? \h*
@@ -43,6 +43,7 @@ grammar Jupyter::Chatbook::Magic::Grammar {
         | <javascript>
         | <openai>
         | <dalle>
+        | <gemini>
         | <palm>
         | <mermaid>
         | <chat>
@@ -58,6 +59,9 @@ grammar Jupyter::Chatbook::Magic::Grammar {
     }
     token latex {
         'latex' [ '(' $<enclosure>=[ \w | '*' ]+ ')' ]?
+    }
+    token gemini {
+        'gemini'
     }
     token mistralai {
         'mistrali'

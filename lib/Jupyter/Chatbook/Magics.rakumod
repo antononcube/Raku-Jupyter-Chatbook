@@ -1,6 +1,7 @@
 unit class Jupyter::Chatbook::Magics;
 use Jupyter::Chatbook::Response;
 use Jupyter::Chatbook::Magic::Grammar;
+use WWW::Gemini;
 use WWW::LLaMA;
 use WWW::MistralAI;
 use WWW::OpenAI;
@@ -482,6 +483,43 @@ my class Magic::PaLM is Magic::LLM {
     }
 }
 
+
+my class Magic::Gemini is Magic::LLM {
+    method preprocess($code) {
+
+        # Process arguments
+        self.pre-process-args;
+
+        self.args = %(max-tokens => 2048, format => 'values') , self.args;
+
+        # Call LLM's interface function
+        my $res;
+        try {
+            $res = gemini-generate-content( $code, |self.args);
+        }
+
+        if $! {
+            $res = "Cannot process request.";
+            if $! ~~ X::AdHoc {
+                $res ~= "\n" ~ $!.Str;
+            }
+        }
+
+        # Copy to clipboard
+        if $*DISTRO eq 'macos' {
+            copy-to-clipboard($res);
+        }
+
+        # Result
+        return Result.new:
+                output => $res,
+                output-mime-type => self.output-mime-type,
+                stdout => $res,
+                stdout-mime-type => self.output-mime-type,
+                ;
+    }
+}
+
 my class Magic::Chat is Magic::LLM {
     has $.chat-id is rw;
     method preprocess($code) {
@@ -828,6 +866,9 @@ class Magic::Actions {
         my $output-mime-type = $<output-mime>.made.mime-type // 'text/plain';
 
         given ("$<key>") {
+            when 'gemini' {
+                $/.make: Magic::Gemini.new(:%args, :$output-mime-type);
+            }
             when 'llama' {
                 $/.make: Magic::LLaMA.new(:%args, :$output-mime-type);
             }
