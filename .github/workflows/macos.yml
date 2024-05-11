@@ -26,7 +26,7 @@ jobs:
         run: |
           brew install zmq
           export DYLD_LIBRARY_PATH=/opt/homebrew/lib:$DYLD_LIBRARY_PATH
-          cp /opt/homebrew/lib/libzmq.5.dylib /usr/local/lib/libzmq.5.dylib
+          cp /opt/homebrew/lib/libzmq.5.dylib /usr/lib/libzmq.5.dylib
           zef install --test --deps-only .
           zef install --test App::Prove6
       - name: Run Tests
