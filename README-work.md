@@ -201,12 +201,12 @@ that can be used to post-process LLM outputs.
 
 ## LLM cells
 
-The LLMs of OpenAI (ChatGPT, DALL-E) and Google (PaLM) can be interacted with using "dedicated" notebook cells.
+The LLMs of OpenAI (ChatGPT, DALL-E) and Google (PaLM, Gemini) can be interacted with using "dedicated" notebook cells.
 
 Here is an example of a code cell with PaLM magic spec:
 
 ```
-%% palm, max-tokens=600
+%% gemini, max-tokens=600
 Generate a horror story about a little girl lost in the forest and getting possessed.
 ```
 
@@ -421,6 +421,67 @@ flowchart LR
     AKWQ --> |no| CIDNone
     CIDNone --> CIDEQ
     COEval -.- LLMFunc
+```
+
+-------
+
+## [DeepL](https://www.deepl.com) cells
+
+Chatbooks can have [DeepL](https://www.deepl.com) cells. For example:
+
+```
+#% deepl, to-lang=German, formality=less, format=text
+I told you to get the frames from the other warehouse!
+```
+
+```
+Ich habe dir gesagt, du sollst die Rahmen aus dem anderen Lager holen!
+```
+
+-------
+
+## [Mermaid-JS](https://mermaid.js.org) cells
+
+Chatbooks can have [Mermaid-JS](https://mermaid.js.org) cells. For example:
+
+```
+#% mermaid, format=svg, background=SlateGray
+mindmap
+**Chatbook**
+    **Direct LLM access**
+        OpenAI
+            ChatGPT
+            DALL-E
+        Google
+            PaLM
+            Gemini
+        MistralAI
+        LLaMA
+    **Notebook wide chats**
+        Chat objects
+           Named
+           Anonymous
+        Chat meta cells              
+        Prompt DSL expansion 
+    **DeepL**
+    **MermaidJS**
+        SVG
+        PNG
+    **Pre-loaded packages**
+        LLM::Functions
+        LLM::Prompts
+        Text::SubParsers
+        Data::Translators
+        Data::TypeSystem
+        Clipboard :ALL
+        Text::Plot
+        Image::Markup::Utilities
+        WWW::LLaMA
+        WWW::MermaidInk
+        WWW::OpenAI
+        WWW::PaLM
+        WWW::Gemini
+        Lingua::Translation::DeepL
 ```
 
 ------

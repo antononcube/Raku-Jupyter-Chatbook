@@ -341,6 +341,67 @@ flowchart LR
     LLMFunc <-.-> PaLM
 ```
 
+-------
+
+## [DeepL](https://www.deepl.com) cells
+
+Chatbooks can have [DeepL](https://www.deepl.com) cells. For example:
+
+```
+#% deepl, to-lang=German, formality=less, format=text
+I told you to get the frames from the other warehouse!
+```
+
+```
+Ich habe dir gesagt, du sollst die Rahmen aus dem anderen Lager holen!
+```
+
+-------
+
+## [Mermaid-JS](https://mermaid.js.org) cells
+
+Chatbooks can have [Mermaid-JS](https://mermaid.js.org) cells. For example:
+
+```
+#% mermaid, format=svg, background=SlateGray
+mindmap
+**Chatbook**
+    **Direct LLM access**
+        OpenAI
+            ChatGPT
+            DALL-E
+        Google
+            PaLM
+            Gemini
+        MistralAI
+        LLaMA
+    **Notebook wide chats**
+        Chat objects
+           Named
+           Anonymous
+        Chat meta cells              
+        Prompt DSL expansion 
+    **DeepL**
+    **MermaidJS**
+        SVG
+        PNG
+    **Pre-loaded packages**
+        LLM::Functions
+        LLM::Prompts
+        Text::SubParsers
+        Data::Translators
+        Data::TypeSystem
+        Clipboard :ALL
+        Text::Plot
+        Image::Markup::Utilities
+        WWW::LLaMA
+        WWW::MermaidInk
+        WWW::OpenAI
+        WWW::PaLM
+        WWW::Gemini
+        Lingua::Translation::DeepL
+```
+
 ------
 
 ## Chat meta cells
