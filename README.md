@@ -211,7 +211,7 @@ that can be used to post-process LLM outputs.
 
 ## LLM cells
 
-The LLMs of OpenAI (ChatGPT, DALL-E) and Google (PaLM) can be interacted with using "dedicated" notebook cells.
+The LLMs of OpenAI (ChatGPT, DALL-E) and Google (PaLM, Gemini) can be interacted with using "dedicated" notebook cells.
 
 Here is an example of a code cell with PaLM magic spec:
 
