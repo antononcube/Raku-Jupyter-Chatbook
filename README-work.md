@@ -48,6 +48,13 @@ From GitHub:
 zef install https://github.com/antononcube/Raku-Jupyter-Chatbook.git
 ```
 
+### macOS specific
+
+If using macOS and [ZMQ](https://zeromq.org) is installed with [homebrew](https://formulae.brew.sh/formula/zeromq), 
+then it might be necessary to copy the ZMQ library "libzmq.5.dylib" into a directory where `zef` can find it.
+
+For example, see the GitHub Actions workflow file ["macos.yml"](https://github.com/antononcube/Raku-Jupyter-Chatbook/blob/master/.github/workflows/macos.yml). 
+
 -------
 
 ## Jupyter kernel configuration

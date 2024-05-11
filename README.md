@@ -48,6 +48,13 @@ From GitHub:
 zef install https://github.com/antononcube/Raku-Jupyter-Chatbook.git
 ```
 
+### macOS specific
+
+If using macOS and [ZMQ](https://zeromq.org) is installed with [homebrew](https://formulae.brew.sh/formula/zeromq), 
+then it might be necessary to copy the ZMQ library "libzmq.5.dylib" into a directory where `zef` can find it.
+
+For example, see the GitHub Actions workflow file ["macos.yml"](https://github.com/antononcube/Raku-Jupyter-Chatbook/blob/master/.github/workflows/macos.yml). 
+
 -------
 
 ## Jupyter kernel configuration
@@ -169,7 +176,7 @@ use LLM::Functions;
 my &fcp = llm-function({"What is the population of the country $_ ?"});
 ```
 ```
-# -> **@args, *%args { #`(Block|5289336413576) ... }
+# -> **@args, *%args { #`(Block|4681680264152) ... }
 ```
 
 Here is another cell that can be evaluated multiple times using different country names:
@@ -178,7 +185,7 @@ Here is another cell that can be evaluated multiple times using different countr
 <Niger Gabon>.map({ &fcp($_) })
 ```
 ```
-# (As of 2021, the estimated population of Niger is approximately 25.9 million people. As of 2021, the estimated population of Gabon is around 2.2 million people.)
+# (As of 2021, the population of Niger is estimated to be around 25 million people. As of 2021, the estimated population of Gabon is 2.27 million.)
 ```
 
 For more examples of LLM functions and LLM chat objects see the notebook 
