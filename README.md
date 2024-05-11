@@ -128,12 +128,16 @@ would find the "RakuChatbook" kernel "quicker" or "more directly."
 
 ------
 
-## LLM API keys
+## LLM and DeepL API keys
 
-The default API keys for the chat cells, LLM functions, and chat objects are taken from 
-the Operating System (OS) environmental variables `OPENAI_API_KEY` and `PALM_API_KEY`. 
+The default API keys for the chat cells, LLM functions, chat objects, and DeepL cells are taken from 
+the Operating System (OS) environmental variables 
+`OPENAI_API_KEY`, `PALM_API_KEY`, `GEMINI_API_KEY`, `MISTRAL_API_KEY`, `DEEPL_AUTH_KEY`. 
+
 The api keys can also be specified using LLM evaluator and configuration options and objects; 
 see [AA3, AAp2, AAv4].
+
+**Remark:** `PALM_API_KEY` works for both PaLM and Gemini.
 
 -------
 
@@ -165,7 +169,7 @@ use LLM::Functions;
 my &fcp = llm-function({"What is the population of the country $_ ?"});
 ```
 ```
-# -> **@args, *%args { #`(Block|6145715459864) ... }
+# -> **@args, *%args { #`(Block|5485873962304) ... }
 ```
 
 Here is another cell that can be evaluated multiple times using different country names:
@@ -174,11 +178,7 @@ Here is another cell that can be evaluated multiple times using different countr
 <Niger Gabon>.map({ &fcp($_) })
 ```
 ```
-# (
-# 
-# As of July 2020, the population of Niger is estimated to be 22,822,542. 
-# 
-# According to the World Bank, the population of Gabon is 2,264,927 as of 2020.)
+# (As of 2021, the estimated population of Niger is approximately 24.21 million people. As of 2021, the estimated population of Gabon is around 2.3 million people.)
 ```
 
 For more examples of LLM functions and LLM chat objects see the notebook 
@@ -216,7 +216,7 @@ The LLMs of OpenAI (ChatGPT, DALL-E) and Google (PaLM, Gemini) can be interacted
 Here is an example of a code cell with PaLM magic spec:
 
 ```
-%% palm, max-tokens=600
+%% gemini, max-tokens=600
 Generate a horror story about a little girl lost in the forest and getting possessed.
 ```
 
@@ -341,67 +341,6 @@ flowchart LR
     LLMFunc <-.-> PaLM
 ```
 
--------
-
-## [DeepL](https://www.deepl.com) cells
-
-Chatbooks can have [DeepL](https://www.deepl.com) cells. For example:
-
-```
-#% deepl, to-lang=German, formality=less, format=text
-I told you to get the frames from the other warehouse!
-```
-
-```
-Ich habe dir gesagt, du sollst die Rahmen aus dem anderen Lager holen!
-```
-
--------
-
-## [Mermaid-JS](https://mermaid.js.org) cells
-
-Chatbooks can have [Mermaid-JS](https://mermaid.js.org) cells. For example:
-
-```
-#% mermaid, format=svg, background=SlateGray
-mindmap
-**Chatbook**
-    **Direct LLM access**
-        OpenAI
-            ChatGPT
-            DALL-E
-        Google
-            PaLM
-            Gemini
-        MistralAI
-        LLaMA
-    **Notebook wide chats**
-        Chat objects
-           Named
-           Anonymous
-        Chat meta cells              
-        Prompt DSL expansion 
-    **DeepL**
-    **MermaidJS**
-        SVG
-        PNG
-    **Pre-loaded packages**
-        LLM::Functions
-        LLM::Prompts
-        Text::SubParsers
-        Data::Translators
-        Data::TypeSystem
-        Clipboard :ALL
-        Text::Plot
-        Image::Markup::Utilities
-        WWW::LLaMA
-        WWW::MermaidInk
-        WWW::OpenAI
-        WWW::PaLM
-        WWW::Gemini
-        Lingua::Translation::DeepL
-```
-
 ------
 
 ## Chat meta cells
@@ -494,6 +433,67 @@ flowchart LR
     COEval -.- LLMFunc
 ```
 
+-------
+
+## [DeepL](https://www.deepl.com) cells
+
+Chatbooks can have [DeepL](https://www.deepl.com) cells. For example:
+
+```
+#% deepl, to-lang=German, formality=less, format=text
+I told you to get the frames from the other warehouse!
+```
+
+```
+Ich habe dir gesagt, du sollst die Rahmen aus dem anderen Lager holen!
+```
+
+-------
+
+## [Mermaid-JS](https://mermaid.js.org) cells
+
+Chatbooks can have [Mermaid-JS](https://mermaid.js.org) cells. For example:
+
+```
+#% mermaid, format=svg, background=SlateGray
+mindmap
+**Chatbook**
+    **Direct LLM access**
+        OpenAI
+            ChatGPT
+            DALL-E
+        Google
+            PaLM
+            Gemini
+        MistralAI
+        LLaMA
+    **Notebook wide chats**
+        Chat objects
+           Named
+           Anonymous
+        Chat meta cells              
+        Prompt DSL expansion 
+    **DeepL**
+    **MermaidJS**
+        SVG
+        PNG
+    **Pre-loaded packages**
+        LLM::Functions
+        LLM::Prompts
+        Text::SubParsers
+        Data::Translators
+        Data::TypeSystem
+        Clipboard :ALL
+        Text::Plot
+        Image::Markup::Utilities
+        WWW::LLaMA
+        WWW::MermaidInk
+        WWW::OpenAI
+        WWW::PaLM
+        WWW::Gemini
+        Lingua::Translation::DeepL
+```
+
 ------
 
 ## TODO
@@ -502,13 +502,17 @@ flowchart LR
    1. [X] DONE Chat-meta cells (simple)
       - [X] DONE meta  
       - [X] DONE all  
-      - [X] DONE prompt  
-   2. [ ] TODO Chat-meta cells (via LLM)
-   3. [ ] TODO DSL ["ProdGDT"](https://github.com/antononcube/Raku-WWW-ProdGDT) cells
-   4. [X] DONE Using pre-prepared prompts
+      - [X] DONE prompt
+   2. [X] DONE Gemini cells
+   3. [X] DONE DeepL cells
+   4. [ ] TODO Wolfram|Alpha cells
+      - Handling cell type: result, simple, or query
+   5. [ ] TODO Chat-meta cells (via LLM)
+   6. [ ] TODO DSL ["ProdGDT"](https://github.com/antononcube/Raku-WWW-ProdGDT) cells
+   7. [X] DONE Using pre-prepared prompts
       - This requires implementing ["LLM::Prompts"](https://github.com/antononcube/Raku-LLM-Prompts).
         - And populating it with a good number of prompts.
-   5. [ ] TODO Parse Python style magics
+   8. [ ] TODO Parse Python style magics
       - See ["JupyterChatbook"](https://github.com/antononcube/Python-JupyterChatbook)
       - See ["Getopt::Long::Grammar"](https://github.com/antononcube/Raku-Getopt-Long-Grammar)
 2. [ ] TODO Unit tests
@@ -607,6 +611,31 @@ flowchart LR
 [AAp10] Anton Antonov,
 [LLM::Prompts Raku package](https://github.com/antononcube/Raku-LLM-Prompts),
 (2023),
+[GitHub/antononcube](https://github.com/antononcube).
+
+[AAp11] Anton Antonov,
+[WWW::MermaidInk Raku package](https://github.com/antononcube/Raku-WWW-MermaidInk),
+(2023),
+[GitHub/antononcube](https://github.com/antononcube).
+
+[AAp12] Anton Antonov,
+[WWW::MistralAI Raku package](https://github.com/antononcube/Raku-WWW-MistralAI),
+(2023),
+[GitHub/antononcube](https://github.com/antononcube).
+
+[AAp13] Anton Antonov,
+[WWW::LLaMA Raku package](https://github.com/antononcube/Raku-WWW-LLaMA),
+(2024),
+[GitHub/antononcube](https://github.com/antononcube).
+
+[AAp14] Anton Antonov,
+[WWW::Gemini Raku package](https://github.com/antononcube/Raku-WWW-Gemini),
+(2024),
+[GitHub/antononcube](https://github.com/antononcube).
+
+[AAp15] Anton Antonov,
+[Lingua::Translation::DeepL Raku package](https://github.com/antononcube/Raku-Lingua-Translation-DeepL),
+(2022),
 [GitHub/antononcube](https://github.com/antononcube).
 
 [BDp1] Brian Duggan,

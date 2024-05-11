@@ -128,12 +128,16 @@ would find the "RakuChatbook" kernel "quicker" or "more directly."
 
 ------
 
-## LLM API keys
+## LLM and DeepL API keys
 
-The default API keys for the chat cells, LLM functions, and chat objects are taken from 
-the Operating System (OS) environmental variables `OPENAI_API_KEY` and `PALM_API_KEY`. 
+The default API keys for the chat cells, LLM functions, chat objects, and DeepL cells are taken from 
+the Operating System (OS) environmental variables 
+`OPENAI_API_KEY`, `PALM_API_KEY`, `GEMINI_API_KEY`, `MISTRAL_API_KEY`, `DEEPL_AUTH_KEY`. 
+
 The api keys can also be specified using LLM evaluator and configuration options and objects; 
 see [AA3, AAp2, AAv4].
+
+**Remark:** `PALM_API_KEY` works for both PaLM and Gemini.
 
 -------
 
@@ -492,13 +496,17 @@ mindmap
    1. [X] DONE Chat-meta cells (simple)
       - [X] DONE meta  
       - [X] DONE all  
-      - [X] DONE prompt  
-   2. [ ] TODO Chat-meta cells (via LLM)
-   3. [ ] TODO DSL ["ProdGDT"](https://github.com/antononcube/Raku-WWW-ProdGDT) cells
-   4. [X] DONE Using pre-prepared prompts
+      - [X] DONE prompt
+   2. [X] DONE Gemini cells
+   3. [X] DONE DeepL cells
+   4. [ ] TODO Wolfram|Alpha cells
+      - Handling cell type: result, simple, or query
+   5. [ ] TODO Chat-meta cells (via LLM)
+   6. [ ] TODO DSL ["ProdGDT"](https://github.com/antononcube/Raku-WWW-ProdGDT) cells
+   7. [X] DONE Using pre-prepared prompts
       - This requires implementing ["LLM::Prompts"](https://github.com/antononcube/Raku-LLM-Prompts).
         - And populating it with a good number of prompts.
-   5. [ ] TODO Parse Python style magics
+   8. [ ] TODO Parse Python style magics
       - See ["JupyterChatbook"](https://github.com/antononcube/Python-JupyterChatbook)
       - See ["Getopt::Long::Grammar"](https://github.com/antononcube/Raku-Getopt-Long-Grammar)
 2. [ ] TODO Unit tests
@@ -597,6 +605,31 @@ mindmap
 [AAp10] Anton Antonov,
 [LLM::Prompts Raku package](https://github.com/antononcube/Raku-LLM-Prompts),
 (2023),
+[GitHub/antononcube](https://github.com/antononcube).
+
+[AAp11] Anton Antonov,
+[WWW::MermaidInk Raku package](https://github.com/antononcube/Raku-WWW-MermaidInk),
+(2023),
+[GitHub/antononcube](https://github.com/antononcube).
+
+[AAp12] Anton Antonov,
+[WWW::MistralAI Raku package](https://github.com/antononcube/Raku-WWW-MistralAI),
+(2023),
+[GitHub/antononcube](https://github.com/antononcube).
+
+[AAp13] Anton Antonov,
+[WWW::LLaMA Raku package](https://github.com/antononcube/Raku-WWW-LLaMA),
+(2024),
+[GitHub/antononcube](https://github.com/antononcube).
+
+[AAp14] Anton Antonov,
+[WWW::Gemini Raku package](https://github.com/antononcube/Raku-WWW-Gemini),
+(2024),
+[GitHub/antononcube](https://github.com/antononcube).
+
+[AAp15] Anton Antonov,
+[Lingua::Translation::DeepL Raku package](https://github.com/antononcube/Raku-Lingua-Translation-DeepL),
+(2022),
 [GitHub/antononcube](https://github.com/antononcube).
 
 [BDp1] Brian Duggan,
