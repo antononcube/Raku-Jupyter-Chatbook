@@ -431,7 +431,10 @@ flowchart LR
 
 ## [DeepL](https://www.deepl.com) cells
 
-Chatbooks can have [DeepL](https://www.deepl.com) cells. For example:
+Chatbooks can have [DeepL](https://www.deepl.com) cells (that use the package 
+["Lingua::Translation::DeepL"](https://raku.land/zef:antononcube/Lingua::Translation::DeepL),
+[AAp15].)
+For example:
 
 ```
 #% deepl, to-lang=German, formality=less, format=text
@@ -446,7 +449,9 @@ Ich habe dir gesagt, du sollst die Rahmen aus dem anderen Lager holen!
 
 ## [Mermaid-JS](https://mermaid.js.org) cells
 
-Chatbooks can have [Mermaid-JS](https://mermaid.js.org) cells. For example:
+Chatbooks can have [Mermaid-JS](https://mermaid.js.org) cells,
+(that use the package ["WWW::MermaidInk"](https://raku.land/zef:antononcube/WWW::MermaidInk), [AAp11].)
+For example:
 
 ```
 #% mermaid, format=svg, background=SlateGray

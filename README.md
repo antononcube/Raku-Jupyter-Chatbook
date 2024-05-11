@@ -169,7 +169,7 @@ use LLM::Functions;
 my &fcp = llm-function({"What is the population of the country $_ ?"});
 ```
 ```
-# -> **@args, *%args { #`(Block|5485873962304) ... }
+# -> **@args, *%args { #`(Block|5289336413576) ... }
 ```
 
 Here is another cell that can be evaluated multiple times using different country names:
@@ -178,7 +178,7 @@ Here is another cell that can be evaluated multiple times using different countr
 <Niger Gabon>.map({ &fcp($_) })
 ```
 ```
-# (As of 2021, the estimated population of Niger is approximately 24.21 million people. As of 2021, the estimated population of Gabon is around 2.3 million people.)
+# (As of 2021, the estimated population of Niger is approximately 25.9 million people. As of 2021, the estimated population of Gabon is around 2.2 million people.)
 ```
 
 For more examples of LLM functions and LLM chat objects see the notebook 
@@ -437,7 +437,10 @@ flowchart LR
 
 ## [DeepL](https://www.deepl.com) cells
 
-Chatbooks can have [DeepL](https://www.deepl.com) cells. For example:
+Chatbooks can have [DeepL](https://www.deepl.com) cells (that use the package 
+["Lingua::Translation::DeepL"](https://raku.land/zef:antononcube/Lingua::Translation::DeepL),
+[AAp15].)
+For example:
 
 ```
 #% deepl, to-lang=German, formality=less, format=text
@@ -452,7 +455,9 @@ Ich habe dir gesagt, du sollst die Rahmen aus dem anderen Lager holen!
 
 ## [Mermaid-JS](https://mermaid.js.org) cells
 
-Chatbooks can have [Mermaid-JS](https://mermaid.js.org) cells. For example:
+Chatbooks can have [Mermaid-JS](https://mermaid.js.org) cells,
+(that use the package ["WWW::MermaidInk"](https://raku.land/zef:antononcube/WWW::MermaidInk), [AAp11].)
+For example:
 
 ```
 #% mermaid, format=svg, background=SlateGray
