@@ -1,0 +1,7 @@
+Revision history for "Jupyter::Chatbook"
+
+0.3.0 2024-05-14
+    - Added Wolfram|Alpha cell.
+
+0.2.8 2024-05-09
+    - Added DeepL and Gemini cells.
