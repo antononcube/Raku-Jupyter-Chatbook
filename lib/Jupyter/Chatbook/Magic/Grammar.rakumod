@@ -2,7 +2,7 @@ grammar Jupyter::Chatbook::Magic::Grammar {
     rule TOP { <magic> }
     rule magic {
         [ '%%' | '#%' ]
-        [ <chat-meta-spec> || <dalle-meta-spec> || <chat-id-spec> || <llm-args> || <mermaid-args> || <deepl-args> || <args> || <simple> || <filter> || <always> ]
+        [ <chat-meta-spec> || <dalle-meta-spec> || <chat-id-spec> || <llm-args> || <mermaid-args> || <deepl-args> || <wolfram-alpha-args> || <args> || <simple> || <filter> || <always> ]
     }
     token simple {
         $<key>=[ 'javascript' | 'bash' ]
@@ -30,6 +30,9 @@ grammar Jupyter::Chatbook::Magic::Grammar {
     token deepl-args {
         $<key>=<.deepl> [\h* '>' \h* $<output-mime>=<mime> | \h* ] [ <.param-sep> <magic-list-of-params> \h*]? \h*
     }
+    token wolfram-alpha-args {
+        $<key>=<.wolfram-alpha> [\h* '>' \h* $<output-mime>=<mime> | \h* ] [ <.param-sep> <magic-list-of-params> \h*]? \h*
+    }
     rule filter {
         [
         | $<out>=<mime> ['>' $<stdout>=<mime>]?
@@ -50,6 +53,7 @@ grammar Jupyter::Chatbook::Magic::Grammar {
         | <gemini>
         | <palm>
         | <mermaid>
+        | <wolfram-alpha>
         | <chat>
     }
     token html {
@@ -84,6 +88,9 @@ grammar Jupyter::Chatbook::Magic::Grammar {
     }
     token mermaid {
         'mermaid' || 'mmd'
+    }
+    token wolfram-alpha {
+        'wolfram-alpha' || 'wa' || 'w|a'
     }
     token chat {
         'chat'

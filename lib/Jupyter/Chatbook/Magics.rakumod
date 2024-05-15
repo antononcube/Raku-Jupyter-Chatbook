@@ -7,6 +7,7 @@ use WWW::MistralAI;
 use WWW::OpenAI;
 use WWW::PaLM;
 use WWW::MermaidInk;
+use WWW::WolframAlpha;
 use Clipboard;  # copy-to-clipboard
 use Text::SubParsers;
 use LLM::Functions;
@@ -738,7 +739,7 @@ my class Magic::MermaidInk is Magic {
             }
 
             default {
-                "Unknown format. Known format: <image svg hash>."
+                "Unknown format. Known formats: <image svg hash>."
             }
         };
 
@@ -799,6 +800,59 @@ my class Magic::DeepL is Magic {
                 output-mime-type => self.output-mime-type,
                 stdout => $res,
                 stdout-mime-type => self.output-mime-type,
+                ;
+    }
+}
+
+my class Magic::WolframAlpha is Magic {
+    has %.args;
+    has $.output-mime-type is rw = 'text/html';
+    method preprocess($code) {
+
+        my $path = self.args<path> // self.args<type> // 'simple';
+
+        my %args = self.args.grep({ $_.key ∉ <path type format header-level plaintext> });
+
+        my $mimeType = self.output-mime-type;
+
+        my $res = do given $path {
+            when $_.lc ∈ <result short> {
+                $mimeType = 'text/plain';
+                wolfram-alpha-result($code, |%args);
+            }
+
+            when $_.lc ∈ <simple> {
+                my $imgResB64 = wolfram-alpha-simple($code, format => 'md-image', |%args);
+                image-from-base64($imgResB64);
+            }
+
+            when $_.lc ∈ <query pods> {
+                $mimeType = 'text/markdown';
+
+                my $header-level = self.args<header-level> // 4;
+                $header-level = try { $header-level.Int };
+                if $! { $header-level = 4; }
+
+                my $plaintext = self.args<plaintext> // "False";
+                $plaintext = $plaintext.Str.lc ∈ <yes true> ?? True !! False;
+
+                my $res = wolfram-alpha-query($code, |%args);
+                try {
+                   $res = wolfram-alpha-pods-to-markdown($res, :$header-level, :$plaintext);
+                }
+                if $! { "No available answer." } else { $res }
+            }
+
+            default {
+                "Unknown type (aka path). Known types: <result simple query>."
+            }
+        };
+
+        return Result.new:
+                output => $res,
+                output-mime-type => $mimeType,
+                stdout => $res,
+                stdout-mime-type => $mimeType,
                 ;
     }
 }
@@ -890,7 +944,10 @@ class Magic::AlwaysWorker is Magic {
 class Magic::Actions {
     method TOP($/) { $/.make: $<magic>.made }
     method magic($/) {
-        $/.make: $<simple>.made // $<filter>.made // $<llm-args>.made // $<mermaid-args>.made // $<deepl-args>.made // $<args>.made // $<chat-id-spec>.made // $<chat-meta-spec>.made // $<dalle-meta-spec>.made // $<always>.made;
+        $/.make:
+                $<simple>.made // $<filter>.made // $<llm-args>.made // $<mermaid-args>.made // $<deepl-args>.made //
+                        $<wolfram-alpha-args>.made // $<args>.made // $<chat-id-spec>.made // $<chat-meta-spec>.made //
+                        $<dalle-meta-spec>.made // $<always>.made;
     }
     method simple($/) {
         given "$<key>" {
@@ -916,8 +973,13 @@ class Magic::Actions {
     }
     method deepl-args($/) {
         my %args = $<magic-list-of-params>.made // %();
-        my $output-mime-type = $<output-mime>.made.mime-type // 'text/html';
+        my $output-mime-type = $<output-mime>.made.mime-type // 'text/plain';
         $/.make: Magic::DeepL.new(:%args, :$output-mime-type);
+    }
+    method wolfram-alpha-args($/) {
+        my %args = $<magic-list-of-params>.made // %();
+        my $output-mime-type = $<output-mime>.made.mime-type // 'text/html';
+        $/.make: Magic::WolframAlpha.new(:%args, :$output-mime-type);
     }
     method llm-args($/) {
         my %args = $<magic-list-of-params>.made // %();
