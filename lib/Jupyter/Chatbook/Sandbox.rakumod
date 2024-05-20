@@ -98,6 +98,7 @@ class Jupyter::Chatbook::Sandbox is export {
             use WWW::OpenAI;
             use WWW::PaLM;
             use WWW::Gemini;
+            use WWW::WolframAlpha;
             use Lingua::Translation::DeepL;
         INIT
     }
