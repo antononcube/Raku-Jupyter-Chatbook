@@ -72,7 +72,7 @@ grammar Jupyter::Chatbook::Magic::Grammar {
         'gemini'
     }
     token mistralai {
-        'mistrali'
+        'mistralai'
     }
     token openai {
         'openai'
