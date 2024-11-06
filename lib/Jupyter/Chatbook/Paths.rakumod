@@ -7,11 +7,11 @@ sub data-dir is export {
         return %*ENV<JUPYTER_DATA_DIR>;
     }
 
-    do given ($*DISTRO) {
+    given $*DISTRO {
         when .is-win {
             '%APPDATA%'.IO.child('jupyter')
         }
-        when .name eq 'macosx' {
+        when .name eq 'macos' {
             %*ENV<HOME>.IO.child('Library').child('Jupyter')
         }
         default {
