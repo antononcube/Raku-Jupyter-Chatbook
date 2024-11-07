@@ -27,7 +27,7 @@ This repository is mostly for experimental work, but it aims to be *always* very
 useful for interacting with LLMs via Raku.
 
 **Remark:** The reason to have a separate package -- a fork of
-["Jupyter::Chatbook"](https://github.com/bduggan/raku-jupyter-kernel) --
+["Jupyter::Kernel"](https://github.com/bduggan/raku-jupyter-kernel) --
 is because:
 - I plan to introduce 4-6 new package dependencies
 - I expect to do a fair amount of UX experimental implementations and refactoring
@@ -60,7 +60,7 @@ For example, see the GitHub Actions workflow file ["macos.yml"](https://github.c
 ## Jupyter kernel configuration
 
 **Remark:** The instructions in this section follow the instructions in
-["Jupyter::Chatbook"](https://github.com/bduggan/raku-jupyter-kernel).
+["Jupyter::Kernel"](https://github.com/bduggan/raku-jupyter-kernel).
 The "main" change is using `jupyter-chatbook.raku` instead of `jupyter-kernel.raku`. 
 
 ### Server Configuration
@@ -135,13 +135,13 @@ would find the "RakuChatbook" kernel "quicker" or "more directly."
 
 ------
 
-## LLM and DeepL API keys
+## LLM, DeepL, and WolframAlpha API keys
 
 The default API keys for the chat cells, LLM functions, chat objects, and DeepL cells are taken from 
 the Operating System (OS) environmental variables 
-`OPENAI_API_KEY`, `PALM_API_KEY`, `GEMINI_API_KEY`, `MISTRAL_API_KEY`, `DEEPL_AUTH_KEY`. 
+`OPENAI_API_KEY`, `PALM_API_KEY`, `GEMINI_API_KEY`, `MISTRAL_API_KEY`, `DEEPL_AUTH_KEY`, `WOLFRAM_ALPHA_API_KEY`. 
 
-The api keys can also be specified using LLM evaluator and configuration options and objects; 
+The API keys can also be specified using LLM evaluator and configuration options and objects; 
 see [AA3, AAp2, AAv4].
 
 **Remark:** `PALM_API_KEY` works for both PaLM and Gemini.
@@ -511,7 +511,7 @@ mindmap
       - [X] DONE prompt
    2. [X] DONE Gemini cells
    3. [X] DONE DeepL cells
-   4. [ ] TODO Wolfram|Alpha cells
+   4. [X] DONE Wolfram|Alpha cells
       - Handling cell type: result, simple, or query
    5. [ ] TODO Chat-meta cells (via LLM)
    6. [ ] TODO DSL ["ProdGDT"](https://github.com/antononcube/Raku-WWW-ProdGDT) cells
@@ -560,6 +560,11 @@ mindmap
 [AA4] Anton Antonov,
 ["Number guessing games: PaLM vs ChatGPT"](https://rakuforprediction.wordpress.com/2023/08/06/number-guessing-games-palm-vs-chatgpt/),
 (2023),
+[RakuForPrediction at WordPress](https://rakuforprediction.wordpress.com).
+
+[AA5] Anton Antonov,
+["Chatbook New Magic Cells"](https://rakuforprediction.wordpress.com/2024/05/18/chatbook-new-magic-cells),
+(2024),
 [RakuForPrediction at WordPress](https://rakuforprediction.wordpress.com).
 
 [SW1] Stephen Wolfram,
@@ -644,6 +649,11 @@ mindmap
 (2022),
 [GitHub/antononcube](https://github.com/antononcube).
 
+[AAp16] Anton Antonov,
+[WWW::WolframAlpha Raku package](https://github.com/antononcube/Raku-WWW-WolframAlpha),
+(2024),
+[GitHub/antononcube](https://github.com/antononcube).
+
 [BDp1] Brian Duggan,
 [Jupyter:Kernel Raku package](https://github.com/bduggan/raku-jupyter-kernel),
 (2017-2023),
@@ -683,4 +693,4 @@ mindmap
 
 ¹ Jupyter clients are user interfaces to interact with an interpreter kernel like "Jupyter::Chatbook".
 Jupyter [Lab | Notebook | Console | QtConsole ] are the jupyter maintained clients.
-More info in the [jupyter documentations site](https://jupyter.org/documentation).
+More info in the [Jupyter documentation site](https://jupyter.org/documentation).
