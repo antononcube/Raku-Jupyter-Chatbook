@@ -1,7 +1,7 @@
 {
   "name": "Jupyter::Chatbook",
   "description": "Jupyter Raku Chatbook that produces LLM-aware notebooks (or chatbooks.)",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "authors": [
     "Brian Duggan",
     "Anton Antonov"
