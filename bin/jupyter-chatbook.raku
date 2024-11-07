@@ -11,8 +11,8 @@ multi MAIN($spec-file, :$logfile = './jupyter.log') {
 
 
 multi MAIN(Bool :$generate-config!,
-        Str :$location = ~raku-dir;
-        Bool :$force) {
+    Str :$location = ~raku-dir;
+    Bool :$force) {
 
     # Retrieve color code
     # nb: Colored output can be disabled with RAKUDO_ERROR_COLOR environment variable
