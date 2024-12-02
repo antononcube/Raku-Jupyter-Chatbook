@@ -506,6 +506,8 @@ mindmap
         Lingua::Translation::DeepL
 ```
 
+**Remark:** The mermaid syntax is indentation sensitive, you may see the _invalid encoded code_ error if your indents are bad.
+
 ------
 
 ## TODO
