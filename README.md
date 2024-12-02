@@ -467,7 +467,7 @@ Chatbooks can have [Mermaid-JS](https://mermaid.js.org) cells,
 For example:
 
 ```
-#% mermaid, format=svg, background=SlateGray
+%% mermaid, format=svg, background=SlateGray
 mindmap
 **Chatbook**
     **Direct LLM access**
