@@ -467,7 +467,7 @@ Chatbooks can have [Mermaid-JS](https://mermaid.js.org) cells,
 For example:
 
 ```
-#% mermaid, format=svg, background=SlateGray
+%% mermaid, format=svg, background=SlateGray
 mindmap
 **Chatbook**
     **Direct LLM access**
@@ -505,6 +505,8 @@ mindmap
         WWW::Gemini
         Lingua::Translation::DeepL
 ```
+
+**Remark:** The mermaid syntax is indentation sensitive, you may see the _invalid encoded code_ error if your indents are bad.
 
 ------
 
