@@ -1,4 +1,4 @@
-FROM sumankhanal/rakudo:daily
+FROM rakudo-star:latest
 LABEL maintainer="Dr Suman Khanal <suman81765@gmail.com>"
 
 
@@ -16,21 +16,14 @@ RUN adduser --disabled-password \
 ENV PATH=$PATH:/usr/share/perl6/site/bin
 
 RUN apt-get update \
-    && apt-get install -y build-essential \
-    wget libzmq3-dev ca-certificates \
-    python3-pip python3-setuptools \
-    && rm -rf /var/lib/apt/lists/* && pip3 install jupyter notebook asciinema jupyterlab pyscaffold --no-cache-dir \
-    && zef -v install git://github.com/bduggan/p6-jupyter-kernel.git@0.0.21 --force-test \
-    && zef install SVG::Plot --force-test \
-    && jupyter-kernel.raku --generate-config \
+    && apt-get install -y build-essential tini wget libzmq3-dev ca-certificates \
+       python3-setuptools jupyter jupyter-notebook asciinema jupyterhub openssl libssl-dev
+RUN zef install SVG::Plot OpenSSL --force-test
+RUN zef -v install git://github.com/antononcube/Raku-Jupyter-Chatbook.git \
+    && jupyter-chatbook.raku --generate-config --force \
     && ln -s /usr/share/perl6/site/bin/* /usr/local/bin
 
-ENV TINI_VERSION v0.18.0
-ADD https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini /usr/bin/tini
-RUN chmod +x /usr/bin/tini
 ENTRYPOINT ["/usr/bin/tini", "--"]
-
-
 
 #For enabling binder..........................
 COPY eg ${HOME}
@@ -40,7 +33,6 @@ RUN chown -R ${NB_UID} ${HOME}
 USER ${NB_USER}
 WORKDIR ${HOME}
 #..............................................
-
 
 EXPOSE 8888
 
