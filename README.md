@@ -176,7 +176,7 @@ use LLM::Functions;
 my &fcp = llm-function({"What is the population of the country $_ ?"});
 ```
 ```
-# -> **@args, *%args { #`(Block|4089612762424) ... }
+# -> **@args, *%args { #`(Block|3736847888056) ... }
 ```
 
 Here is another cell that can be evaluated multiple times using different country names:
@@ -185,7 +185,7 @@ Here is another cell that can be evaluated multiple times using different countr
 <Niger Gabon>.map({ &fcp($_) })
 ```
 ```
-# (As of 2021, the estimated population of Niger is approximately 25 million people. According to the latest World Bank data, the population of Gabon is estimated to be around 2.2 million people as of 2021.)
+# (As of 2021, the population of Niger is estimated to be around 25 million. According to the latest United Nations data, the population of Gabon is approximately 2.2 million as of 2021.)
 ```
 
 For more examples of LLM functions and LLM chat objects see the notebook 
@@ -285,7 +285,8 @@ Here is a flowchart that summarizes the way chatbooks create and utilize LLM cha
 ```mermaid
 flowchart LR
     OpenAI{{OpenAI}}
-    PaLM{{PaLM}}
+    Gemini{{Gemini}}
+    LLaMA{{LLaMA}}
     LLMFunc[[LLM::Functions]]
     LLMProm[[LLM::Prompts]]
     CODB[(Chat objects)]
@@ -323,7 +324,8 @@ flowchart LR
     subgraph LLM interaction
       COEval
       LLMFunc
-      PaLM
+      Gemini
+      LLaMA
       OpenAI
     end
     CCell --> CIDQ
@@ -345,7 +347,8 @@ flowchart LR
     CIDNone --> CIDEQ
     COEval -.- LLMFunc
     LLMFunc <-.-> OpenAI
-    LLMFunc <-.-> PaLM
+    LLMFunc <-.-> Gemini
+    LLMFunc <-.-> LLaMA
 ```
 
 ------
@@ -467,7 +470,7 @@ Chatbooks can have [Mermaid-JS](https://mermaid.js.org) cells,
 For example:
 
 ```
-%% mermaid, format=svg, background=SlateGray
+#% mermaid, format=svg, background=SlateGray
 mindmap
 **Chatbook**
     **Direct LLM access**
@@ -506,7 +509,28 @@ mindmap
         Lingua::Translation::DeepL
 ```
 
-**Remark:** The mermaid syntax is indentation sensitive, you may see the _invalid encoded code_ error if your indents are bad.
+------
+
+## Docker 
+
+Thanks for @ab5tract there are two Docker files:
+
+1. [Dockerfile](./Dockerfile)
+2. [Dockerfile.rakudo-HEAD](./Dockerfile.rakudo-HEAD)
+
+The first is for a "standard" run; the second builds Rakudo.
+
+Create the "core" image [`rchat:1.0`](./Dockerfile.rakudo-HEAD) on Linux with:
+
+```
+docker build -f Dockerfile.rakudo-HEAD -t rchat:1.0 .
+```
+
+Run a container `chatbook` based on the image `rchat:1.0`:
+
+```
+docker run --rm -p 8888:8888 --name chatbook -t rchat:1.0
+```
 
 ------
 
@@ -518,15 +542,16 @@ mindmap
       - [X] DONE all  
       - [X] DONE prompt
    2. [X] DONE Gemini cells
-   3. [X] DONE DeepL cells
-   4. [X] DONE Wolfram|Alpha cells
+   3. [X] DONE LLaMA cells
+   4. [X] DONE DeepL cells
+   5. [X] DONE Wolfram|Alpha cells
       - Handling cell type: result, simple, or query
-   5. [ ] TODO Chat-meta cells (via LLM)
-   6. [ ] TODO DSL ["ProdGDT"](https://github.com/antononcube/Raku-WWW-ProdGDT) cells
-   7. [X] DONE Using pre-prepared prompts
+   6. [ ] TODO Chat-meta cells (via LLM)
+   7. [ ] TODO DSL ["ProdGDT"](https://github.com/antononcube/Raku-WWW-ProdGDT) cells
+   8. [X] DONE Using pre-prepared prompts
       - This requires implementing ["LLM::Prompts"](https://github.com/antononcube/Raku-LLM-Prompts).
         - And populating it with a good number of prompts.
-   8. [ ] TODO Parse Python style magics
+   9. [ ] TODO Parse Python style magics
       - See ["JupyterChatbook"](https://github.com/antononcube/Python-JupyterChatbook)
       - See ["Getopt::Long::Grammar"](https://github.com/antononcube/Raku-Getopt-Long-Grammar)
 2. [ ] TODO Unit tests
@@ -539,10 +564,10 @@ mindmap
    - [X] DONE LLM functions and chat objects in chatbooks
    - [X] DONE LLM cells in chatbooks
    - [X] DONE Notebook-wide chats and chat meta cells 
+   - [X] DONE Introductory video(s)
    - [ ] TODO All parameters of OpenAI API in Raku
    - [ ] TODO All parameters of PaLM API in Raku
    - [ ] TODO More details on prompts
-   - [ ] TODO Introductory video(s)
 
 ------
 
