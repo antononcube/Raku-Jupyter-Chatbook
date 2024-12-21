@@ -73,6 +73,7 @@ class Jupyter::Chatbook::Sandbox is export {
         $!handler = Jupyter::Chatbook::Handler.new unless $.handler;
         $OUTERS::iopub_supplier = $iopub_supplier;
         $!compiler := nqp::getcomp("Raku") || nqp::getcomp('perl6');
+        $*IN.^find_method('t').wrap( { True } );
         $!repl = REPL.new($!compiler, {});
         $!completer = Jupyter::Chatbook::Sandbox::Autocomplete.new(:$.handler);
         self.eval(q:to/INIT/);
