@@ -2,3 +2,5 @@
 Untitled*
 .precomp
 *.log
+.DS_Store
+.idea
