@@ -105,7 +105,7 @@ class MockResult {
 # Or have the env variable CHATBOOK_LLM_PERSONAS_CONF set to file.
 {
     my $code = q:to/DONE/;
-    %% chat p6
+    %% chat raku
     How to print a variable?
     DONE
 
