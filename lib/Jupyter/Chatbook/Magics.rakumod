@@ -14,6 +14,7 @@ use LLM::Functions;
 use LLM::Prompts;
 use Image::Markup::Utilities; # image-from-base64
 use Lingua::Translation::DeepL;
+use JSON::Tiny; # That has to be refactored out, and use "JSON::Fast".
 
 my class Result does Jupyter::Chatbook::Response {
     has $.output is default(Nil);
@@ -38,6 +39,7 @@ my class Always {
 #| Globals
 my $always = Always.new;
 
+# See the INIT block below
 my %chats;
 
 my @dalle-images;
@@ -1095,4 +1097,32 @@ method find-magic($code is rw) {
         return Magic::AlwaysWorker.new;
     }
     return $magic-action;
+}
+
+INIT {
+    my $base = %*ENV<XDG_HOME> // $*HOME.child('.local');
+    $base = $base.child('share').child('raku').child('Chatbook') // $*HOME.child('.local');
+    my $conf-file = %*ENV<CHATBOOK_LLM_PERSONAS_CONF> // $base.child('llm-personas.json');
+    if $conf-file.IO.e {
+        #note "Reading configuration from $conf-file";
+        try {
+            my @specs = |from-json($conf-file.IO.slurp);
+            if @specs ~~ (List:D | Array:D | Seq:D) && @specs.all ~~ Map:D {
+                # Merge magic arguments with defaults
+                my %personas = do for @specs.kv -> $i, %p {
+                    # Merge with defaults
+                    my %h = %(conf => 'ChatGPT', chat-id => "p$i" ), %p;
+                    # Expand prompt
+                    # For some reason this gives because it has new lines:
+                    #   Missing serialize REPR function for REPR VMException (BOOTException)
+                    #if %h<prompt>:exists {
+                    #    %h<prompt> = llm-prompt-expand(%h<prompt>)
+                    #}
+                    # Make a chat object
+                    %h<chat-id> => llm-chat(|%h);
+                }
+                %chats = %personas;
+            }
+        }
+    }
 }
