@@ -101,4 +101,21 @@ class MockResult {
     is $r.output-mime-type, 'text/markdown', 'chat magic set the mime type';
 }
 
+# It is expected to have the file "~/.local/share/raku/Chatbook/llm-personas.json".
+# Or have the env variable CHATBOOK_LLM_PERSONAS_CONF set to file.
+{
+    my $code = q:to/DONE/;
+    %% chat p6
+    How to print a variable?
+    DONE
+
+    ok my $magic = $m.find-magic($code), 'preprocess recognized %% chat';
+    is $code, "How to print a variable?\n", 'content of the chat cell';
+    my $r = $magic.preprocess($code);
+    #note $r.output;
+    # say $variable
+    is $r.output.contains('say'), True, 'response contains "say"';
+    is $r.output-mime-type, 'text/plain', 'chat magic set the mime type';
+}
+
 done-testing;
