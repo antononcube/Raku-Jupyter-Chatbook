@@ -1100,11 +1100,11 @@ method find-magic($code is rw) {
 }
 
 INIT {
-    my $base = %*ENV<XDG_HOME> // $*HOME.child('.local');
-    $base = $base.child('share').child('raku').child('Chatbook') // $*HOME.child('.local');
-    my $conf-file = %*ENV<CHATBOOK_LLM_PERSONAS_CONF> // $base.child('llm-personas.json');
+    my $base = %*ENV<XDG_HOME> // $*HOME.child('.config');
+    $base = $base.child('raku-chatbook') // $*HOME.child('.config');
+    my $conf-file = %*ENV<RAKU_CHATBOOK_LLM_PERSONAS_CONF> // $base.child('llm-personas.json');
     if $conf-file.IO.e {
-        #note "Reading configuration from $conf-file";
+        #debug "Reading configuration from $conf-file";
         try {
             my @specs = |from-json($conf-file.IO.slurp);
             if @specs ~~ (List:D | Array:D | Seq:D) && @specs.all ~~ Map:D {
