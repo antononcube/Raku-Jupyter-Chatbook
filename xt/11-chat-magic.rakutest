@@ -101,8 +101,8 @@ class MockResult {
     is $r.output-mime-type, 'text/markdown', 'chat magic set the mime type';
 }
 
-# It is expected to have the file "~/.local/share/raku/Chatbook/llm-personas.json".
-# Or have the env variable CHATBOOK_LLM_PERSONAS_CONF set to file.
+# It is expected to have the file "~/.config/raku-chatbook/llm-personas.json".
+# Or have the env variable RAKU_CHATBOOK_LLM_PERSONAS_CONF set to file.
 {
     my $code = q:to/DONE/;
     %% chat raku
