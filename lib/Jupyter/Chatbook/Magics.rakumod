@@ -1113,11 +1113,9 @@ INIT {
                     # Merge with defaults
                     my %h = %(conf => 'ChatGPT', chat-id => "p$i" ), %p;
                     # Expand prompt
-                    # For some reason this gives because it has new lines:
-                    #   Missing serialize REPR function for REPR VMException (BOOTException)
-                    #if %h<prompt>:exists {
-                    #    %h<prompt> = llm-prompt-expand(%h<prompt>)
-                    #}
+                    if %h<prompt>:exists {
+                        %h<prompt> = llm-prompt-expand(%h<prompt>)
+                    }
                     # Make a chat object
                     %h<chat-id> => llm-chat(|%h);
                 }
