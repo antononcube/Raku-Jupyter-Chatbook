@@ -11,7 +11,6 @@ use nqp;
 
 state $iopub_supplier;
 
-
 sub mime-type($str) {
     return do given $str {
         when /:i ^ '<svg' / {
@@ -76,7 +75,7 @@ class Jupyter::Chatbook::Sandbox is export {
         $*IN.^find_method('t').wrap( { True } );
         $!repl = REPL.new($!compiler, {});
         $!completer = Jupyter::Chatbook::Sandbox::Autocomplete.new(:$.handler);
-        self.eval(q:to/INIT/);
+        my $init-code = q:to/INIT/;
             my $Out = [];
             my $In  = [];
             sub Out { $Out };
@@ -102,6 +101,16 @@ class Jupyter::Chatbook::Sandbox is export {
             use WWW::WolframAlpha;
             use Lingua::Translation::DeepL;
         INIT
+        my $user-init-code = self!get-user-init-code;
+        my $res = self.eval($init-code ~ "\n" ~ $user-init-code);
+        if $res.exception {
+            # If there is a problem with the user supplied code,
+            # just evaluate the "standard" init code.
+            # I am not sure how a warning message can be given in user's Jupyter session.
+            # Another concern is:
+            #  Is it "slow" to use self.eval, or it is better to make the check with EVAL?
+            self.eval($init-code)
+        }
     }
 
     method eval(Str $code, Bool :$no-persist, Int :$store, :$out-mime-type) {
@@ -189,5 +198,19 @@ class Jupyter::Chatbook::Sandbox is export {
                 return $cursor-pos,$cursor-pos,();
             }
         }
+    }
+
+    method !get-user-init-code( --> Str:D) {
+        my $code = '';
+        my $base = %*ENV<XDG_HOME> // $*HOME.child('.config');
+        $base = $base.child('raku-chatbook') // $*HOME.child('.config');
+        my $init-file = %*ENV<RAKU_CHATBOOK_INIT_FILE> // $base.child('init.raku');
+        if $init-file.IO.e {
+            #note "Reading initialization code from $init-file";
+            try {
+                $code = $init-file.IO.slurp;
+            }
+        }
+        return $code;
     }
 }
