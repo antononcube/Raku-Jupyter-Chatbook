@@ -39,10 +39,15 @@ my class Always {
 #| Globals
 my $always = Always.new;
 
-# See the INIT block below
 my %chats;
 
 my @dalle-images;
+
+#===========================================================
+
+submethod TWEAK() {
+    %chats = self.get-user-llm-personas;
+}
 
 #===========================================================
 
@@ -1099,7 +1104,7 @@ method find-magic($code is rw) {
     return $magic-action;
 }
 
-INIT {
+method get-user-llm-personas(--> Map:D) {
     my $base = %*ENV<XDG_HOME> // $*HOME.child('.config');
     $base = $base.child('raku-chatbook') // $*HOME.child('.config');
     my $conf-file = %*ENV<RAKU_CHATBOOK_LLM_PERSONAS_CONF> // $base.child('llm-personas.json');
@@ -1119,8 +1124,9 @@ INIT {
                     # Make a chat object
                     %h<chat-id> => llm-chat(|%h);
                 }
-                %chats = %personas;
+                return %personas;
             }
         }
     }
+    return %();
 }
