@@ -49,8 +49,7 @@
   },
   "resources": [
     "logo-32x32.png",
-    "logo-64x64.png",
-    "llm-personas.json"
+    "logo-64x64.png"
   ],
   "license": "Artistic-2.0",
   "tags": [
