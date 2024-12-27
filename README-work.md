@@ -505,6 +505,48 @@ mindmap
 
 ------
 
+## Automatic initialization
+
+Both initialization Raku code and LLM personas can be automatically run and loaded respectively.
+
+### Init code
+
+The initialization Raku code can be specified with the OS environmental variable `RAKU_CHATBOOK_INIT_FILE`.
+
+If that variable is not set, the existence of the following files is verified in this order:
+
+1. "~/.config/raku-chatbook/init.raku"
+2. "~/.config/init.raku"
+
+If an initialization file is found, an attempt is made to evaluate it. If the evaluation is successful,
+then the content of file is used to initialize the Jupyter session. (In addition to the code that is always used for initialization.)
+
+For example, see the file ["./resources/init.raku"](./resources/init.raku).
+
+### LLM personas
+
+The Jupyter session can have pre-loaded LLM personas (i.e. chat objects.)
+
+The LLM personas JSON file can be specified with the OS environmental variable `RAKU_CHATBOOK_LLM_PERSONAS_CONF`.
+
+If that variable is not set, the existence of the following files is verified in this order:
+
+1. "~/.config/raku-chatbook/llm-personas.json"
+2. "~/.config/llm-personas.json"
+
+Prompts from ["LLM::Prompts"](https://github.com/antononcube/Raku-LLM-Prompts), [AAp10], can be used in that file.
+
+For example, see the file ["./resources/llm-personas.json"](./resources/llm-personas.json).
+
+The pre-loaded LLM personas (chat objects) can be verified with the magic cell:
+
+```
+#% chat meta all
+gist 
+```
+
+------
+
 ## Docker 
 
 Thanks for @ab5tract there are two Docker files:

@@ -176,7 +176,7 @@ use LLM::Functions;
 my &fcp = llm-function({"What is the population of the country $_ ?"});
 ```
 ```
-# -> **@args, *%args { #`(Block|3736847888056) ... }
+# -> **@args, *%args { #`(Block|5261019071144) ... }
 ```
 
 Here is another cell that can be evaluated multiple times using different country names:
@@ -185,7 +185,7 @@ Here is another cell that can be evaluated multiple times using different countr
 <Niger Gabon>.map({ &fcp($_) })
 ```
 ```
-# (As of 2021, the population of Niger is estimated to be around 25 million. According to the latest United Nations data, the population of Gabon is approximately 2.2 million as of 2021.)
+# (As of 2021, the estimated population of Niger is approximately 25.9 million. The population of Gabon is approximately 2.22 million as of 2021.)
 ```
 
 For more examples of LLM functions and LLM chat objects see the notebook 
@@ -507,6 +507,48 @@ mindmap
         WWW::PaLM
         WWW::Gemini
         Lingua::Translation::DeepL
+```
+
+------
+
+## Automatic initialization
+
+Both initialization Raku code and LLM personas can be automatically run and loaded respectively.
+
+### Init code
+
+The initialization Raku code can be specified with the OS environmental variable `RAKU_CHATBOOK_INIT_FILE`.
+
+If that variable is not set, the existence of the following files is verified in this order:
+
+1. "~/.config/raku-chatbook/init.raku"
+2. "~/.config/init.raku"
+
+If an initialization file is found, an attempt is made to evaluate it. If the evaluation is successful,
+then the content of file is used to initialize the Jupyter session. (In addition to the code that is always used for initialization.)
+
+For example, see the file ["./resources/init.raku"](./resources/init.raku).
+
+### LLM personas
+
+The Jupyter session can have pre-loaded LLM personas (i.e. chat objects.)
+
+The LLM personas JSON file can be specified with the OS environmental variable `RAKU_CHATBOOK_LLM_PERSONAS_CONF`.
+
+If that variable is not set, the existence of the following files is verified in this order:
+
+1. "~/.config/raku-chatbook/llm-personas.json"
+2. "~/.config/llm-personas.json"
+
+Prompts from ["LLM::Prompts"](https://github.com/antononcube/Raku-LLM-Prompts), [AAp10], can be used in that file.
+
+For example, see the file ["./resources/llm-personas.json"](./resources/llm-personas.json).
+
+The pre-loaded LLM personas (chat objects) can be verified with the magic cell:
+
+```
+#% chat meta all
+gist 
 ```
 
 ------
