@@ -27,6 +27,7 @@
     "WWW::LLaMA:ver<0.1.0+>",
     "WWW::MermaidInk:ver<0.1.2+>",
     "WWW::MistralAI:ver<0.1.2+>",
+    "WWW::Ollama:ver<0.0.3+>",
     "WWW::OpenAI:ver<0.3.2+>",
     "WWW::PaLM:ver<0.1.9+>",
     "WWW::WolframAlpha:ver<0.1.2+>"
