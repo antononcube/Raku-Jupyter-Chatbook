@@ -54,19 +54,21 @@
   ],
   "license": "Artistic-2.0",
   "tags": [
-    "bard",
     "chat",
     "chatbook",
     "chatgpt",
     "dall-e",
+    "gemini",
     "jupyter",
     "kernel",
+    "llamafile",
     "llm",
     "mermaid",
     "mermaid-js",
     "notebook",
+    "ollama",
     "openai",
-    "palm"
+    "wolfram alpha"
   ],
   "api": "1",
   "source-url": "https://github.com/antononcube/Raku-Jupyter-Chatbook",
