@@ -16,7 +16,7 @@ has $.kernel-info = {
     status => 'ok',
     protocol_version => '5.0',
     implementation => 'Raku-Jupyter-Chatbook',
-    implementation_version => '0.2.0',
+    implementation_version => '0.3.6',
     language_info => {
         name => 'raku',
         version => ~$*RAKU.version,
@@ -35,7 +35,7 @@ method resources {
 }
 
 method run($spec-file!) {
-    info 'starting jupyter kernel';
+    info 'starting jupyter chatbook (kernel)';
 
     my $spec = from-json($spec-file.IO.slurp);
     my $url = "$spec<transport>://$spec<ip>";
