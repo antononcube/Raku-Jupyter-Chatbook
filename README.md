@@ -61,7 +61,7 @@ For example, see the GitHub Actions workflow file ["macos.yml"](https://github.c
 
 **Remark:** The instructions in this section follow the instructions in
 ["Jupyter::Kernel"](https://github.com/bduggan/raku-jupyter-kernel).
-The "main" change is using `jupyter-chatbook.raku` instead of `jupyter-kernel.raku`. 
+The "main" change is using `jupyter-chatbook-raku` instead of `jupyter-kernel.raku`. 
 
 ### Server Configuration
 
@@ -69,7 +69,7 @@ To generate a configuration directory, and to install a kernel
 config file and icons into the default location:
 
 ```
-jupyter-chatbook.raku --generate-config
+jupyter-chatbook-raku --generate-config
 ```
 
 * Use `--location=XXX` to specify another location.

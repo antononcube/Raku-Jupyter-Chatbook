@@ -32,7 +32,7 @@ multi MAIN(Bool :$generate-config!,
             "display_name": "RakuChatbook",
             "language": "raku",
             "argv": [
-                "jupyter-chatbook.raku",
+                "jupyter-chatbook-raku",
                 "{connection_file}"
             ]
         }

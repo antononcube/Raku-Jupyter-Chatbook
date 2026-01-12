@@ -21,7 +21,7 @@ RUN apt-get update \
 RUN bash -c 'pushd . && cd /tmp && git clone https://github.com/rakudo/rakudo.git && cd rakudo && perl Configure.pl --gen-moar --gen-nqp --backends=moar --prefix=/usr && make && make install && cd .. && git clone https://github.com/ugexe/zef.git && cd zef && raku -I. bin/zef install . && popd'
 RUN zef install SVG::Plot OpenSSL --force-test
 RUN zef -v install git://github.com/antononcube/Raku-Jupyter-Chatbook.git \
-    && jupyter-chatbook.raku --generate-config --force \
+    && jupyter-chatbook-raku --generate-config --force \
     && ln -s /usr/share/perl6/site/bin/* /usr/local/bin
 
 ENTRYPOINT ["/usr/bin/tini", "--"]

@@ -20,7 +20,7 @@ RUN apt-get update \
        python3-setuptools jupyter jupyter-notebook asciinema jupyterhub openssl libssl-dev
 RUN zef install SVG::Plot OpenSSL --force-test
 RUN zef -v install git://github.com/antononcube/Raku-Jupyter-Chatbook.git \
-    && jupyter-chatbook.raku --generate-config --force \
+    && jupyter-chatbook-raku --generate-config --force \
     && ln -s /usr/share/perl6/site/bin/* /usr/local/bin
 
 ENTRYPOINT ["/usr/bin/tini", "--"]
