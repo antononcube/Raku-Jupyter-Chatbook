@@ -1,5 +1,11 @@
 Revision history for "Jupyter::Chatbook"
 
+0.3.6 2026-01-12
+    - Refactoring! :
+        - Changed the name of "jupyter-chatbook.raku" into "jupyter-chatbook-raku".
+        - This resolves the issues of missing shebang of the kernel script and that script not being executable.
+    - The package "WWW::Ollama" is loaded in notebook session.
+
 0.3.0 2024-05-14
     - Added Wolfram|Alpha cell.
 
