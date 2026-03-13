@@ -607,6 +607,8 @@ my class Magic::ChatMeta is Magic::Chat {
                 $.meta-command = 'drop'
             } elsif $code.trim ∈ <clear empty> {
                 $.meta-command = 'clear'
+            } elsif $code.trim ∈ <keys names> {
+                $.meta-command = 'keys'
             }
         }
 
@@ -682,11 +684,19 @@ my class Magic::ChatMeta is Magic::Chat {
 
                     my @knownMethods = <keys values pairs Str gist>;
                     $res = do given $code.trim {
+                        when $_ ∈ <keys names> {
+                            %chats.keys.sort.List
+                        }
                         when 'values' {
                             %chats.values.map({ $_.Str }).List
                         }
                         when 'pairs' {
                             %chats.map({ $_.key => $_.value.Str }).List
+                        }
+                        when $_ ∈ <drop delete> {
+                            my $message = "Deleted {%chats.elems} chat obejcts with names {%chats.keys.sort}.";
+                            %chats = Empty;
+                            $message
                         }
                         when $_ ∈ @knownMethods {
                             %chats."$_"();
