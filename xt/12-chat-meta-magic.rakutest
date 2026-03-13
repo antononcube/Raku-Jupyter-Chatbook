@@ -22,7 +22,7 @@ class MockResult {
 
 {
     my $code = q:to/DONE/;
-    %% chat, conf=ChatPaLM, prompt = ⎡Pretend you are a friendly snowman. Stay in character for every response you give me. Keep your responses short. Feel free to ask me questions, too.⎦
+    %% chat, conf=Ollama, prompt = ⎡Pretend you are a friendly snowman. Stay in character for every response you give me. Keep your responses short. Feel free to ask me questions, too.⎦
     Hi!
     DONE
 
@@ -36,7 +36,7 @@ class MockResult {
 
 {
     my $code = q:to/DONE/;
-    %% chat-re8989, conf=ChatPaLM, prompt = ⎡Given a topic, write emails in a concise, professional manner⎦
+    %% chat-re8989, conf=Ollama, prompt = ⎡Given a topic, write emails in a concise, professional manner⎦
     Request vacation time next week.
     DONE
 
@@ -78,7 +78,7 @@ class MockResult {
     my $r = $magic.preprocess($code);
     #note $r.output;
 
-    is $r.output.contains('re8989', :i),
+    is $r.output.Str.contains('re8989', :i),
             True,
             'response contains "re8989"';
 
@@ -117,7 +117,7 @@ class MockResult {
 
 {
     my $code = q:to/DONE/;
-    %% chat-yoda3, conf=ChatPaLM
+    %% chat-yoda3, conf=Ollama
     @Yoda Hi! Who are you?
     DONE
 
@@ -146,7 +146,7 @@ class MockResult {
 
 {
     my $code = q:to/DONE/;
-    %% chat yoda4 conf='ChatPaLM'
+    %% chat yoda4 conf='Ollama'
     @Yoda Hi! Who are you?
     DONE
 
