@@ -694,7 +694,7 @@ my class Magic::ChatMeta is Magic::Chat {
                             %chats.map({ $_.key => $_.value.Str }).List
                         }
                         when $_ ∈ <drop delete> {
-                            my $message = "Deleted {%chats.elems} chat obejcts with names {%chats.keys.sort}.";
+                            my $message = "Deleted {%chats.elems} chat objects with names {%chats.keys.sort}.";
                             %chats = Empty;
                             $message
                         }
