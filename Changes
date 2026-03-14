@@ -1,5 +1,9 @@
 Revision history for "Jupyter::Chatbook"
 
+0.3.7 2026-03-13
+    - Added synonyms to chat commands: "names" as "keys", "delete" as "drop".
+    - Made sure `#% chat all` can drop all chat objects.
+
 0.3.6 2026-01-12
     - Refactoring! :
         - Changed the name of "jupyter-chatbook.raku" into "jupyter-chatbook-raku".
