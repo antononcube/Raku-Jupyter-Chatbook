@@ -1,5 +1,10 @@
 Revision history for "Jupyter::Chatbook"
 
+0.3.8 2026-07-28
+    - Removed PalM magic cells and dependencies on "WWW::PaLM".
+    - Added OpenRouter and XAI magic cells.
+    - The packages "WWW::OpenRouter" and "WWW::XAI" are loaded in each chatbook session.
+
 0.3.7 2026-03-13
     - Added synonyms to chat commands: "names" as "keys", "delete" as "drop".
     - Made sure `#% chat all` can drop all chat objects.
