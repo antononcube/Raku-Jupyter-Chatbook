@@ -139,12 +139,10 @@ would find the "RakuChatbook" kernel "quicker" or "more directly."
 
 The default API keys for the chat cells, LLM functions, chat objects, and DeepL cells are taken from 
 the Operating System (OS) environmental variables 
-`OPENAI_API_KEY`, `PALM_API_KEY`, `GEMINI_API_KEY`, `MISTRAL_API_KEY`, `DEEPL_AUTH_KEY`, `WOLFRAM_ALPHA_API_KEY`. 
+`OPENAI_API_KEY`, `GEMINI_API_KEY`, `MISTRAL_API_KEY`, `OPENROUNTER_API_KEY`, `XAI_API_KEY`, `DEEPL_AUTH_KEY`, `WOLFRAM_ALPHA_API_KEY`. 
 
 The API keys can also be specified using LLM evaluator and configuration options and objects; 
 see [AA3, AAp2, AAv4].
-
-**Remark:** `PALM_API_KEY` works for both PaLM and Gemini.
 
 -------
 
@@ -155,7 +153,7 @@ There are four ways to use LLMs in a chatbook:
 1. [LLM functions](https://github.com/antononcube/Raku-Jupyter-Chatbook/blob/master/eg/Chatbook-LLM-functions-and-chat-objects.ipynb), [AA3, AAp2]
 2. [LLM chat objects](https://github.com/antononcube/Raku-Jupyter-Chatbook/blob/master/eg/Chatbook-LLM-functions-and-chat-objects.ipynb), [AA4, AAp2]
 3. [Code cells with magics](https://github.com/antononcube/Raku-Jupyter-Chatbook/blob/master/eg/Chatbook-LLM-cells.ipynb)
-   accessing LLMs, like, OpenAI's, [AAp3], or PaLM's, [AAp4]
+   accessing LLMs, like, OpenAI's, [AAp3], or Gemini's, [AAp14]
 4. [Notebook-wide chats](https://github.com/antononcube/Raku-Jupyter-Chatbook/blob/master/eg/Chatbook-LLM-chats.ipynb) 
    that are distributed over multiple code cells with chat-magic specs
 
@@ -212,9 +210,9 @@ that can be used to post-process LLM outputs.
 
 ## LLM cells
 
-The LLMs of OpenAI (ChatGPT, DALL-E) and Google (PaLM, Gemini) can be interacted with using "dedicated" notebook cells.
+The LLMs of OpenAI (ChatGPT, DALL-E) and Google (Gemini) can be interacted with using "dedicated" notebook cells.
 
-Here is an example of a code cell with PaLM magic spec:
+Here is an example of a code cell with Gemini magic spec:
 
 ```
 %% gemini, max-tokens=600
@@ -472,10 +470,11 @@ mindmap
             ChatGPT
             DALL-E
         Google
-            PaLM
             Gemini
         MistralAI
         LLaMA
+        OpenRouter
+        XAI
     **Notebook wide chats**
         Chat objects
            Named
@@ -498,8 +497,9 @@ mindmap
         WWW::LLaMA
         WWW::MermaidInk
         WWW::OpenAI
-        WWW::PaLM
         WWW::Gemini
+        WWW::OpenRouter
+        WWW::XAI
         Lingua::Translation::DeepL
 ```
 
@@ -590,6 +590,8 @@ docker run --rm -p 8888:8888 --name chatbook -t rchat:1.0
    9. [ ] TODO Parse Python style magics
       - See ["JupyterChatbook"](https://github.com/antononcube/Python-JupyterChatbook)
       - See ["Getopt::Long::Grammar"](https://github.com/antononcube/Raku-Getopt-Long-Grammar)
+   10. [X] DONE OpenRouter cells
+   11. [X] DONE XAI cells
 2. [ ] TODO Unit tests
    1. [X] DONE PaLM cells
    2. [X] DONE OpenAI cells
@@ -721,6 +723,16 @@ docker run --rm -p 8888:8888 --name chatbook -t rchat:1.0
 [AAp16] Anton Antonov,
 [WWW::WolframAlpha Raku package](https://github.com/antononcube/Raku-WWW-WolframAlpha),
 (2024),
+[GitHub/antononcube](https://github.com/antononcube).
+
+[AAp17] Anton Antonov,
+[WWW::OpenRouter Raku package](https://github.com/antononcube/Raku-WWW-OpenRouter),
+(2026),
+[GitHub/antononcube](https://github.com/antononcube).
+
+[AAp18] Anton Antonov,
+[WWW::XAI Raku package](https://github.com/antononcube/Raku-WWW-XAI),
+(2026),
 [GitHub/antononcube](https://github.com/antononcube).
 
 [BDp1] Brian Duggan,
