@@ -39,30 +39,44 @@ class MockResult {
 
 {
     my $code = q:to/DONE/;
-    %% palm
+    %% openrouter
     What is the population of Brazil?
     DONE
 
-    ok my $magic = $m.find-magic($code), 'preprocess recognized %% palm';
+    ok my $magic = $m.find-magic($code), 'preprocess recognized %% openrouter';
     is $code, "What is the population of Brazil?\n", 'find-magic removed magic line';
     my $r = $magic.preprocess($code);
     #note $r.output;
-    isa-ok sub-parser('GenericNumeric').subparse($r.output.subst(/(\d) ',' (\d**3)/, {"$0_$1"}):g), Numeric, 'Numeric answer from PalM cell';
-    is $r.output-mime-type, 'text/plain', 'palm magic set the mime type';
+    isa-ok sub-parser('GenericNumeric').subparse($r.output.subst(/(\d) ',' (\d**3)/, {"$0_$1"}):g), Numeric, 'Numeric answer from OpenRouter cell';
+    is $r.output-mime-type, 'text/plain', 'openrouter magic set the mime type';
 }
 
 {
     my $code = q:to/DONE/;
-    %% palm, max-tokens=30, format=json
+    %% openrouter, max-tokens=1024, format=json
     What is the population of Brazil?
     DONE
 
-    ok my $magic = $m.find-magic($code), 'preprocess recognized %% palm, *%args';
+    ok my $magic = $m.find-magic($code), 'preprocess recognized %% openrouter, *%args';
     is $code, "What is the population of Brazil?\n", 'find-magic removed magic line';
     my $r = $magic.preprocess($code);
     #note $r.output;
-    ok from-json($r.output), 'got JSON string for PalM with format=json';
-    is $r.output-mime-type, 'text/plain', 'palm magic set the mime type';
+    ok from-json($r.output), 'got JSON string for OpenRouter with format=json';
+    is $r.output-mime-type, 'text/plain', 'openrouter magic set the mime type';
+}
+
+{
+    my $code = q:to/DONE/;
+    %% xai, max-tokens=1024, format=json
+    What is the population of Brazil?
+    DONE
+
+    ok my $magic = $m.find-magic($code), 'preprocess recognized %% xai, *%args';
+    is $code, "What is the population of Brazil?\n", 'find-magic removed magic line';
+    my $r = $magic.preprocess($code);
+    #note $r.output;
+    ok from-json($r.output), 'got JSON string for XAI with format=json';
+    is $r.output-mime-type, 'text/plain', 'xai magic set the mime type';
 }
 
 {
