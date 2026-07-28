@@ -5,7 +5,8 @@ use WWW::Gemini;
 use WWW::LLaMA;
 use WWW::MistralAI;
 use WWW::OpenAI;
-use WWW::PaLM;
+use WWW::OpenRouter;
+use WWW::XAI;
 use WWW::MermaidInk;
 use WWW::WolframAlpha;
 use Clipboard;  # copy-to-clipboard
@@ -456,18 +457,54 @@ my class Magic::OpenAIDallEMeta is Magic::LLM {
     }
 }
 
-my class Magic::PaLM is Magic::LLM {
+my class Magic::OpenRouter is Magic::LLM {
     method preprocess($code) {
 
         # Process arguments
         self.pre-process-args;
 
-        self.args = %(max-tokens => 900, format => 'values') , self.args;
+        self.args = %(max-tokens => 4096, format => 'values') , self.args;
 
         # Call LLM's interface function
         my $res;
         try {
-            $res = palm-generate-text( $code, |self.args);
+            $res = openrouter-chat-completion($code, |self.args);
+        }
+
+        if $! {
+            $res = "Cannot process request.";
+            if $! ~~ X::AdHoc {
+                $res ~= "\n" ~ $!.Str;
+            }
+        }
+
+        # Copy to clipboard
+        if $*DISTRO eq 'macos' {
+            copy-to-clipboard($res);
+        }
+
+        # Result
+        return Result.new:
+                output => $res,
+                output-mime-type => self.output-mime-type,
+                stdout => $res,
+                stdout-mime-type => self.output-mime-type,
+                ;
+    }
+}
+
+my class Magic::XAI is Magic::LLM {
+    method preprocess($code) {
+
+        # Process arguments
+        self.pre-process-args;
+
+        self.args = %(max-tokens => 4096, format => 'values') , self.args;
+
+        # Call LLM's interface function
+        my $res;
+        try {
+            $res = xai-console($code, path => 'chat', |self.args);
         }
 
         if $! {
@@ -1018,8 +1055,11 @@ class Magic::Actions {
             when 'dalle' {
                 $/.make: Magic::OpenAIDallE.new(:%args, :$output-mime-type);
             }
-            when 'palm' {
-                $/.make: Magic::PaLM.new(:%args, :$output-mime-type);
+            when 'openrouter' {
+                $/.make: Magic::OpenRouter.new(:%args, :$output-mime-type);
+            }
+            when 'xai' {
+                $/.make: Magic::XAI.new(:%args, :$output-mime-type);
             }
             when 'chat' {
                 my $chat-id = 'NONE';

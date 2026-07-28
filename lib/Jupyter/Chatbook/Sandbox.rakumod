@@ -97,7 +97,8 @@ class Jupyter::Chatbook::Sandbox is export {
             use WWW::MermaidInk;
             use WWW::Ollama;
             use WWW::OpenAI;
-            use WWW::PaLM;
+            use WWW::OpenRouter;
+            use WWW::XAI;
             use WWW::Gemini;
             use WWW::WolframAlpha;
             use Lingua::Translation::DeepL;

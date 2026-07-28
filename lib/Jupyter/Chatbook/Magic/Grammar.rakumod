@@ -12,7 +12,7 @@ grammar Jupyter::Chatbook::Magic::Grammar {
         $<key>='run' $<rest>=.*
     }
     regex llm-args {
-        $<key>=[ 'gemini' | 'llama' | 'mistralai' | 'openai' | 'dalle' | 'palm' | 'chat' ] [\h* '>' \h* $<output-mime>=<mime> | \h* ] [ <.param-sep> <magic-list-of-params> \h*]? \h*
+        $<key>=[ 'gemini' | 'llama' | 'mistralai' | 'openai' | 'dalle' | 'openrouter' | 'xai' | 'chat' ] [\h* '>' \h* $<output-mime>=<mime> | \h* ] [ <.param-sep> <magic-list-of-params> \h*]? \h*
     }
     token chat-id-spec {
         <chat> [ '-' | '_' | ':' | \h+ ] $<chat-id>=(<.alnum> <-[,;\s]>*) [\h* '>' \h* $<output-mime>=<mime>]? [<.param-sep> <magic-list-of-params> \h*]? \h*
@@ -48,10 +48,11 @@ grammar Jupyter::Chatbook::Magic::Grammar {
         | <latex>
         | <javascript>
         | <openai>
+        | <openrouter>
         | <dalle>
         | <deepl>
         | <gemini>
-        | <palm>
+        | <xai>
         | <mermaid>
         | <wolfram-alpha>
         | <chat>
@@ -77,14 +78,17 @@ grammar Jupyter::Chatbook::Magic::Grammar {
     token openai {
         'openai'
     }
+    token openrouter {
+        'openrouter'
+    }
     token dalle {
         'dalle'
     }
     token deepl {
         'deepl'
     }
-    token palm {
-        'palm'
+    token xai {
+        'xai'
     }
     token mermaid {
         'mermaid' || 'mmd'
