@@ -256,11 +256,15 @@ my class Magic::OpenAIDallE is Magic::LLM {
         self.pre-process-args;
 
         self.args =
-                %(response-format => 'b64_json',
-                  n => 1,
+                %(n => 1,
                   size => Whatever,
                   format => 'values',
                   method => 'tiny') , self.args;
+
+        # Newer OpenAI image creation models do not use the argument 'response_format'
+        if (self.args<model>:exists) && self.args<model> ∈ <dalle2 dall-e-2 dalle3 dall-e-3> {
+            self.args<response-format> = 'b64_json'
+        }
 
         my $prompt = self.args<prompt> // '';
         $prompt = to-unquoted($prompt);
@@ -286,7 +290,7 @@ my class Magic::OpenAIDallE is Magic::LLM {
             }
 
         } else {
-            if self.args<response-format> eq 'b64_json' {
+            if (self.args<response-format>:!exists) || self.args<response-format> eq 'b64_json' {
                 try {
                     @imgResB64 = |openai-create-image($code, |self.args);
                 }
@@ -1124,7 +1128,7 @@ class Magic::Actions {
             when 'openai' {
                 $/.make: Magic::OpenAI.new(:%args, :$output-mime-type);
             }
-            when 'dalle' {
+            when $_.lc ∈ <dalle openai-images openaiimages> {
                 $/.make: Magic::OpenAIDallE.new(:%args, :$output-mime-type);
             }
             when 'openrouter' {
@@ -1133,7 +1137,7 @@ class Magic::Actions {
             when 'xai' {
                 $/.make: Magic::XAI.new(:%args, :$output-mime-type);
             }
-            when 'xai-images' {
+            when $_.lc ∈ <xai-images xaiimages> {
                 $/.make: Magic::XAIImage.new(:%args, :$output-mime-type);
             }
             when 'chat' {
