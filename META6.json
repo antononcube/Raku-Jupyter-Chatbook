@@ -28,7 +28,7 @@
     "WWW::MermaidInk:ver<0.1.2+>",
     "WWW::MistralAI:ver<0.1.2+>",
     "WWW::Ollama:ver<0.0.3+>",
-    "WWW::OpenAI:ver<0.3.2+>",
+    "WWW::OpenAI:ver<0.3.20+>",
     "WWW::OpenRouter:ver<0.0.1+>",
     "WWW::XAI:ver<0.1.1+>",
     "WWW::WolframAlpha:ver<0.1.2+>"
