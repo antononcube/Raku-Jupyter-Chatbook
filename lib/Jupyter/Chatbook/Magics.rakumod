@@ -375,12 +375,12 @@ my class Magic::OpenAIDallEMeta is Magic::LLM {
                             @dalle-images."$_"();
                         }
                         default {
-                            "Do not know how to process {$_.raku}. The known DALL-E images object methods are: {@knownMethods.raku}.\nContinuing with .elems.\n\n" ~ @dalle-images.elems;
+                            "Do not know how to process {$_.raku}. The known AI images object methods are: {@knownMethods.raku}.\nContinuing with .elems.\n\n" ~ @dalle-images.elems;
                         }
                     }
 
                 } else {
-                    $res = "No stored DALL-E images.";
+                    $res = "No stored AI images.";
                 }
             }
 
@@ -529,6 +529,78 @@ my class Magic::XAI is Magic::LLM {
     }
 }
 
+# Very similar / same as Magic::OpenAIDallE, except the image creation function calls.
+my class Magic::XAIImage is Magic::LLM {
+    method preprocess($code) {
+
+        # Process arguments
+        self.pre-process-args;
+
+        self.args =
+                %(response-format => 'b64_json',
+                  n => 1,
+                  size => Whatever,
+                  format => 'values',
+                  method => 'tiny') , self.args;
+
+        my $prompt = self.args<prompt> // '';
+        $prompt = to-unquoted($prompt);
+
+        my $res = '';
+        my @imgResB64;
+        # Call LLM's interface function
+        if $code.trim.starts-with('@') && $code.trim.substr(1).IO.f {
+
+            $res = 'Modifying images with XAI is not implemented yet.'
+
+        } else {
+            if self.args<response-format> eq 'b64_json' {
+                try {
+                    @imgResB64 = |xai-console($code, path => 'image', |self.args);
+                }
+
+                if $! || !(@imgResB64.all ~~ Str) {
+                    $res = "Cannot process request.";
+                    if $! ~~ X::AdHoc {
+                        $res ~= "\n" ~ $!.Str;
+                    }
+                    @imgResB64 = Empty;
+                }
+            } else {
+                try {
+                    $res = xai-console($code, path => 'image', |self.args);
+                }
+
+                if $! {
+                    $res = "Cannot process request.";
+                    if $! ~~ X::AdHoc {
+                        $res ~= "\n" ~ $!.Str;
+                    }
+                    @imgResB64 = Empty;
+                } else {
+                    # Copy to clipboard
+                    if $*DISTRO eq 'macos' {
+                        copy-to-clipboard($res);
+                    }
+                }
+            }
+        }
+
+        # Transform base64 images into HTML images
+        if @imgResB64 {
+            @dalle-images.append(@imgResB64);
+            $res = @imgResB64.map({ image-from-base64($_) }).join("\n\n");
+        }
+
+        # Result
+        return Result.new:
+                output => $res,
+                output-mime-type => 'text/html',
+                stdout => $res,
+                stdout-mime-type => 'text/html',
+                ;
+    }
+}
 
 my class Magic::Gemini is Magic::LLM {
     method preprocess($code) {
@@ -1060,6 +1132,9 @@ class Magic::Actions {
             }
             when 'xai' {
                 $/.make: Magic::XAI.new(:%args, :$output-mime-type);
+            }
+            when 'xai-images' {
+                $/.make: Magic::XAIImage.new(:%args, :$output-mime-type);
             }
             when 'chat' {
                 my $chat-id = 'NONE';

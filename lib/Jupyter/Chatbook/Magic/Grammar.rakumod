@@ -12,7 +12,7 @@ grammar Jupyter::Chatbook::Magic::Grammar {
         $<key>='run' $<rest>=.*
     }
     regex llm-args {
-        $<key>=[ 'gemini' | 'llama' | 'mistralai' | 'openai' | 'dalle' | 'openrouter' | 'xai' | 'chat' ] [\h* '>' \h* $<output-mime>=<mime> | \h* ] [ <.param-sep> <magic-list-of-params> \h*]? \h*
+        $<key>=[ 'gemini' | 'llama' | 'mistralai' | 'openai' | 'dalle' | 'openrouter' | 'xai' | 'xai-images' | 'chat' ] [\h* '>' \h* $<output-mime>=<mime> | \h* ] [ <.param-sep> <magic-list-of-params> \h*]? \h*
     }
     token chat-id-spec {
         <chat> [ '-' | '_' | ':' | \h+ ] $<chat-id>=(<.alnum> <-[,;\s]>*) [\h* '>' \h* $<output-mime>=<mime>]? [<.param-sep> <magic-list-of-params> \h*]? \h*
@@ -22,7 +22,7 @@ grammar Jupyter::Chatbook::Magic::Grammar {
         || <chat> [ '-' | '_' | ':' | \h+ ] $<chat-id>=(<-[,;\s]>*) \h+ $<meta-command>= [ 'meta' | 'prompt' | 'drop' | 'clear' | 'all' ] [<.param-sep> <magic-list-of-params> \h*]? \h*
     }
     token dalle-meta-spec {
-        <dalle> \h+ $<meta-command>= [ 'meta' | 'export' | 'drop' | 'clear' ] [<.param-sep> <magic-list-of-params> \h*]? \h*
+        [ <dalle> | <ai-images> ] \h+ $<meta-command>= [ 'meta' | 'export' | 'drop' | 'clear' ] [<.param-sep> <magic-list-of-params> \h*]? \h*
     }
     token mermaid-args {
         $<key>=<.mermaid> [\h* '>' \h* $<output-mime>=<mime> | \h* ] [ <.param-sep> <magic-list-of-params> \h*]? \h*
@@ -36,7 +36,7 @@ grammar Jupyter::Chatbook::Magic::Grammar {
     rule filter {
         [
         | $<out>=<mime> ['>' $<stdout>=<mime>]?
-           | '>' $<stdout>=<mime>
+        | '>' $<stdout>=<mime>
        ]
     }
     token always {
@@ -53,12 +53,16 @@ grammar Jupyter::Chatbook::Magic::Grammar {
         | <deepl>
         | <gemini>
         | <xai>
+        | <xai-images>
         | <mermaid>
         | <wolfram-alpha>
         | <chat>
     }
     token html {
         'html'
+    }
+    token ai-images {:i
+        'ai-images' || 'aiimages'
     }
     token markdown {
         'markdown' || 'md'
@@ -89,6 +93,9 @@ grammar Jupyter::Chatbook::Magic::Grammar {
     }
     token xai {
         'xai'
+    }
+    token xai-images {:i
+        'xai-images' || 'xaiimages'
     }
     token mermaid {
         'mermaid' || 'mmd'
