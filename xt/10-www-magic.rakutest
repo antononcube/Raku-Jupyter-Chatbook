@@ -144,6 +144,26 @@ class MockResult {
 
 {
     my $code = q:to/DONE/;
+    %% xai-images, prompt='Better butterfly.'
+
+    DONE
+
+    ok my $magic = $m.find-magic($code), 'preprocess recognized %% xai-image with prompt';
+    say (:$magic);
+    is $code.trim.starts-with('@'), True, 'find-magic removed magic line';
+
+    my $r = $magic.preprocess($code);
+
+    #note $r.output;
+    is $r.output.starts-with('<img src="data:image/png;base64'),
+            True,
+            'got HTML base64 string from xai-image with prompt';
+
+    is $r.output-mime-type, 'text/html', 'xai-image with prompt magic set the mime type';
+}
+
+{
+    my $code = q:to/DONE/;
     %% dalle meta
     @resources/no-images.png
     DONE
