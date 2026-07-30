@@ -555,7 +555,26 @@ my class Magic::XAIImage is Magic::LLM {
         # Call LLM's interface function
         if $code.trim.starts-with('@') && $code.trim.substr(1).IO.f {
 
-            $res = 'Modifying images with XAI is not implemented yet.'
+            try {
+                my $file = $code.trim.substr(1).IO.absolute.Str;
+                if !$prompt {
+                    $prompt = [
+                        'Render this image in anime illustration style',
+                        'Render this image as an oil painting in the style of impressionism',
+                        'Render this image as pop art with bold colors and halftone dots',
+                        'Render this image as a pencil sketch with detailed shading',
+                        'Render this image as a watercolor painting with soft edges',
+                        'Render this image as a inkblot white ink on dark background',
+                    ].pick;
+                }
+                self.args<prompt>:delete;
+                @imgResB64 = |xai-console($prompt, path => 'images/edits', image => $file, |self.args);
+            }
+
+            if $! || !(@imgResB64.all ~~ Str) {
+                $res = "Cannot process file -- non-image result:\n" ~ @imgResB64.raku;
+                @imgResB64 = Empty;
+            }
 
         } else {
             if self.args<response-format> eq 'b64_json' {
